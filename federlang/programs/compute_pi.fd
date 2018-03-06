@@ -1,0 +1,27 @@
+include "stdio.fd"
+include "stdmath.fd"
+
+double func circley (double radius, double x)
+	# Using x^2 + y^2 = r^2
+	return math.sqrt (radius * radius - (x * x))
+;
+
+double func distanceCircle (double radius, double x0, double x1)
+	y0 = circley (radius, x0)
+	y1 = circley (radius, x1)
+	dx = x0 - x1
+	dy = y0 - y1
+	return math.sqrt ((dx * dx) + (dy * dy))
+;
+
+pi = 0.0
+Radius = 0.5
+max_parts = 1000000 # Tests said: thats a good number
+small_part = Radius / (double from max_parts)
+
+for i = 0, i < max_parts, i++
+	pi += distanceCircle (Radius, (double from i) * small_part, (double from i+1) * small_part)
+;
+
+io.print ("PI: ")
+io.println (pi * 4.0)

@@ -1,0 +1,535 @@
+package feder;
+
+import java.util.*;
+import feder.types.*;
+import java.io.File;
+
+/**
+ * This class is just there to minimize the line numbers in SyntaxTreeElement.java
+ * @author Fionn Langhans
+ * @ingroup compiler
+ */
+public class SyntaxTreeElementUtils
+{
+
+	/**
+	 * @param index
+	 * @return This method returns a new branch, which is created with a context
+	 *         aware function. If the current index equals ')', the branch will be
+	 *         reaching to the next ')'.
+	 */
+	public static SyntaxTreeElement newBranchAt(SyntaxTreeElement el, int index)
+	{
+		List<String> tokens0 = new LinkedList<>();
+		List<String> stringsOfTokens0 = new LinkedList<>();
+
+		if (index >= el.tokens.size()) {
+			return new SyntaxTreeElement(el.compiler, el.body, el.line,
+			                             tokens0, stringsOfTokens0);
+		}
+
+		if (el.tokens.get(index).equals("(")
+				|| el.tokens.get(index).equals("[")) {
+
+			String open_bracket = el.tokens.get(index);
+			String close_bracket = ")";
+			if (open_bracket.equals("[")) {
+				close_bracket = "]";
+			}
+			
+			// System.out.println(open_bracket + ", " + close_bracket);
+
+			// Read till the next ')' (which is not in yet another scope)
+			int count = 1;
+			int i;
+			for (i = index + 1; i < el.tokens.size(); i++) {
+				if (el.tokens.get(i).equals(open_bracket)) {
+					count++;
+				} else if (el.tokens.get(i).equals(close_bracket)) {
+					count--;
+					if (count == 0) {
+						break;
+					}
+				}
+
+				tokens0.add(el.tokens.get(i));
+				stringsOfTokens0.add(el.stringsOfTokens.get(i));
+			}
+
+			if (i == el.tokens.size()) {
+				el.indexToken = index + tokens0.size();
+				if (count == 1)
+					throw new RuntimeException("A '" + close_bracket + "' is missing!");
+
+				throw new RuntimeException("Several '" + close_bracket + "' are missing!");
+			}
+
+			return new SyntaxTreeElement(el.compiler, el.body, el.line, tokens0, stringsOfTokens0);
+		}
+
+		if (el.tokens.get(index).equals("=") || el.tokens.get(index).equals("==") || el.tokens.get(index).equals("!=")
+		        || el.tokens.get(index).equals("if") || el.tokens.get(index).equals("while")
+		        || el.tokens.get(index).equals("from") || el.tokens.get(index).equals("return")
+		        || el.tokens.get(index).equals("global") || el.tokens.get(index).equals("for")) {
+			// Start reading from the next index (i+1)
+			for (int i = index + 1; i < el.tokens.size(); i++) {
+				tokens0.add(el.tokens.get(i));
+				stringsOfTokens0.add(el.stringsOfTokens.get(i));
+			}
+		} else {
+			for (int i = index; i < el.tokens.size(); i++) {
+				tokens0.add(el.tokens.get(i));
+				stringsOfTokens0.add(el.stringsOfTokens.get(i));
+			}
+		}
+
+		SyntaxTreeElement ste0 = new SyntaxTreeElement(el.compiler, el.body, el.line, tokens0, stringsOfTokens0);
+		ste0.parent = el;
+		return ste0;
+	}
+
+	/**
+	 * This method generates an ending to compileTo from the body
+	 *
+	 * @param body
+	 * @param compileTo
+	 * @param ignore
+	 */
+	private static void generateEnding(String pos, FederBody body, StringBuilder compileTo, FederObject ignore,
+	                                   boolean global)
+	{
+		if (body instanceof FederClass) {
+			return;
+		}
+
+		for (FederBinding binding : body.getBindings()) {
+			if (binding == null)
+				continue;
+			if (!(binding instanceof FederObject))
+				continue;
+			FederObject obj = (FederObject) binding;
+
+			// Interface can't/mustn't be deleted
+			if (!obj.isGarbagable())
+				continue;
+
+			// Don't delete objects, which were generated in different compiler instances
+			if (obj.parent != null
+			        && !obj.parent.getMainNamespace().getCompiler().equals(body.getMainNamespace().getCompiler()))
+				continue;
+
+			// Don't delete global object
+			if (obj.isGlobal)
+				continue;
+
+			/*
+			 * The following code in the 'if' statement is currently unused, but could be
+			 * used to improve the performance a program written in Feder is running
+			 */
+			if (obj == ignore) {
+				// Ignore
+				compileTo.append(body.inFrontOfSyntax()).append("fdDecreaseUsage ((fdobject*) ")
+				.append(obj.generateCName()).append(");\n");
+				continue;
+			}
+
+			// Write a little notice when in Debug Mode
+			if (body.getCompiler().isDebug()) {
+				compileTo.append(body.inFrontOfSyntax())
+				.append("printf (\"" + pos + ". Removing object " + obj.getName() + "\\n\");\n");
+			}
+
+			// Append source code which removes the selected object
+			compileTo.append(body.inFrontOfSyntax()).append("fdRemoveObject ((fdobject*)").append(obj.generateCName())
+			.append(");\n");
+		}
+	}
+
+	public static void generateEnding(String pos, FederBody body, boolean completely, FederObject ignore)
+	{
+		generateEnding(pos, body, completely, ignore, body.getMainNamespace().getCompiler().allowMain);
+	}
+
+	/**
+	 * This method generates some source code, which deletes all global variables
+	 * created by the program.
+	 *
+	 * @param fmn
+	 * @param mainMethod
+	 */
+	public static void generateGlobalEnding(FederBody fmn, StringBuilder mainMethod)
+	{
+		_generateGlobalEnding(fmn.getMainNamespace(), mainMethod);
+	}
+
+	private static void _generateGlobalEnding(FederBody fmn, StringBuilder mainMethod)
+	{
+		for (FederBinding bind : fmn.getBindings()) {
+			if (bind instanceof FederObject) {
+				FederObject obj = (FederObject) bind;
+				if (obj.isGlobal && obj.isGarbagable()) {
+					mainMethod.append("fdRemoveObject ((fdobject*) " + obj.generateCName() + ");\n");
+				} else if(obj.isGlobal && obj.isDataType()) {
+					mainMethod.append("free (" + obj.generateCNameOnly() + ");\n");
+				}
+			} else if (bind instanceof FederBody) {
+				_generateGlobalEnding((FederBody) bind, mainMethod);
+			}
+		}
+	}
+
+
+	public static String generateGlobalStart(FederBody fmn)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (FederBinding bind : fmn.getBindings()) {
+			if (bind instanceof FederObject) {
+				FederObject obj = (FederObject) bind;
+				if(obj.isGlobal && obj.isDataType()) {
+					sb.append(obj.generateCNameOnly() + " = (" + obj.getResultType().generateCName() + " *) malloc (sizeof (" + obj.getResultType().generateCName() + "));\n");
+				}
+			} else if (bind instanceof FederBody) {
+				sb.append(generateGlobalStart((FederBody) bind));
+			}
+		}
+
+		return sb.toString();
+	}
+
+	/**
+	 * This method generates the end of a 'body'
+	 *
+	 * @param body
+	 * @param completely
+	 *            If this boolean is true, the generated text, will not only delete
+	 *            the objects used by the current body, but also those used by
+	 *
+	 * @param ignore
+	 */
+	public static void generateEnding(String pos, FederBody body, boolean completely, FederObject ignore,
+	                                  boolean global)
+	{
+		if (body instanceof FederClass) {
+			return;
+		}
+
+		body.compile_file_text.append("\n// Generated ending\n");
+		generateEnding(pos, body, body.compile_file_text, ignore, global);
+
+		if (!completely)
+			return;
+
+		if (!body.isInFunction() && global) {
+			generateGlobalEnding(body, body.compile_file_text);
+		}
+
+		FederBody b = body.getParent();
+		FederBody last = body;
+		while (b != null && last instanceof FederAutomat) {
+			generateEnding(pos, b, body.compile_file_text, ignore, global);
+			last = b;
+			b = b.getParent();
+		}
+	}
+
+
+	/**
+	 * Preproccesor This function processes commands, so lines which start with
+	 * "::".
+	 *
+	 * @param command
+	 * @return
+	 */
+	public static StringBuilder command(FederCompiler compiler, SyntaxTreeElement ste,
+			FederBody currentBody, String command)
+	{
+		String[] args = command.split("[\t ]");
+
+		if (args.length == 0) {
+			throw new RuntimeException("Expected a command!");
+		}
+
+		if (args[0].equals("def")) {
+			if (args.length != 2) {
+				throw new RuntimeException(
+				    "Expected a name (args length should be 2)! ([[:alpha:]_][[:alpha:]_[:digits:]]*)");
+			}
+
+			if (!args[1].matches("[A-Za-z_][A-Za-z_0-9]*")) {
+				throw new RuntimeException("Expected a name! ([[:alpha:]_][[:alpha:]_[:digits:]]*)");
+			}
+
+			if (!compiler.preprocessorMacros.contains(args[1]))
+				compiler.preprocessorMacros.add(args[1]);
+
+			return new StringBuilder();
+		} else if (args[0].equals("if") || args[0].equals("elif") || args[0].equals("ifn") || args[0].equals("elifn")) {
+			if (args.length != 2) {
+				throw new RuntimeException("Expected a defined macro name!");
+			}
+
+			if (args[0].equals("elif") && !compiler.preprocessorIfCame) {
+				throw new RuntimeException("Expected a preprocessor 'if' before 'elif'");
+			}
+
+			boolean shouldBeTrue = !args[0].endsWith("n");
+
+			compiler.preprocessorIfCame = true;
+			boolean res = (compiler.preprocessorMacros.contains(args[1])
+			               && !compiler.preprocessorWasTrue) == shouldBeTrue;
+			if (res && !compiler.preprocessorWasTrue) {
+				compiler.preprocessorWasTrue = true;
+				compiler.preprocessorSkipCode = false;
+			} else {
+				compiler.preprocessorSkipCode = true;
+			}
+
+			return new StringBuilder();
+		} else if (args[0].equals("else")) {
+			if (args.length != 1) {
+				throw new RuntimeException("Didn't expected anything else besides 'else'");
+			}
+
+			if (!compiler.preprocessorIfCame) {
+				throw new RuntimeException("Expected a preprocessor 'if' before 'elif'");
+			}
+
+			compiler.preprocessorSkipCode = compiler.preprocessorWasTrue;
+
+			return new StringBuilder();
+		} else if ((args[0].equals("fi"))) {
+			if (args.length != 1) {
+				throw new RuntimeException("Didn't expected anything else besides 'fi'");
+			}
+
+			if (!compiler.preprocessorIfCame) {
+				throw new RuntimeException("Expected a preprocessor 'if', 'elif' befor 'fi'");
+			}
+
+			compiler.preprocessorWasTrue = false;
+			compiler.preprocessorIfCame = false;
+			compiler.preprocessorSkipCode = false;
+			return new StringBuilder();
+		}
+
+		else if (args[0].equals("use")) {
+			if (args.length != 2) {
+				throw new RuntimeException("Excpected ::use [argument]");
+			}
+
+			compiler.linkerOptions.add(args[1]);
+			compiler.progCCOptions.add(args[1]);
+
+			return new StringBuilder();
+		} else if (args[0].equals("error") || args[0].equals("warning")) {
+			StringBuilder msg = new StringBuilder();
+			for (int i = 1; i < args.length; i++) {
+				if (i != 1)
+					msg.append(" ");
+
+				msg.append(args[i]);
+			}
+
+			if (args[0].equals("error")) {
+				throw new RuntimeException("Error: " + msg.toString());
+			}
+
+			System.err.println("Warning: " + msg.toString());
+			return new StringBuilder();
+		} else if (args[0].equals("rule")) {
+			List<StringBuilder> list = new LinkedList<>();
+			list.add(new StringBuilder());
+			int i = 0;
+			boolean isInString = false;
+			while (i < command.length()) {
+				char current_char = command.charAt(i);
+				if (isInString && current_char == '"') {
+					isInString = false;
+					i++;
+					continue;
+				} else if (isInString && command.startsWith("\\\"", i)) {
+					list.get(list.size()-1).append("\"");
+					i += 2;
+					continue;
+				} else if (!isInString && current_char == '"') {
+					isInString = true;
+					i++;
+					continue;
+				} else if (!isInString && current_char == ' ') {
+					if (list.get(list.size()-1).length() == 0) {
+						i++;
+						continue;
+					}
+
+					list.add(new StringBuilder());
+					i++;
+					continue;
+				} else if (!isInString && current_char == '.') {
+					list.add(new StringBuilder("."));
+					list.add(new StringBuilder());
+					i++;
+					continue;
+				} else {
+					list.get(list.size()-1).append(current_char);
+					i++;
+					continue;
+				}
+			}
+			
+			List<String> topasstofunc = new LinkedList<>();
+			for (StringBuilder sb : list) {
+				topasstofunc.add(sb.toString());
+				//System.out.print ("'" + sb.toString() + "'' ");
+			}
+			
+			//System.out.println();
+			
+			FederRule rule = FederRule.define(currentBody, topasstofunc, ste);
+			compiler.feder_rules.add(0, rule);
+			return new StringBuilder();
+		}
+
+		throw new RuntimeException("That command is invalid!");
+	}
+
+
+	/**
+	 * This function fails, if the include file could not be found.
+	 * If the file was already included in the same compiler or if the
+	 * compiler, which compiled the file to include, failed.
+	 * @param name The name of the file to include (or its path).
+	 * The file should be in one of the include paths.
+	 * @return Returns a generated string, which might be necessary.
+	 */
+	public static String opInclude(FederCompiler compiler, String name)
+	{
+		if (compiler.includeDirs.size() == 0) {
+			throw new RuntimeException("No include directories were added to compiler!");
+		}
+
+		// Create a new compiler
+		FederCompiler compilerInclude = new FederCompiler(name, compiler);
+		if (compiler.alreadyIncluded(compilerInclude.getName())) {
+			compiler.fatalError = true;
+			// File was already included in this file
+			throw new RuntimeException("Already included in file!");
+		}
+
+		// Look if the file was already included
+		FederCompiler fc = compiler.getCompiler(compilerInclude.getName());
+		if (fc != null) {
+			// System.out.println("# nonnull");
+			for (FederBinding binding : fc.main.getBindings()) {
+				binding.setHasToBuild(false);
+
+				if (!compiler.main.getBindings().contains(binding))
+					compiler.main.addBinding(binding);
+
+			}
+
+			compiler.included.add(fc);
+			if (!fc.main.dependBodies.contains (compiler.main)) {
+				fc.main.dependBodies.add (compiler.main);
+			}
+
+			return "";
+		}
+
+		// Search for the file
+		File file = null;
+		for (String dirpath : compiler.includeDirs) {
+			String path0 = (dirpath + name).replace("/", Feder.separator);
+			//System.err.println ("Try include path: " + path0);
+			if (!path0.endsWith(Feder.separator)) {
+				path0 += Feder.separator;
+			}
+
+			File file0 = new File(path0);
+			if (file0.exists()) {
+				file = file0;
+				break;
+			}
+		}
+
+		if (file == null) {
+			// !! File not found
+			throw new RuntimeException("File \"" + name + "\" not found in include paths!");
+		}
+
+		// Read the file
+		String text = Feder.getStringFromFile(file);
+		// Compile the source code
+		FederNamespace main = compilerInclude.compile(text);
+
+		if (main == null) {
+			compiler.fatalError = true;
+			throw new RuntimeException("Couldn't import file!");
+		}
+
+		if (!main.dependBodies.contains (compiler.main)) {
+			main.dependBodies.add (compiler.main);
+		}
+
+		compiler.included.add(compilerInclude);
+		compiler.globalIncluded.add(compilerInclude);
+
+		for (FederBinding binding : main.getBindings()) {
+			binding.setHasToBuild(false);
+
+			if (!compiler.main.getBindings().contains(binding))
+				compiler.main.addBinding(binding);
+		}
+
+		compiler.informInclude(name);
+
+		return compilerInclude.generateLibraryCallerFunctionName() + " ();\n";
+	}
+
+	/**
+	 * This method tries to convert a context to a bool (if clause!)
+	 * @param s
+	 * @param fc
+	 * @param body
+	 * @return
+	 */
+	public static String handleNonBoolToBool(FederCompiler compiler, String s, FederClass fc, FederBody body)
+	{
+		if (fc == null) {
+			return "0";
+		}
+		
+		String typename_written = fc.toWrittenString();
+		FederRule rule = compiler.getApplyableRuleForStruct( "conditional_statement_" + typename_written);
+		if (rule == null) {
+			compiler.fatalError = true;
+			throw new RuntimeException("struct rule 'conditional_statement_" + typename_written + "' was not found!");
+		}
+
+		/*FederBinding binding = body.getBinding(body, "bool", true);
+		if (binding == null) {
+			throw new RuntimeException("The class/type 'bool' has to be created!");
+		}
+
+		if (!(binding instanceof FederClass)) {
+			throw new RuntimeException("The binding 'bool' does exist, but is not a type/class!");
+		}
+
+		FederClass bindingc = (FederClass) binding;*/
+
+		return rule.applyRule(body, s);
+		
+		//throw new RuntimeException("Error: operation not support");
+
+/*		FederArguments func = fc.getFunction(body, "istrue", new LinkedList<>(), false);
+		if (func == null || (func.getReturnType() != binding)) {
+			throw new RuntimeException("The class " + fc.getName() + " doesn't have a function 'bool func istrue'");
+		}
+
+		if (bindingc.isType()) {
+			return func.generateCName() + " (" + s + ")";
+		}
+
+//		return "fdRemoveObject_bool((" + binding.generateCName() + ") " + func.generateCName() + "(" + s + "))";
+		return rule.applyRule(body, "(" + binding.generateCName() + ") ptr_" + func.generateCName() + "(" + s + ")"); */
+	}
+}

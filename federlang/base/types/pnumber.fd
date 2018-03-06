@@ -1,0 +1,31 @@
+##
+# types/pnumber.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of the Feder Standard Library and provides
+# 'pointer classes' for the 'type classes'
+##
+
+include "types/bool.fd"
+include "types/byte.fd"
+include "types/int.fd"
+include "types/double.fd"
+
+class Integer32
+	int32 val
+
+	Integer32 func set (int32 val0)
+		val = val0
+		return this
+	;
+;
+
+class Double
+	double val
+
+	Double func set (double val0)
+		val = val0
+		return this
+	;
+;
+

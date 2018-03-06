@@ -1,0 +1,13 @@
+include "stdio.fd"
+
+b = false
+
+if b
+	io.println ("Test 01 failed")
+	return false
+else
+	return true
+;
+
+io.println ("Test 02 failed")
+return false

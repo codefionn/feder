@@ -1,0 +1,48 @@
+##
+# stdargs.fd
+# created by Fionn Langhans
+#
+# This file is part of the Feder Standard Library and provides
+# an interface for analysing Unix-like program arguments.
+#
+# There are to type of arguments:
+#	- short arguments:
+#		These arguments are only one character long and are marked with
+#		only one '-'. Several short arguments can be after one '-'
+#	    E.g. -s, -sa (these are two arguments)
+#	- long arguments:
+#		The arguments consist of one or more characters and start with
+#	    '--'. E.g. --longargument
+##
+
+include "stdtype.fd"
+
+##
+# This function analysis the strings in 'args' starting from 'index_start'.
+#
+##
+func analyseArguments (List args, int index_start, List lexical_names, List values)
+	i = index_start.cp () # Well, int could be a class
+	len0 = args.len0gth ()
+	while isLess (i, len0)
+		s = String from args.at (i)
+
+		if s.startsWith ("--")
+			lexical_names.add (object from "option")
+			values.add (object from s.subString (2, len0.sub ((1).makeNegative ())))
+		else if s.startsWith ("-")
+			index_char = 1
+			len0_s = s.len0gth ()
+			while isLess (index_char, len0_s)
+				lexical_names.add (object from "option")
+				values.add (object from String.add (s.at (index_char).cp ()))
+				index_char.addto (1)
+			;
+		else
+			lexical_names.add (object from "value")
+			values.add (object from s.cp ())
+		;
+
+		i.addto (1)
+	;
+;

@@ -1,0 +1,168 @@
+\hypertarget{classfeder_1_1types_1_1FederBinding}{}\section{feder.\+types.\+Feder\+Binding Class Reference}
+\label{classfeder_1_1types_1_1FederBinding}\index{feder.\+types.\+Feder\+Binding@{feder.\+types.\+Feder\+Binding}}
+Inheritance diagram for feder.\+types.\+Feder\+Binding\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.074074cm]{classfeder_1_1types_1_1FederBinding}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+abstract String \hyperlink{classfeder_1_1types_1_1FederBinding_ab233b4eb1c5fef826e01cfe610447cea}{get\+Name} ()
+\item 
+abstract String \hyperlink{classfeder_1_1types_1_1FederBinding_a237e4d83da1cee7e4bcaecea513c4b9d}{get\+Code\+Friendly\+Name} ()
+\item 
+abstract String \hyperlink{classfeder_1_1types_1_1FederBinding_a8a3a3d920f5312db5beff5c82071cb12}{generate\+C\+Name} ()
+\item 
+abstract boolean \hyperlink{classfeder_1_1types_1_1FederBinding_a72cdcf7fcc293cfadb311c52abffdd00}{has\+To\+Build} ()
+\item 
+abstract void \hyperlink{classfeder_1_1types_1_1FederBinding_a8c895588a1ab8067b5697ff5c9608fa5}{set\+Has\+To\+Build} (boolean build)
+\item 
+boolean \hyperlink{classfeder_1_1types_1_1FederBinding_ad5937fb65ae2d25cc075dcf639dcfe04}{is\+Private} ()
+\item 
+boolean \hyperlink{classfeder_1_1types_1_1FederBinding_a84df88cf32e2d678fc73f8e868477487}{is\+Immutable} ()
+\item 
+abstract \hyperlink{classfeder_1_1types_1_1FederBody}{Feder\+Body} \hyperlink{classfeder_1_1types_1_1FederBinding_a28620ccaf5f32f1376e6c6bd1d13452d}{get\+Parent} ()
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static boolean \hyperlink{classfeder_1_1types_1_1FederBinding_a25f8e1f9d64b08dc98c7be9bf931e479}{Is\+Garbagable} (\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} bind)
+\item 
+static boolean \hyperlink{classfeder_1_1types_1_1FederBinding_aefeac9d1325508287fb394ab0a6c54a3}{are\+Same\+Types} (\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} bind0, \hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} bind1)
+\item 
+static boolean \hyperlink{classfeder_1_1types_1_1FederBinding_a2c04e0db9889dacd7ad0c5a839797c2f}{is\+Data\+Type} (\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} binding)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+Fionn Langhans 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_aefeac9d1325508287fb394ab0a6c54a3}\label{classfeder_1_1types_1_1FederBinding_aefeac9d1325508287fb394ab0a6c54a3}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!are\+Same\+Types@{are\+Same\+Types}}
+\index{are\+Same\+Types@{are\+Same\+Types}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{are\+Same\+Types()}{areSameTypes()}}
+{\footnotesize\ttfamily static boolean feder.\+types.\+Feder\+Binding.\+are\+Same\+Types (\begin{DoxyParamCaption}\item[{\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding}}]{bind0,  }\item[{\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding}}]{bind1 }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em bind0} & \\
+\hline
+{\em bind1} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns true, if bind0 and bind1 have the same types or are the same (if bind0 or bind1 is null, the result is false). 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_a8a3a3d920f5312db5beff5c82071cb12}\label{classfeder_1_1types_1_1FederBinding_a8a3a3d920f5312db5beff5c82071cb12}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!generate\+C\+Name@{generate\+C\+Name}}
+\index{generate\+C\+Name@{generate\+C\+Name}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{generate\+C\+Name()}{generateCName()}}
+{\footnotesize\ttfamily abstract String feder.\+types.\+Feder\+Binding.\+generate\+C\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [abstract]}}
+
+\begin{DoxyReturn}{Returns}
+Returns the name, which should be used in C. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_a237e4d83da1cee7e4bcaecea513c4b9d}\label{classfeder_1_1types_1_1FederBinding_a237e4d83da1cee7e4bcaecea513c4b9d}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!get\+Code\+Friendly\+Name@{get\+Code\+Friendly\+Name}}
+\index{get\+Code\+Friendly\+Name@{get\+Code\+Friendly\+Name}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{get\+Code\+Friendly\+Name()}{getCodeFriendlyName()}}
+{\footnotesize\ttfamily abstract String feder.\+types.\+Feder\+Binding.\+get\+Code\+Friendly\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [abstract]}}
+
+\begin{DoxyReturn}{Returns}
+Should return a \textquotesingle{}code friendly\textquotesingle{} name (something like generate\+C\+Name, but compatible to construct bigger names) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_ab233b4eb1c5fef826e01cfe610447cea}\label{classfeder_1_1types_1_1FederBinding_ab233b4eb1c5fef826e01cfe610447cea}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!get\+Name@{get\+Name}}
+\index{get\+Name@{get\+Name}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{get\+Name()}{getName()}}
+{\footnotesize\ttfamily abstract String feder.\+types.\+Feder\+Binding.\+get\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [abstract]}}
+
+\begin{DoxyReturn}{Returns}
+Should return the name of the binding 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_a28620ccaf5f32f1376e6c6bd1d13452d}\label{classfeder_1_1types_1_1FederBinding_a28620ccaf5f32f1376e6c6bd1d13452d}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!get\+Parent@{get\+Parent}}
+\index{get\+Parent@{get\+Parent}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{get\+Parent()}{getParent()}}
+{\footnotesize\ttfamily abstract \hyperlink{classfeder_1_1types_1_1FederBody}{Feder\+Body} feder.\+types.\+Feder\+Binding.\+get\+Parent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [abstract]}}
+
+\begin{DoxyReturn}{Returns}
+Should return the parent of the binding 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_a72cdcf7fcc293cfadb311c52abffdd00}\label{classfeder_1_1types_1_1FederBinding_a72cdcf7fcc293cfadb311c52abffdd00}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!has\+To\+Build@{has\+To\+Build}}
+\index{has\+To\+Build@{has\+To\+Build}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{has\+To\+Build()}{hasToBuild()}}
+{\footnotesize\ttfamily abstract boolean feder.\+types.\+Feder\+Binding.\+has\+To\+Build (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [abstract]}}
+
+\begin{DoxyReturn}{Returns}
+Should return true, if the binding has to be build. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_a2c04e0db9889dacd7ad0c5a839797c2f}\label{classfeder_1_1types_1_1FederBinding_a2c04e0db9889dacd7ad0c5a839797c2f}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!is\+Data\+Type@{is\+Data\+Type}}
+\index{is\+Data\+Type@{is\+Data\+Type}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{is\+Data\+Type()}{isDataType()}}
+{\footnotesize\ttfamily static boolean feder.\+types.\+Feder\+Binding.\+is\+Data\+Type (\begin{DoxyParamCaption}\item[{\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding}}]{binding }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em binding} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns true, if binding is a datatype. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_a25f8e1f9d64b08dc98c7be9bf931e479}\label{classfeder_1_1types_1_1FederBinding_a25f8e1f9d64b08dc98c7be9bf931e479}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!Is\+Garbagable@{Is\+Garbagable}}
+\index{Is\+Garbagable@{Is\+Garbagable}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{Is\+Garbagable()}{IsGarbagable()}}
+{\footnotesize\ttfamily static boolean feder.\+types.\+Feder\+Binding.\+Is\+Garbagable (\begin{DoxyParamCaption}\item[{\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding}}]{bind }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em bind} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns true, if the binding \textquotesingle{}bind\textquotesingle{} is garbageable (true if class and not datatype or if type is array) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_a84df88cf32e2d678fc73f8e868477487}\label{classfeder_1_1types_1_1FederBinding_a84df88cf32e2d678fc73f8e868477487}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!is\+Immutable@{is\+Immutable}}
+\index{is\+Immutable@{is\+Immutable}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{is\+Immutable()}{isImmutable()}}
+{\footnotesize\ttfamily boolean feder.\+types.\+Feder\+Binding.\+is\+Immutable (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+Returns true, if the binding should be immutable 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_ad5937fb65ae2d25cc075dcf639dcfe04}\label{classfeder_1_1types_1_1FederBinding_ad5937fb65ae2d25cc075dcf639dcfe04}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!is\+Private@{is\+Private}}
+\index{is\+Private@{is\+Private}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{is\+Private()}{isPrivate()}}
+{\footnotesize\ttfamily boolean feder.\+types.\+Feder\+Binding.\+is\+Private (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+Returns true, if the binding should be private 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1types_1_1FederBinding_a8c895588a1ab8067b5697ff5c9608fa5}\label{classfeder_1_1types_1_1FederBinding_a8c895588a1ab8067b5697ff5c9608fa5}} 
+\index{feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}!set\+Has\+To\+Build@{set\+Has\+To\+Build}}
+\index{set\+Has\+To\+Build@{set\+Has\+To\+Build}!feder\+::types\+::\+Feder\+Binding@{feder\+::types\+::\+Feder\+Binding}}
+\subsubsection{\texorpdfstring{set\+Has\+To\+Build()}{setHasToBuild()}}
+{\footnotesize\ttfamily abstract void feder.\+types.\+Feder\+Binding.\+set\+Has\+To\+Build (\begin{DoxyParamCaption}\item[{boolean}]{build }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [abstract]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em build} & You probably want to set this to \textquotesingle{}false\textquotesingle{} \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/feder/types/Feder\+Binding.\+java\end{DoxyCompactItemize}

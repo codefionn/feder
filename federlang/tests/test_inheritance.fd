@@ -1,0 +1,35 @@
+include "stdio.fd"
+
+class Animal
+	int32 age
+
+	int32 func getAge
+		return age
+	;
+;
+
+class Person Animal
+	String name
+
+	Person func new (String name0, int32 age0)
+		name = name0
+		age = age0
+		return this
+	;
+;
+
+p0 = Person.new ("Fionn Langhans", 18)
+if !isEqual (p0.name, "Fionn Langhans")
+	io.println ("Test 01 failed")
+	return false
+;
+
+if !isEqual (p0.getAge (), 18)
+	io.println ("Test 02 failed")
+	return false
+;
+
+if !isEqual (p0.age, 18)
+	io.println ("Test 03 failed!")
+	return false
+;

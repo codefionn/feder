@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# jfederc - Java Feder Compiler
+# Please run build.sh in the master directory, before running this script
+DIR_OF_JAR="."
+if $(echo $(pwd) | grep -G '^.*random$' > /dev/null) ; then
+	DIR_OF_JAR="${DIR_OF_JAR}/.."
+fi
+
+DIR_OF_JAR=${DIR_OF_JAR}/../jfederc.jar
+
+if uname -s | grep "Cygwin" > /dev/null ; then
+	DIR_OF_JAR=$(cygpath -w ${DIR_OF_JAR})
+fi
+
+java -jar ${DIR_OF_JAR} --loption "-O2" --coption "-O2" $@ 
+exit $?

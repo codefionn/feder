@@ -1,0 +1,259 @@
+\hypertarget{classfeder_1_1Lexer}{}\section{feder.\+Lexer Class Reference}
+\label{classfeder_1_1Lexer}\index{feder.\+Lexer@{feder.\+Lexer}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classfeder_1_1Lexer_a4642c5b1fb5d7a20d7d076ffab0a236b}\label{classfeder_1_1Lexer_a4642c5b1fb5d7a20d7d076ffab0a236b}} 
+{\bfseries Lexer} (\hyperlink{classfeder_1_1FederCompiler}{Feder\+Compiler} compiler0)
+\item 
+int \hyperlink{classfeder_1_1Lexer_a4278e0e494f8a716e69bc9d24834da19}{tokensinline} ()
+\item 
+void \hyperlink{classfeder_1_1Lexer_abd8b18eca822366aa2d9668b9991346b}{error} (int index, String msg)
+\item 
+boolean \hyperlink{classfeder_1_1Lexer_aebe48a23dda741c897806ab3413f711f}{starts\+With} (String s)
+\item 
+void \hyperlink{classfeder_1_1Lexer_a69679a02624d16be3b567fd2aa71be57}{lex} (String text0)
+\item 
+String \hyperlink{classfeder_1_1Lexer_a7d9ad2063076fe1ba3b005024537a629}{get\+Token} (int index)
+\item 
+String \hyperlink{classfeder_1_1Lexer_a61a77f59e6000f6f6989d700e7902949}{get\+Token} ()
+\item 
+String \hyperlink{classfeder_1_1Lexer_aeb51675939cd32f0c6c7b896060b1379}{get\+Token\+Whitelist} (int index, String... allowed\+\_\+tokens)
+\item 
+String \hyperlink{classfeder_1_1Lexer_afc4f6ea269fbaf8b8a48d97d73972c2d}{get\+Token\+Whitelist} (String... allowed\+\_\+tokens)
+\item 
+String \hyperlink{classfeder_1_1Lexer_aa2e15cfd390d162a7ccd392d19386031}{get\+String\+Of\+Token} (int index)
+\item 
+String \hyperlink{classfeder_1_1Lexer_ad9de8a8d8a612b1fd99a1c8cdc327768}{get\+String\+Of\+Token} ()
+\item 
+void \hyperlink{classfeder_1_1Lexer_a523ea1024fa914eb932a2048f8201aa8}{dbg\+Output} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+List$<$ String $>$ \hyperlink{classfeder_1_1Lexer_a8dcd49cd409b92ea88d9e5e4ac312bee}{softokens}
+\item 
+List$<$ String $>$ \hyperlink{classfeder_1_1Lexer_a2ed05abcd7fc74ad17e99bd3795d289b}{tokens}
+\item 
+\mbox{\Hypertarget{classfeder_1_1Lexer_a43d6e1225cc8d3618ba0b5c92953c679}\label{classfeder_1_1Lexer_a43d6e1225cc8d3618ba0b5c92953c679}} 
+List$<$ Integer $>$ {\bfseries postoken}
+\item 
+\mbox{\Hypertarget{classfeder_1_1Lexer_aae364370e5ed7814b3e77bd815f440b6}\label{classfeder_1_1Lexer_aae364370e5ed7814b3e77bd815f440b6}} 
+\hyperlink{classfeder_1_1utils_1_1TextPositionManager}{Text\+Position\+Manager} {\bfseries tpm}
+\item 
+\mbox{\Hypertarget{classfeder_1_1Lexer_a6cb55f752e7dd2e18b9350d5bc1aaf00}\label{classfeder_1_1Lexer_a6cb55f752e7dd2e18b9350d5bc1aaf00}} 
+int {\bfseries errors} = 0
+\item 
+\mbox{\Hypertarget{classfeder_1_1Lexer_a02a6da779c8fb2ddd943ac1ad49352f6}\label{classfeder_1_1Lexer_a02a6da779c8fb2ddd943ac1ad49352f6}} 
+\hyperlink{classfeder_1_1FederCompiler}{Feder\+Compiler} {\bfseries compiler}
+\item 
+\mbox{\Hypertarget{classfeder_1_1Lexer_ab1555a16a3bb67ce086febe81f7c5ba3}\label{classfeder_1_1Lexer_ab1555a16a3bb67ce086febe81f7c5ba3}} 
+int {\bfseries index\+List}
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static final List$<$ String $>$ {\bfseries O\+P\+E\+R\+A\+T\+O\+RS}
+\item 
+static final List$<$ String $>$ \hyperlink{classfeder_1_1Lexer_a9b040bc2158eeda1a1f579a41bedaa92}{R\+U\+L\+E\+\_\+\+O\+P\+E\+R\+A\+T\+O\+RS}
+\item 
+static final List$<$ String $>$ \hyperlink{classfeder_1_1Lexer_a0e0ebb5336f19210156b0cb6e146c2b3}{N\+A\+M\+E\+D\+\_\+\+O\+P\+E\+R\+A\+T\+OR}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class is responsible for the lexical analysis
+
+\begin{DoxyAuthor}{Author}
+Fionn Langhans 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classfeder_1_1Lexer_a523ea1024fa914eb932a2048f8201aa8}\label{classfeder_1_1Lexer_a523ea1024fa914eb932a2048f8201aa8}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!dbg\+Output@{dbg\+Output}}
+\index{dbg\+Output@{dbg\+Output}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{dbg\+Output()}{dbgOutput()}}
+{\footnotesize\ttfamily void feder.\+Lexer.\+dbg\+Output (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Debug output \mbox{\Hypertarget{classfeder_1_1Lexer_abd8b18eca822366aa2d9668b9991346b}\label{classfeder_1_1Lexer_abd8b18eca822366aa2d9668b9991346b}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!error@{error}}
+\index{error@{error}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{error()}{error()}}
+{\footnotesize\ttfamily void feder.\+Lexer.\+error (\begin{DoxyParamCaption}\item[{int}]{index,  }\item[{String}]{msg }\end{DoxyParamCaption})}
+
+Utility function for printing errors 
+\begin{DoxyParams}{Parameters}
+{\em index} & index in the input text \\
+\hline
+{\em msg} & Error message \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classfeder_1_1Lexer_aa2e15cfd390d162a7ccd392d19386031}\label{classfeder_1_1Lexer_aa2e15cfd390d162a7ccd392d19386031}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!get\+String\+Of\+Token@{get\+String\+Of\+Token}}
+\index{get\+String\+Of\+Token@{get\+String\+Of\+Token}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{get\+String\+Of\+Token()}{getStringOfToken()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily String feder.\+Lexer.\+get\+String\+Of\+Token (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & an index in the bounds of softokens \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns softokens.\+get(index) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1Lexer_ad9de8a8d8a612b1fd99a1c8cdc327768}\label{classfeder_1_1Lexer_ad9de8a8d8a612b1fd99a1c8cdc327768}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!get\+String\+Of\+Token@{get\+String\+Of\+Token}}
+\index{get\+String\+Of\+Token@{get\+String\+Of\+Token}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{get\+String\+Of\+Token()}{getStringOfToken()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily String feder.\+Lexer.\+get\+String\+Of\+Token (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+Returns the current value of the current token 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1Lexer_a7d9ad2063076fe1ba3b005024537a629}\label{classfeder_1_1Lexer_a7d9ad2063076fe1ba3b005024537a629}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!get\+Token@{get\+Token}}
+\index{get\+Token@{get\+Token}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{get\+Token()}{getToken()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily String feder.\+Lexer.\+get\+Token (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+Returns the token at \textquotesingle{}index\textquotesingle{} 
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+Possible error, if index is out of the bounds of tokens \mbox{\Hypertarget{classfeder_1_1Lexer_a61a77f59e6000f6f6989d700e7902949}\label{classfeder_1_1Lexer_a61a77f59e6000f6f6989d700e7902949}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!get\+Token@{get\+Token}}
+\index{get\+Token@{get\+Token}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{get\+Token()}{getToken()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily String feder.\+Lexer.\+get\+Token (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+Returns the token at the current index (index\+List) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1Lexer_aeb51675939cd32f0c6c7b896060b1379}\label{classfeder_1_1Lexer_aeb51675939cd32f0c6c7b896060b1379}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!get\+Token\+Whitelist@{get\+Token\+Whitelist}}
+\index{get\+Token\+Whitelist@{get\+Token\+Whitelist}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{get\+Token\+Whitelist()}{getTokenWhitelist()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily String feder.\+Lexer.\+get\+Token\+Whitelist (\begin{DoxyParamCaption}\item[{int}]{index,  }\item[{String...}]{allowed\+\_\+tokens }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+{\em allowed\+\_\+tokens} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the token at index
+\end{DoxyReturn}
+If the current token is not in allowed\+\_\+tokens an error is thrown \mbox{\Hypertarget{classfeder_1_1Lexer_afc4f6ea269fbaf8b8a48d97d73972c2d}\label{classfeder_1_1Lexer_afc4f6ea269fbaf8b8a48d97d73972c2d}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!get\+Token\+Whitelist@{get\+Token\+Whitelist}}
+\index{get\+Token\+Whitelist@{get\+Token\+Whitelist}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{get\+Token\+Whitelist()}{getTokenWhitelist()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily String feder.\+Lexer.\+get\+Token\+Whitelist (\begin{DoxyParamCaption}\item[{String...}]{allowed\+\_\+tokens }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em allowed\+\_\+tokens} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the token at the current index
+\end{DoxyReturn}
+If the current token is not in allowed\+\_\+tokens an error is thrown \mbox{\Hypertarget{classfeder_1_1Lexer_a69679a02624d16be3b567fd2aa71be57}\label{classfeder_1_1Lexer_a69679a02624d16be3b567fd2aa71be57}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!lex@{lex}}
+\index{lex@{lex}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{lex()}{lex()}}
+{\footnotesize\ttfamily void feder.\+Lexer.\+lex (\begin{DoxyParamCaption}\item[{String}]{text0 }\end{DoxyParamCaption})}
+
+This method performs a lexical analysis. The results of the method are softokens and tokens
+
+
+\begin{DoxyParams}{Parameters}
+{\em text0} & (hopefully) \hyperlink{classfeder_1_1Feder}{Feder} source code \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classfeder_1_1Lexer_aebe48a23dda741c897806ab3413f711f}\label{classfeder_1_1Lexer_aebe48a23dda741c897806ab3413f711f}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!starts\+With@{starts\+With}}
+\index{starts\+With@{starts\+With}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{starts\+With()}{startsWith()}}
+{\footnotesize\ttfamily boolean feder.\+Lexer.\+starts\+With (\begin{DoxyParamCaption}\item[{String}]{s }\end{DoxyParamCaption})}
+
+Same as tpm.\+starts\+With(s) 
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if text at the current index starts with \textquotesingle{}s\textquotesingle{} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1Lexer_a4278e0e494f8a716e69bc9d24834da19}\label{classfeder_1_1Lexer_a4278e0e494f8a716e69bc9d24834da19}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!tokensinline@{tokensinline}}
+\index{tokensinline@{tokensinline}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{tokensinline()}{tokensinline()}}
+{\footnotesize\ttfamily int feder.\+Lexer.\+tokensinline (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Returns the numbers of tokens in the current line \begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classfeder_1_1Lexer_a0e0ebb5336f19210156b0cb6e146c2b3}\label{classfeder_1_1Lexer_a0e0ebb5336f19210156b0cb6e146c2b3}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!N\+A\+M\+E\+D\+\_\+\+O\+P\+E\+R\+A\+T\+OR@{N\+A\+M\+E\+D\+\_\+\+O\+P\+E\+R\+A\+T\+OR}}
+\index{N\+A\+M\+E\+D\+\_\+\+O\+P\+E\+R\+A\+T\+OR@{N\+A\+M\+E\+D\+\_\+\+O\+P\+E\+R\+A\+T\+OR}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{N\+A\+M\+E\+D\+\_\+\+O\+P\+E\+R\+A\+T\+OR}{NAMED\_OPERATOR}}
+{\footnotesize\ttfamily final List$<$String$>$ feder.\+Lexer.\+N\+A\+M\+E\+D\+\_\+\+O\+P\+E\+R\+A\+T\+OR\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= Arrays.asList(\textcolor{stringliteral}{"func"}, \textcolor{stringliteral}{"class"}, \textcolor{stringliteral}{"namespace"}, \textcolor{stringliteral}{"if"}, \textcolor{stringliteral}{"while"}, \textcolor{stringliteral}{"for"},\textcolor{stringliteral}{"else"},
+            \textcolor{stringliteral}{"continue"}, \textcolor{stringliteral}{"break"}, \textcolor{stringliteral}{"return"}, \textcolor{stringliteral}{"true"}, \textcolor{stringliteral}{"false"}, \textcolor{stringliteral}{"null"}, \textcolor{stringliteral}{"include"}, \textcolor{stringliteral}{"import"}, \textcolor{stringliteral}{"interface"}, \textcolor{stringliteral}{"from
+      "}, \textcolor{stringliteral}{"global"},
+            \textcolor{stringliteral}{"type"}, \textcolor{stringliteral}{"len"}, \textcolor{stringliteral}{"append"})
+\end{DoxyCode}
+Operators which have names (regular expr. (P\+O\+S\+IX standard)\+: \mbox{[}a-\/z\+A-\/\+Z\+\_\+\mbox{]}\mbox{[}a-\/z\+A-\/\+Z0-\/9\+\_\+\mbox{]}$\ast$) \mbox{\Hypertarget{classfeder_1_1Lexer_a0637e17c147b9190d44a7e0c0f913242}\label{classfeder_1_1Lexer_a0637e17c147b9190d44a7e0c0f913242}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!O\+P\+E\+R\+A\+T\+O\+RS@{O\+P\+E\+R\+A\+T\+O\+RS}}
+\index{O\+P\+E\+R\+A\+T\+O\+RS@{O\+P\+E\+R\+A\+T\+O\+RS}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{O\+P\+E\+R\+A\+T\+O\+RS}{OPERATORS}}
+{\footnotesize\ttfamily final List$<$String$>$ feder.\+Lexer.\+O\+P\+E\+R\+A\+T\+O\+RS\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= Arrays.asList(\textcolor{stringliteral}{"=="}, \textcolor{stringliteral}{"!="}, \textcolor{stringliteral}{"("}, \textcolor{stringliteral}{")"}, \textcolor{stringliteral}{","}, \textcolor{stringliteral}{"."}, \textcolor{stringliteral}{"="}, \textcolor{stringliteral}{";"}, \textcolor{stringliteral}{"||"}, \textcolor{stringliteral}{"&&"},
+            \textcolor{stringliteral}{"[]"}, \textcolor{stringliteral}{"["}, \textcolor{stringliteral}{"]"})
+\end{DoxyCode}
+\mbox{\Hypertarget{classfeder_1_1Lexer_a9b040bc2158eeda1a1f579a41bedaa92}\label{classfeder_1_1Lexer_a9b040bc2158eeda1a1f579a41bedaa92}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!R\+U\+L\+E\+\_\+\+O\+P\+E\+R\+A\+T\+O\+RS@{R\+U\+L\+E\+\_\+\+O\+P\+E\+R\+A\+T\+O\+RS}}
+\index{R\+U\+L\+E\+\_\+\+O\+P\+E\+R\+A\+T\+O\+RS@{R\+U\+L\+E\+\_\+\+O\+P\+E\+R\+A\+T\+O\+RS}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{R\+U\+L\+E\+\_\+\+O\+P\+E\+R\+A\+T\+O\+RS}{RULE\_OPERATORS}}
+{\footnotesize\ttfamily final List$<$String$>$ feder.\+Lexer.\+R\+U\+L\+E\+\_\+\+O\+P\+E\+R\+A\+T\+O\+RS\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= Arrays.asList(\textcolor{stringliteral}{">="}, \textcolor{stringliteral}{"<="}, \textcolor{stringliteral}{"<"}, \textcolor{stringliteral}{">"}, \textcolor{stringliteral}{"+="}, \textcolor{stringliteral}{"-="}, \textcolor{stringliteral}{"*="}, \textcolor{stringliteral}{"/="}, \textcolor{stringliteral}{"%="},
+            \textcolor{stringliteral}{"&="}, \textcolor{stringliteral}{"|="}, \textcolor{stringliteral}{"!"},
+            \textcolor{stringliteral}{"++"}, \textcolor{stringliteral}{"--"}, \textcolor{stringliteral}{"+"}, \textcolor{stringliteral}{"-"}, \textcolor{stringliteral}{"*"}, \textcolor{stringliteral}{"/"}, \textcolor{stringliteral}{"%"}, \textcolor{stringliteral}{"^"}, \textcolor{stringliteral}{"&"}, \textcolor{stringliteral}{"|"})
+\end{DoxyCode}
+Operators for \hyperlink{classfeder_1_1Feder}{Feder}\textquotesingle{}s rules \mbox{\Hypertarget{classfeder_1_1Lexer_a8dcd49cd409b92ea88d9e5e4ac312bee}\label{classfeder_1_1Lexer_a8dcd49cd409b92ea88d9e5e4ac312bee}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!softokens@{softokens}}
+\index{softokens@{softokens}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{softokens}{softokens}}
+{\footnotesize\ttfamily List$<$String$>$ feder.\+Lexer.\+softokens}
+
+This are the strings of the tokens, which only differ if the token is a name \mbox{\Hypertarget{classfeder_1_1Lexer_a2ed05abcd7fc74ad17e99bd3795d289b}\label{classfeder_1_1Lexer_a2ed05abcd7fc74ad17e99bd3795d289b}} 
+\index{feder\+::\+Lexer@{feder\+::\+Lexer}!tokens@{tokens}}
+\index{tokens@{tokens}!feder\+::\+Lexer@{feder\+::\+Lexer}}
+\subsubsection{\texorpdfstring{tokens}{tokens}}
+{\footnotesize\ttfamily List$<$String$>$ feder.\+Lexer.\+tokens}
+
+This are the tokens, which where generated by the lexical analysis 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/feder/Lexer.\+java\end{DoxyCompactItemize}

@@ -1,0 +1,324 @@
+##
+# types/int.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of the Feder Standard Library and
+# provides an integer like type
+##
+
+include "stdc.fd"
+include "types/bool.fd"
+
+namespace h_intern_int_include
+	:#include <stdint.h>
+;
+
+type "int16_t" int16
+	int16 func makeNegative
+		:if (*federobj_this > 0) {
+			:*federobj_this *= -1;
+		:}
+
+		return this
+	;
+
+	int16 func cp
+		result = this
+		return result
+	;
+;
+
+type "uint16_t" uint16
+	uint16 func cp
+		result = this
+		return result
+	;
+;
+
+type "int32_t" int32
+	int32 func makeNegative
+		:if (*federobj_this > 0) {
+			:*federobj_this *= -1;
+		:}
+
+		return this
+	;
+
+	int32 func cp
+		result = this
+		return result
+	;
+;
+
+::rule buildin int "(fdc_int32) {0}" int32
+
+type "uint32_t" uint32
+	uint32 func cp
+		result = this
+		return result
+	;
+;
+
+type "int64_t" int64
+	int64 func makeNegative
+		:if (*federobj_this > 0) {
+			:*federobj_this *= -1;
+		:}
+		
+		return this
+	;
+
+	int64 func cp
+		result = this
+		return result
+	;
+;
+
+type "uint64_t" uint64
+	uint64 func cp
+		result = this
+		return result
+	;
+;
+
+namespace h_intern_int
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_int16 (fdtypearray* ar, fdc_int16 n);
+
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_uint16 (fdtypearray* ar, fdc_uint16 n);
+
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_int32 (fdtypearray* ar, fdc_int32 n);
+
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_uint32 (fdtypearray* ar, fdc_uint32 n);
+
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_int64 (fdtypearray* ar, fdc_int64 n);
+
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_uint64 (fdtypearray* ar, fdc_uint64 n);
+;
+
+namespace c_intern_int
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_int16 (fdtypearray* ar, fdc_int16 n) {
+		:return fdAppendToTypeArray (ar, (char*) &n);
+	:}
+
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_uint16 (fdtypearray* ar, fdc_uint16 n) {
+		:return fdAppendToTypeArray (ar, (char*) &n);
+	:}
+
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_int32 (fdtypearray* ar, fdc_int32 n) {
+		:return fdAppendToTypeArray (ar, (char*) &n);
+	:}
+
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_uint32 (fdtypearray* ar, fdc_uint32 n) {
+		:return fdAppendToTypeArray (ar, (char*) &n);
+	:}
+
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_int64 (fdtypearray* ar, fdc_int64 n) {
+		:return fdAppendToTypeArray (ar, (char*) &n);
+	:}
+
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_uint64 (fdtypearray* ar, fdc_uint64 n) {
+		:return fdAppendToTypeArray (ar, (char*) &n);
+	:}
+;
+
+# Feder ::rules
+
+# int16
+::rule pattern + "{0} + {1}" int16 int16 int16
+::rule pattern - "{0} - {1}" int16 int16 int16
+::rule pattern * "{0} * {1}" int16 int16 int16
+::rule pattern / "{0} / {1}" int16 int16 int16
+::rule pattern % "{0} % {1}" int16 int16 int16
+::rule pattern | "{0} | {1}" int16 int16 int16
+::rule pattern & "{0} & {1}" int16 int16 int16
+
+::rule pattern - "-{1}" int16 null int16
+
+::rule pattern ++ "{0}++" int16 int16 null
+::rule pattern -- "{0}--" int16 int16 null
+::rule pattern ++ "++{1}" int16 null int16
+::rule pattern -- "--{1}" int16 null int16
+
+::rule pattern += "{0} += {1}" null int16 int16
+::rule pattern -= "{0} -= {1}" null int16 int16
+::rule pattern *= "{0} *= {1}" null int16 int16
+::rule pattern /= "{0} /= {1}" null int16 int16
+
+::rule pattern > "{0} > {1}" bool int16 int16
+::rule pattern < "{0} < {1}" bool int16 int16
+::rule pattern >= "{0} >= {1}" bool int16 int16
+::rule pattern <= "{0} <= {1}" bool int16 int16
+::rule pattern == "{0} == {1}" bool int16 int16
+::rule pattern != "{0} != {1}" bool int16 int16
+
+# uint16
+::rule pattern + "{0} + {1}" uint16 uint16 uint16
+::rule pattern - "{0} - {1}" uint16 uint16 uint16
+::rule pattern * "{0} * {1}" uint16 uint16 uint16
+::rule pattern / "{0} / {1}" uint16 uint16 uint16
+::rule pattern % "{0} % {1}" uint16 uint16 uint16
+::rule pattern | "{0} | {1}" uint16 uint16 uint16
+::rule pattern & "{0} & {1}" uint16 uint16 uint16
+
+::rule pattern - "-{1}" uint16 !void uint16
+
+::rule pattern ++ "{0}++" uint16 uint16 !void
+::rule pattern -- "{0}--" uint16 uint16 !void
+::rule pattern ++ "++{1}" uint16 !void uint16
+::rule pattern -- "--{1}" uint16 !void uint16
+
+::rule pattern += "{0} += {1}" null uint16 uint16
+::rule pattern -= "{0} -= {1}" null uint16 uint16
+::rule pattern *= "{0} *= {1}" null uint16 uint16
+::rule pattern /= "{0} /= {1}" null uint16 uint16
+
+::rule pattern > "{0} > {1}" bool uint16 uint16
+::rule pattern < "{0} < {1}" bool uint16 uint16
+::rule pattern >= "{0} >= {1}" bool uint16 uint16
+::rule pattern <= "{0} <= {1}" bool uint16 uint16
+::rule pattern == "{0} == {1}" bool uint16 uint16
+::rule pattern != "{0} != {1}" bool uint16 uint16
+
+# int32
+::rule pattern + "{0} + {1}" int32 int32 int32
+::rule pattern - "{0} - {1}" int32 int32 int32
+::rule pattern * "{0} * {1}" int32 int32 int32
+::rule pattern / "{0} / {1}" int32 int32 int32
+::rule pattern % "{0} % {1}" int32 int32 int32
+::rule pattern | "{0} | {1}" int32 int32 int32
+::rule pattern & "{0} & {1}" int32 int32 int32
+
+::rule pattern - "-{1}" int32 !void int32
+
+::rule pattern ++ "{0}++" int32 int32 !void
+::rule pattern -- "{0}--" int32 int32 !void
+::rule pattern ++ "++{1}" int32 !void int32
+::rule pattern -- "--{1}" int32 !void int32
+
+::rule pattern += "{0} += {1}" null int32 int32
+::rule pattern -= "{0} -= {1}" null int32 int32
+::rule pattern *= "{0} *= {1}" null int32 int32
+::rule pattern /= "{0} /= {1}" null int32 int32
+
+::rule pattern > "{0} > {1}" bool int32 int32
+::rule pattern < "{0} < {1}" bool int32 int32
+::rule pattern >= "{0} >= {1}" bool int32 int32
+::rule pattern <= "{0} <= {1}" bool int32 int32
+::rule pattern == "{0} == {1}" bool int32 int32
+::rule pattern != "{0} != {1}" bool int32 int32
+
+type "int32_t" int32
+	int32 func add (int32 n)
+		result = this + n
+		return result
+	;
+
+	int32 func sub (int32 n)
+		result = this - n
+		return result
+	;
+
+	int32 func addto (int32 n)
+		this += n
+		return this
+	;
+
+	int32 func subto (int32 n)
+		this -= n
+		return this
+	;
+;
+
+# uint32
+::rule pattern + "{0} + {1}" uint32 uint32 uint32
+::rule pattern - "{0} - {1}" uint32 uint32 uint32
+::rule pattern * "{0} * {1}" uint32 uint32 uint32
+::rule pattern / "{0} / {1}" uint32 uint32 uint32
+::rule pattern % "{0} % {1}" uint32 uint32 uint32
+::rule pattern | "{0} | {1}" uint32 uint32 uint32
+::rule pattern & "{0} & {1}" uint32 uint32 uint32
+
+::rule pattern ++ "{0}++" uint32 uint32 !void
+::rule pattern -- "{0}--" uint32 uint32 !void
+::rule pattern ++ "++{1}" uint32 !void uint32
+::rule pattern -- "--{1}" uint32 !void uint32
+
+::rule pattern += "{0} += {1}" null uint32 uint32
+::rule pattern -= "{0} -= {1}" null uint32 uint32
+::rule pattern *= "{0} *= {1}" null uint32 uint32
+::rule pattern /= "{0} /= {1}" null uint32 uint32
+
+::rule pattern > "{0} > {1}" bool uint32 uint32
+::rule pattern < "{0} < {1}" bool uint32 uint32
+::rule pattern >= "{0} >= {1}" bool uint32 uint32
+::rule pattern <= "{0} <= {1}" bool uint32 uint32
+::rule pattern == "{0} == {1}" bool uint32 uint32
+::rule pattern != "{0} != {1}" bool uint32 uint32
+
+# int64
+::rule pattern + "{0} + {1}" int64 int64 int64
+::rule pattern - "{0} - {1}" int64 int64 int64
+::rule pattern * "{0} * {1}" int64 int64 int64
+::rule pattern / "{0} / {1}" int64 int64 int64
+::rule pattern % "{0} % {1}" int64 int64 int64
+::rule pattern | "{0} | {1}" int64 int64 int64
+::rule pattern & "{0} & {1}" int64 int64 int64
+
+::rule pattern - "-{1}" int64 !void int64
+
+::rule pattern ++ "{0}++" int64 int64 !void
+::rule pattern -- "{0}--" int64 int64 !void
+::rule pattern ++ "++{1}" int64 !void int64
+::rule pattern -- "--{1}" int64 !void int64
+
+::rule pattern += "{0} += {1}" null int64 int64
+::rule pattern -= "{0} -= {1}" null int64 int64
+::rule pattern *= "{0} *= {1}" null int64 int64
+::rule pattern /= "{0} /= {1}" null int64 int64
+
+::rule pattern > "{0} > {1}" bool int64 int64
+::rule pattern < "{0} < {1}" bool int64 int64
+::rule pattern >= "{0} >= {1}" bool int64 int64
+::rule pattern <= "{0} <= {1}" bool int64 int64
+::rule pattern == "{0} == {1}" bool int64 int64
+::rule pattern != "{0} != {1}" bool int64 int64
+
+# uint64
+::rule pattern + "{0} + {1}" uint64 uint64 uint64
+::rule pattern - "{0} - {1}" uint64 uint64 uint64
+::rule pattern * "{0} * {1}" uint64 uint64 uint64
+::rule pattern / "{0} / {1}" uint64 uint64 uint64
+::rule pattern % "{0} % {1}" uint64 uint64 uint64
+::rule pattern | "{0} | {1}" uint64 uint64 uint64
+::rule pattern & "{0} & {1}" uint64 uint64 uint64
+
+::rule pattern - "-{1}" uint64 !void uint64
+
+::rule pattern ++ "{0}++" uint64 uint64 !void
+::rule pattern -- "{0}--" uint64 uint64 !void
+::rule pattern ++ "++{1}" uint64 !void uint64
+::rule pattern -- "--{1}" uint64 !void uint64
+
+::rule pattern += "{0} += {1}" null uint64 uint64
+::rule pattern -= "{0} -= {1}" null uint64 uint64
+::rule pattern *= "{0} *= {1}" null uint64 uint64
+::rule pattern /= "{0} /= {1}" null uint64 uint64
+
+::rule pattern > "{0} > {1}" bool uint64 uint64
+::rule pattern < "{0} < {1}" bool uint64 uint64
+::rule pattern >= "{0} >= {1}" bool uint64 uint64
+::rule pattern <= "{0} <= {1}" bool uint64 uint64
+::rule pattern == "{0} == {1}" bool uint64 uint64
+::rule pattern != "{0} != {1}" bool uint64 uint64

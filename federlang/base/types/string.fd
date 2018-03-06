@@ -1,0 +1,656 @@
+include "stdc.fd"
+include "types/bool.fd"
+include "types/byte.fd"
+include "types/int.fd"
+include "types/double.fd"
+include "types/numcomp.fd"
+::if STRING_USE_ARRAY
+include "types/array.fd"
+::else
+include "types/list.fd"
+::fi
+
+namespace h_intern_string_include
+	:#include <stdio.h>
+;
+
+# String
+
+##
+# "STRING_USE_ARRAY" should be defined, if the String implementation should
+# use the 'Array' class instead of the 'String' class.
+##
+#::def STRING_USE_ARRAY
+
+##
+# A String is a collection of characters, which could be used to represent
+# words, sentences or something else, which needs 'characters' (Bytes).
+# The difference between an Array or List and a String is, that the String
+# provides more functions, so it is easier to manipulate the data in the String.
+##
+class String
+	# Short for characters
+	::if STRING_USE_ARRAY
+	Array chars
+	::else
+	List chars
+	::fi
+;
+
+::rule buildin string "fdCreateString (\"{0}\")" String
+
+class String
+	func init
+		# Initialize the List, which should contain
+		# characters
+		::if STRING_USE_ARRAY
+		chars = Array
+		::else
+		chars = List
+		::fi
+	;
+	
+	# Returns the Byte at position 'index'. 'index'
+	# has to be greater than or equal to 0 and smaller
+	# than this.length ()
+	Byte func at (int32 index)
+		return Byte from chars.at (index)
+	;
+
+	##
+	# Adds the Byte 'append_Byte' to the String
+	# AFter that, the String returns itself (this)
+	##
+	String func add (Byte append_Byte)
+		chars.add (object from append_Byte)
+		return this
+	;
+
+	##
+	# This function inserts the character 'append_Byte' at
+	# position 'index'.
+	#
+	# Returns itself, if an error occured (index out of bounds),
+	# this function will return null.
+	##
+	String func insert (Byte append_Byte, int32 index)
+		if chars.insert (object from append_Byte, index) != null
+			return this
+		else
+			return null
+		;
+	;
+
+	String func insert (String str0, int32 index)
+		if chars.insert (str0.chars, index) != null
+			return this
+		else
+			return null
+		;
+	;
+
+	##
+	# This function removes a character at position 'index'.
+	# 
+	# Returns itself. Returns null, if index is out of bounds.
+	##
+	String func removeAt (int32 index)
+		if chars.removeAt (index) != null
+			return this
+		else
+			return null
+		;
+	;
+		
+	##
+	# This function returns the length of the String.
+	##
+	int32 func length
+		return chars.length ()
+	;
+
+	##
+	# This function copies the String
+	##
+	String func cp
+		result = String
+		len0 = length ()
+		i = 0
+		while i < len0
+			result.add (at (i).cp ())
+			i.addto (1)
+		;
+		
+		return result
+	;
+
+	##
+	# This function adds the given String to the current one.
+	# The returned result is the String itself (this).
+	# Returns null if an error occured.
+	##
+	String func addto (String str0)
+		if str0 == null || this == null
+			return null
+		;
+
+		i = 0
+		len0 = str0.length ()
+		while i < len0
+			add (str0.at (i))
+			i.addto (1)
+		;
+		
+		return this
+	;
+
+	##
+	# This function adds the given String to a copy of the current one.
+	# Returns the copy.
+	##
+	String func add (String str0)
+		result = this.cp ()
+		result.addto (str0)
+		return result
+	;
+
+	String func addString (String str0)
+		return add (str0)
+	;
+	
+	bool func isNumber (bool allowFloatingPoint32)
+		if this == null
+			return false
+		;
+
+		dotCame = false
+		
+		i = 0
+		len0 = length ()
+		while i < len0
+			character = at (i)
+			if isEqual (character, ".".at (0)) && dotCame.isfalse () && allowFloatingPoint32
+				dotCame = true
+			else if character.isDigit ().isfalse ()
+				return false
+			;
+
+			i.addto (1)
+		;
+
+		return true
+	;
+
+	##
+	# This function returns null, when the String is not an int32eger
+	##
+	int32 func toint32
+		if isNumber (false).isfalse ()
+			return (1).makeNegative ()
+		;
+
+		int32 result
+		:char * cString = fdStringToCString (*federobj_this);
+		:federobj_result = atoi (cString);
+		:free (cString);
+		return result
+	;
+
+	##
+	# This function return null, when the String is not a floating point32 number
+	##
+	double func todouble
+		if isNumber (true).isfalse ()
+			return (1.0).makeNegative ()
+		;
+
+		double result
+		:char * cString = fdStringToCString (*federobj_this);
+		:federobj_result = strtod (cString, NULL);
+		:free (cString);
+		return result
+	;
+
+	##
+	# This function makes all characters of the String lowercase
+	# Returns 'this'.
+	##
+	String func toLower
+		::if STRING_USE_ARRAY
+		i = 0
+		len0 = length ()
+		while i < len0
+			at (i).toLower()
+			i.addto (1)
+		;
+		::else
+		node = chars.first
+		while node != null
+			(Byte from node.data).toLower ()
+			node = node.next
+		;
+		::fi
+
+		return this
+	;
+
+	##
+	# This function makes all characters of the String uppercase 
+	# Returns 'this'.
+	##
+	String func toUpper
+		::if STRING_USE_ARRAY
+		i = 0
+		len0 = length ()
+		while i < len0
+			at (i).toUpper()
+			i.addto (1)
+		;
+		::else
+		node = chars.first
+		while node != null
+			(Byte from node.data).toUpper ()
+			node = node.next
+		;
+		::fi
+
+		return this
+	;
+
+	##
+	# This function checks if this String starts with the String
+	# str0, beginning from position 'index'.
+	#
+	# The returned result is 'true', if the condition above is true
+	# and if the condition is not true, the returned result is 'false'.
+	##
+	bool func startsWith (String str0, int32 index)
+		len0 = length ()
+		len1 = str0.length ()
+		i = 0
+		while i < len1
+			ii = index.add (i)
+			if !(ii < len0)
+				return false
+			;
+			
+			if isEqual (at (ii), str0.at (i)).isfalse ()
+				return false
+			;
+
+			i.addto (1)
+		;
+
+		return true
+	;
+
+	##
+	# This function checks if this String starts with the String
+	# str0, begging from position '0'.
+	#
+	# The returned result is 'true', if the condition above is true
+	# and if the condition is not true, the returned result is 'false'.
+	#	
+	# The  same as startsWith (str0, 0)
+	## 
+	bool func startsWith (String str0)
+		return startsWith (str0, 0)
+	;
+
+	##
+	# This function returns a String, which can be found
+	# starting from the index index_start to the index index_end. The last
+	# character of the result is in this String the index
+	# index_end.
+	#
+	# The result is 'null', if the indecis are out of bounds
+	# or if index_start is greater than index_end
+	##
+	String func subString (int32 index_start, int32 index_end)
+		if index_start > index_end
+			return null
+		;
+		
+		result = String
+		i = index_start.cp ()
+		while !(i > index_end)
+			character = at (i)
+			if character == null
+				# The index is out of bounds
+				return null
+			;
+
+			result.add (character.cp ())
+			i.addto (1)
+		;
+
+		return result
+	;
+
+	##
+	# This function returns a String, which can be found from
+	# starting from the index 'index_start' to the last index
+	# available in this String.
+	#
+	# The result is 'null', if the index index_start is out
+	# of bounds
+	##
+	String func subString (int32 index_start)
+		return subString (index_start, length().add ((1).makeNegative ()))
+	;
+
+	##
+	# This function removes the characters at index 'index_start'
+	# and 'index_end' and all character between those two indecis
+	#
+	# Returns null, if the index_start is greater than index_end. Also
+	# returns null, if index_start and/or index_end is out of bounds
+	# (the indecis must be between 0<=index<length).
+	# If no error occured, the removed the removed characters returned eturned.
+	##
+	String func remove (int32 index_start, int32 index_end)
+		if index_start > index_end
+			return null
+		;
+
+		len0 = length ()
+		if !(index_start < len0)
+			return null
+		;
+
+		if !(index_end < len0)
+			return null
+		;
+
+		result = String
+		i = index_start.cp ()
+		while !(i > index_end)
+			result.add (at (index_start))
+			if removeAt (index_start) == null
+				return null
+			;
+
+			i.addto (1)
+		;
+
+		return result
+	;
+;
+
+##
+# This function prints out which list-type
+# the String class uses (Array/[Linked]List)
+##
+String func getStringUse
+		::if STRING_USE_ARRAY
+		return "Array"
+		::else
+		return "List"
+		::fi
+;
+
+type "int32_t" int32
+	##
+	# This function returns a String which is a 
+	# decimal number, created from int32 (this)
+	##
+	String func toString
+		String result
+		:char cstring[50];
+		:sprintf (cstring, "%i", *federobj_this);
+		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		return result
+	;
+;
+
+type "uint32_t" uint32
+	##
+	# This function returns a String which is a 
+	# decimal number, created from uint32 (this)
+	##
+	String func toString
+		String result
+		:char cstring[50];
+		:sprintf (cstring, "%u", *federobj_this);
+		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		return result
+	;
+;
+
+type "int64_t" int64
+	##
+	# This function returns a String which is a 
+	# decimal number, created from int64 (this)
+	##
+	String func toString
+		String result
+		:char cstring[60];
+		:sprintf (cstring, "%li", *federobj_this);
+		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		return result
+	;
+;
+
+type "uint64_t" uint64
+	##
+	# This function returns a String which is a 
+	# decimal number, created from uint64 (this)
+	##
+	String func toString
+		String result
+		:char cstring[60];
+		:sprintf (cstring, "%lu", *federobj_this);
+		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		return result
+	;
+;
+
+type "double" double
+	##
+	# This function returns a String which is a 
+	# decimal number, created from double (this)
+	##
+	String func toString
+		String result
+		:char cstring[80];
+		:sprintf (cstring, "%lf", *federobj_this);
+		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		return result
+	;
+;
+
+# Checks if s0 and s1 are equal
+bool func isEqual (String s0, String s1)
+	if s0 == s1
+		return true
+	;
+
+	if s0 == null || s1 == null
+		return false
+	;
+
+	len0 = s0.length ()
+
+	if isEqual (len0, s1.length ()).isfalse ()
+		# The Strings are not equal because their
+		# lengths differ
+		return false
+	;
+
+	n = 0
+	while n < len0
+		if isEqual (s0.at (n), s1.at (n)).isfalse ()
+			# Characters, which are at the same position
+			# in s0 and s1, differ, so the Strings,
+			# which have to be compared, are not equal
+			return false
+		;
+
+		n.addto (1)
+	;
+	
+	return true
+;
+
+bool func isEqual_String_String (object s0, object s1)
+	return isEqual (String from s0, String from s1)
+;
+
+bool func isEqualIgnoreCase (String s0, String s1)
+	return isEqual (s0.cp ().toLower (), s1.cp ().toLower ())
+;
+
+bool func isEqualIgnoreCase_String_String (object s0, object s1)
+	return isEqualIgnoreCase (String from s0, String from s1)
+;
+
+class String
+	##
+	# This function returns the index, where the first occurence of str0
+	# has been found. If nothing has been found, this function return null.
+	##
+	int32 func find (String str0)
+		len0tocheck = length ().sub (str0.length ()).add (1)
+		i = 0
+		while i < len0tocheck
+			if startsWith (str0, i)
+				return i
+			;
+			
+			i.addto (1)
+		;
+
+		return (1).makeNegative ()
+	;
+
+	##
+	# This function returns 'false' if the String 'str0' was
+	# not found in this String
+	##
+	bool func contains (String str0)
+		return isEqual (find (str0), (1).makeNegative ()).isfalse ()
+	;
+
+	##
+	# This function replaces occurences of str0 with str1 in this String.
+	# How many occurences should be replaced is controlled by the count
+	# argument. If you want to replace an infinite amount of occurences, pass
+	# -1 as the count argument
+	#
+	# Returns the number of replaces elements
+	##
+	int32 func replace (String str0, String str1, int32 count)
+		len0 = length ()
+		len0str0 = str0.length ()
+		len0str1 = str1.length ()
+		len0tocheck = len0.sub (len0str0).add (1)
+		len0toadd = len0str1.sub (len0str0)
+
+		replaced = 0
+		i = 0
+		while i < len0tocheck && (count < 0 || replaced < count)
+			if startsWith (str0, i)
+				index_start = i.cp ()
+				index_end = index_start.add (len0str0).sub (1)
+
+				if remove (index_start, index_end) == null
+					return (1).makeNegative ()
+				;
+				
+				insert (str1, index_start)
+
+				i.addto (len0str1)
+				len0tocheck.addto (len0toadd)
+
+				replaced.addto (1)
+			else
+				i.addto (1)
+			;
+		;
+
+		return replaced
+	;
+
+	##
+	# This function replaces all occurences of str0 in this String
+	# with the String str1
+	#
+	# Returns the amount of replaced occurences
+	##
+	int32 func replace (String str0, String str1)
+		return replace (str0, str1, (1).makeNegative ())
+	;
+
+	##
+	# This function removes a limited amount of occurences of str0 in this
+	# String. The int32eger 'count' specifies how often this should be possible.
+	# If count equals -1, then an unlimited amount of occurences will
+	# be deleted.
+	#
+	# Returns the amount of removed occurences of str0:
+	##
+	int32 func remove (String str0, int32 count)
+		return replace (str0, "", count)
+	;
+
+	##
+	# This function removes all occurences of str0 in this String.
+	# 
+	# Returns the amount of removed occurences of str0.
+	##
+	int32 func remove (String str0)
+		return remove (str0, (1).makeNegative ())
+	;
+;
+
+::rule func + String.addString
+
+# An intern namespace for the String class
+namespace h_intern_String
+	:#include <string.h>
+	:fdc_String *
+	:fdCreateString (const char * cString);
+	
+	:char * fdStringToCString (fdc_String * arg0);
+;
+
+# An intern namespace for the String class
+namespace c_intern_String
+	:fdc_String *
+	:fdCreateString (const char * cString) {
+		:fdc_String * result = fdCreateClass_fdc_String ();
+		:result->usage += 1;
+	
+		:fdc_int32 len0 = strlen (cString);
+		:fdc_int32 i = -1;
+		:while (++i < len0) {
+		::if STRING_USE_ARRAY
+			:fdfunc_3Array_0object_add (&result->federobj_chars,
+				:(fdc_object*) fdCreateByte ((signed char) cString [i]));
+		::else
+			:fdfunc_3List_0object_add (&result->federobj_chars,
+				:(fdc_object*) fdCreateByte ((signed char) cString [i]));
+		::fi
+		:}
+
+		:result->usage -= 1;
+		:return result;
+	:}
+
+	:char * fdStringToCString (fdc_String * arg0) {
+	:	fdIncreaseUsage ((fdobject*) arg0);
+	:
+	:	fdc_int32 len0 = fdfunc_3String_length (&arg0);
+	:	
+	:	char * cString = (char*) malloc (sizeof (char) * (len0+1));
+	:	cString[len0] = '\0'; // 0 Terminator
+	:	for (fdc_int32 i = 0; i < len0; i++) {
+	:		fdc_Byte * fdByte = (fdc_Byte*) fdfunc_3String_0int32_at (&arg0, (fdc_int32) i);
+	:		cString [i] = (char) fdByte->federobj_val;
+	:	}
+	:
+	:	fdRemoveObject ((fdobject*) arg0);
+	:
+	:	return cString;
+	:}
+;

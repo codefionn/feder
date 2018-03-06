@@ -1,0 +1,360 @@
+##
+# stdc.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com> 
+#
+# This file ist part of the Feder standard library and
+# contains C code (in Feder) which is required by the Feder compiler.
+##
+
+namespace h_intern
+	::if POSIX
+	:#define _POSIX_C_SOURCE 200809L
+	::fi
+
+	:#include <stdlib.h>
+	:#include <string.h>
+	:#include <stdint.h>
+
+	:#ifdef DEBUG
+	:# include <stdio.h>
+	:#endif
+
+	# Feder's classes need this typedef to be able
+	# to declare and define an interface, which deletes
+	# objects of that class.
+	:typedef void (* PFDDELETE) (void * data);
+
+	# Forward declaration
+	:struct _fdobject;
+	:typedef struct _fdobject fdobject;
+
+	# Because every class in Feder needs a function,
+	# which decreases an object's usage (and the objects'
+	# objects usage), this typedef has to be defined
+	:typedef void (* PFDUSAGE) (fdobject * obj, int increase);
+	:
+	# Jede Klasse die mit Feder erstellt wird,
+	# muss nach (_)fdobject umgeformt werden
+	# können ('cast')
+	:struct _fdobject {
+	# reference counter
+	# (drops or is zero => object will be deleted)
+	:  int usage;
+	# The function to delete an object of a class
+	:  PFDDELETE delfn;
+	# The function to increase/decrease the object's
+	# reference counter
+	:  PFDUSAGE usagefn;
+	:};
+	:
+	# This function calls the delete function
+	# of the given object
+	:void
+	:fdDeleteObject (fdobject * object);
+	:
+	# This function decreases the object's reference
+	# counter. If the counter drops to zero or is
+	# already zero, the delete function of the object
+	# gets called.
+	:void
+	:fdRemoveObject (fdobject * object);
+	:
+	# This function gets called if a function
+	# returns something and was called. It deletes
+	# an object if the object's reference counter
+	# is equal to zero.
+	:void
+	:fdRemoveObject_func (fdobject * object);
+	:
+	# This function gets called, if a new objects
+	# gets assigned to another
+	:fdobject *
+	:fdAssignObject (fdobject * object);
+
+	# This function gets called, if a old objects
+	# has been assigned to another. It calls
+	# the remove function of the old object.
+	# And this function also assigns the old
+	# object to the new one
+	:fdobject *
+	:fdAssignObjectOld (fdobject ** oldobj,
+	:				   fdobject * newobj);
+
+	# This function gets called, if an object's
+	# reference counter should be increased.
+	:void
+	:fdIncreaseUsage (fdobject * object);
+
+	# This function gets called, if an object's
+	# reference counter should be decreased.
+	:void
+	:fdDecreaseUsage (fdobject * object);
+
+	# Type arrays
+
+	:struct _fdtypearray;
+	:typedef struct _fdtypearray fdtypearray ;
+
+	:struct _fdtypearray {
+		# reference counter
+		# (drops or is zero => object will be deleted)
+		:int usage;
+		# The function to delete an object of a class
+		:PFDDELETE delfn;
+		# The function to increase/decrease the object's
+		# reference counter
+		:PFDUSAGE usagefn;
+
+		:char * data;
+		:int length;
+		:int typesize;
+	:};
+
+	# Functions for arrays
+	:fdtypearray*
+	:fdCreateTypeArray (int typesize, int size);
+
+	:void
+	:fdDeleteTypeArray (void * data);
+
+	:void
+	:fdIncreaseUsageTypeArray (fdobject * obj, int increase);
+
+	:int
+	:fdGetTypeArrayLength (fdtypearray* ar);
+
+	:fdtypearray*
+	:fdAppendToTypeArray (fdtypearray* ar, char * data);
+
+	# Class arrays
+
+	:struct _fdclassarray;
+	:typedef struct _fdclassarray fdclassarray;
+
+	:struct _fdclassarray {
+		:int usage;
+		:PFDDELETE delfn;
+		:PFDUSAGE usagefn;
+
+		:fdobject ** data;
+		:int length;
+	:};
+
+	:fdclassarray*
+	:fdCreateClassArray (int size);
+
+	:void
+	:fdDeleteClassArray (void * data);
+
+	:void
+	:fdIncreaseUsageClassArray (fdobject * obj, int increase);
+
+	:int
+	:fdGetClassArrayLength (fdclassarray * ar);
+
+	:fdclassarray*
+	:fdAppendToClassArray (fdclassarray* ar, fdobject * obj);
+
+	:fdobject*
+	:fdGetClassArrayObjectAt (fdclassarray* ar, int index);
+;
+
+# Define all declared functions
+namespace c_intern
+	:#include <stdio.h>
+	:void
+	:fdDeleteObject (fdobject * object) {
+	:  if (!object) return;
+	:
+	:  object->usage = 100;
+	:  object->delfn (object);
+	:}
+
+	:void
+	:fdRemoveObject (fdobject * object) {
+	:  if (!object) return;
+	:
+	:  if (object->usage > 1) {
+	:	fdDecreaseUsage (object);
+	:	return;
+	:  }
+	:
+	:  fdDeleteObject (object);
+	:}
+
+	:void
+	:fdRemoveObject_func (fdobject * object) {
+	:  if (!object)
+	:	return;
+	:
+	:  if (object->usage <= 0)
+	:	fdDeleteObject (object);
+	:}
+
+	:fdobject *
+	:fdAssignObject (fdobject * object) {
+	:  if (!object)
+	:	return NULL;
+	:
+	:  fdIncreaseUsage (object);
+	:  return object;
+	:}
+
+	:fdobject *
+	:fdAssignObjectOld (fdobject ** objold,
+	:				   fdobject * objnew) {
+	:
+	:  fdIncreaseUsage (objnew);
+	:  fdRemoveObject (*objold);
+	:  *objold = objnew;
+	:  return *objold;
+	:}
+
+	:void
+	:fdIncreaseUsage (fdobject * object) {
+	:  if (!object) return;
+	:  object->usagefn (object, 1);
+	:}
+
+	:void
+	:fdDecreaseUsage (fdobject * object) {
+	:  if (!object) return;
+	:  object->usagefn (object, 0);
+	:}
+
+	# Type array
+
+	:void
+	:fdIncreaseUsageTypeArray (fdobject* obj, int usage) {
+		:if (!obj) return;
+		:if (usage) {
+			:obj->usage++;
+		:} else {
+			:obj->usage--;
+		:}
+	:}
+
+	:void
+	:fdDeleteTypeArray (void* data) {
+		:if (!data) return;
+		:fdtypearray* ar = (fdtypearray*) data;
+		:free (ar->data);
+		:free (ar);
+	:}
+
+	:fdtypearray*
+	:fdCreateTypeArray (int typesize, int size) {
+		:fdtypearray* result = (fdtypearray*) malloc (sizeof (fdtypearray));
+		:result->usage = 0;
+		:result->delfn = fdDeleteTypeArray;
+		:result->usagefn = fdIncreaseUsageTypeArray;
+
+		:result->data = (char*) malloc (size * typesize);
+		:result->length = size;
+		:result->typesize = typesize;
+
+		:return result;
+	:}
+
+	:int
+	:fdGetTypeArrayLength (fdtypearray* ar) {
+		:if (!ar)
+			:return 0;
+		:int result = ar->length;
+		:fdRemoveObject_func ((fdobject*) ar);
+		:return result;
+	:}
+
+	:fdtypearray*
+	:fdAppendToTypeArray (fdtypearray* ar, char * data) {
+		:ar->length += 1;
+		:ar->data = (char*) realloc ((void*) ar->data, ar->length * ar->typesize);
+		:memcpy (ar->data + ((ar->length-1) * ar->typesize), data, ar->typesize);
+		:return ar;
+
+	:}
+
+	# Class array
+
+	:fdclassarray*
+	:fdCreateClassArray (int size) {
+		:fdclassarray* result = (fdclassarray*) malloc (sizeof (fdclassarray));
+		:result->usage = 0;
+		:result->delfn = fdDeleteClassArray;
+		:result->usagefn = fdIncreaseUsageClassArray;
+		
+		# Create the data
+		:result->data = (fdobject**) malloc (size * sizeof (fdobject*));
+		# Assign the created data to NULL
+		:for (int i = 0; i < size; i++) {
+			:result->data[i] = NULL;
+		:}
+
+		:result->length = size;
+		:return result;
+	:}
+
+	:void
+	:fdDeleteClassArray (void * data) {
+		:fdclassarray* todel = (fdclassarray*) data;
+		:for (int i = 0; i < todel->length; i++) {
+			:fdRemoveObject (todel->data[i]);
+		:}
+
+		:free (todel->data);
+		:free (todel);
+	:}
+
+	:void
+	:fdIncreaseUsageClassArray (fdobject * obj, int increase) {
+		:if (!obj) return;
+		:if (increase) {
+			:obj->usage++;
+		:} else {
+			:obj->usage--;
+		:}
+	:}
+
+	:int
+	:fdGetClassArrayLength (fdclassarray * ar) {
+		:if (!ar)
+			:return 0;
+
+		:int length = ar->length;
+		:fdRemoveObject_func ((fdobject*) ar);
+		:return length;
+	:}
+
+	:fdclassarray*
+	:fdAppendToClassArray (fdclassarray* ar, fdobject * obj) {
+		:if (!ar)
+			:return NULL;
+
+		:ar->length += 1;
+		:ar->data = (fdobject**) malloc (ar->length * sizeof (fdobject*));
+		:ar->data[ar->length-1] = fdAssignObject (obj);
+		
+		:return ar;
+	:}
+
+	:fdobject*
+	:fdGetClassArrayObjectAt (fdclassarray* ar, int index) {
+		:if (!ar)
+			:return NULL;
+
+		# Out of bounds
+		:if (index < 0 || index >= ar->length)
+			:return NULL;
+		
+		:fdobject* result = ar->data[index];
+		# Necessary, if ar gets deleted from heap
+		:fdIncreaseUsage (result);
+		:fdRemoveObject_func ((fdobject*) ar);
+		:fdDecreaseUsage (result);
+
+		:return result;
+	:}
+;
+
+class object
+;

@@ -1,0 +1,11 @@
+include "stdio.fd"
+
+result = 5 - 5 + 4 - 2
+# Left to right (std): 2
+# Right to left (err): -2
+
+if result != 2
+	io.print ("Error: ")
+	io.println (result)
+	return false
+;

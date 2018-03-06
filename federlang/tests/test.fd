@@ -1,0 +1,22 @@
+include "stdio.fd"
+
+class entity
+	int age
+
+	func init
+		age = 18
+	;
+;
+
+class person entity
+	string name
+
+	func init
+		name = "Fionn"
+	;
+;
+
+deve = person
+
+ent = person from deve
+io.println (ent.age)

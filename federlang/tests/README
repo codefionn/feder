@@ -1,0 +1,2 @@
+Some tests, which must not fail to compile. The test test_return_false should
+fail to succeed (it should return EXIT_FAILURE). All others must succeed.

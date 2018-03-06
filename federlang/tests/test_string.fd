@@ -1,0 +1,192 @@
+##
+# test_string.fd
+# created by Fionn Langhans
+#
+# This library tests the functions of a string
+##
+
+include "stdio.fd"
+
+io.print ("\tString Implementation: ")
+io.println (getStringUse ())
+
+s = "Hello World"
+
+# Test 01: equal
+if isEqual (s.length (), 11).isfalse ()
+	io.println ("\tTest 01-1 failed")
+	return false
+;
+
+if isEqual (s, "Hello World").isfalse ()
+	io.println ("\tTest 01-2 failed")
+	return false
+;
+
+io.println ("\tTest 01 passed")
+
+# Test 02: Not equal
+if isEqual (s, "Not the str")
+	io.println ("\tTest 02 failed")
+	return false
+;
+
+io.println ("\tTest 02 passed")
+
+# Test 03: subString
+s0 = s.subString(6, 10)
+if isEqual (s0, "World").isfalse ()
+	io.println ("\tTest 03 failed")
+	return false
+;
+
+io.println ("\tTest 03 passed")
+
+# Test 04: remove region
+s0 = s.cp ()
+s1 = s0.remove (1, 9)
+if isEqual (s1, "ello Worl").isfalse ()
+	io.println ("\tTest 04-1 failed: ".add (s1))
+	return false
+;
+
+if isEqual (s0, "Hd").isfalse ()
+	io.println ("\tTest 04-2 failed")
+	return false
+;
+
+io.println ("\tTest 04 passed")
+
+# Test 05: startsWith
+s = "Hello World"
+if s.startsWith ("Hello").isfalse ()
+	io.println ("\tTest 05-1 failed")
+	return false
+;
+
+if s.startsWith ("Worl", 6).isfalse ()
+	io.println ("\tTest 05-2 failed")
+	return false
+;
+
+if s.startsWith ("World")
+	io.println ("\tTest 05-3 failed")
+	return false
+;
+
+if s.startsWith ("Hello", 5)
+	io.println ("\tTest 05-4 failed")
+	return false
+;
+
+io.println ("\tTest 05 passed")
+
+# Test 06: insert
+s0 = s.cp ()
+if s0.insert ("H".at (0), 5) == null
+	io.println ("\tTest 06-01 failed")
+	return false
+;
+
+if isEqual (s0, "HelloH World").isfalse ()
+	io.println ("\tTest 06-02 failed")
+	return false
+;
+
+s0.insert ("ello", 6)
+if isEqual (s0, "HelloHello World").isfalse ()
+	io.println ("\tTest 06-03 failed: ".add (s0))
+	return false
+;
+
+io.println ("\tTest 06 passed")
+
+# Test 07: remove (1 character)
+s0 = s.cp ()
+if isEqual (s0.remove (" "), 1).isfalse ()
+	io.println ("\tTest 07-1 failed: ".add (s0))
+	return false
+;
+
+if isEqual (s0.remove ("l"), 3).isfalse ()
+	io.println ("\tTest 07-2 failed: ".add (s0))
+	return false
+;
+
+if isEqual (s0, "HeoWord").isfalse ()
+	io.println ("\tTest 07-03 failed: ".add (s0))
+	return false
+;
+
+io.println ("\tTest 07 passed")
+
+# Test 08: remove
+s0 = s.cp ()
+if isEqual (s0.remove ("Hello "), 1).isfalse ()
+	io.println ("\tTest 08-1 failed: ".add (s0))
+	return false
+;
+
+if isEqual (s0, "World").isfalse ()
+	io.println ("\tTest 08-2 failed")
+	return false
+;
+
+s0 = s.cp ()
+if isEqual (s0.remove (" Worl"), 1).isfalse ()
+	io.println ("\tTest 08-3 failed")
+	return false
+;
+
+if isEqual (s0, "Hellod").isfalse ()
+	io.println ("\tTest 08-4 failed")
+	return false
+;
+
+io.println ("\tTest 08 passed")
+
+# Test 09: Uppercase/Lowercase
+s0 = s.cp ()
+if isEqual (s0.toUpper (), "HELLO WORLD").isfalse ()
+	io.println ("\tTest 09-1 failed: ".add (s0))
+	return false
+;
+
+if isEqual (s0.toLower (), "hello world").isfalse ()
+	io.println ("\tTest 09-2 failed: ".add (s0))
+	return false
+;
+
+if isEqualIgnoreCase (s0, "HELLO world").isfalse ()
+	io.println ("\tTest 09-3 failed: ".add (s0))
+	return false
+;
+
+io.println ("\tTest 09 passed")
+
+# Test 10: IndexOf not existing strings
+s = "Hello World"
+
+if s0.contains ("12345")
+	io.println ("\tTest 10-1 failed")
+	return false
+;
+
+io.println ("\tTest 10 passed")
+
+# Test 11: Add
+s = "Hello World"
+s0 = "Hello " + s
+
+if !isEqual (s0, "Hello Hello World")
+	io.println ("\tTest 11-01 failed")
+	return false
+;
+
+s0 = s + " Hello"
+if !isEqual (s0, "Hello World Hello")
+	io.println ("\tTest 11-02 failed")
+	return false
+;
+
+io.println ("\tTest 11 passed")

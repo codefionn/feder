@@ -1,0 +1,3 @@
+include "stdio.fd"
+
+io.println (io.readString())

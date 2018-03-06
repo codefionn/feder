@@ -1,0 +1,133 @@
+.\" Manpage for feder
+.\" Copyright (C) 2018 Fionn Langhans
+.\" (fionn.langhans@gmail.com)
+.\"
+.\" %%%LICENSE_START(VERBATIM)
+.\" Permission is granted to make and distribute verbatim copies of this
+.\" manual provided the copyright notice and this permission notice are
+.\" preserved on all copies.
+.\"
+.\" Permission is granted to copy and distribute modified versions of this
+.\" manual under the conditions for verbatim copying, provided that the
+.\" entire resulting derived work is distributed under the terms of a
+.\" permission notice identical to this one.
+.\"
+.\" Since the Feder programming language is constantly changing,
+.\" this manual page may be incorrect or out-of-date.  The author(s)
+.\" assume no responsibility for errors or omissions, or for damages resulting
+.\" from the use of the information contained herein.
+.\"
+.\" Formatted or processed versions of this manual, if unaccompanied by
+.\" the source, must acknowledge the copyright and authors of this work.
+.\" %%%LICENSE_END
+.\"
+.TH FEDER 7 2018-02-15 "Feder" "Feder Manual"
+.SH NAME
+feder \- A short introduction to Feder
+.SH SYNOPSIS
+.SY jfederc
+.OP \-D builddir
+.OP \-O program_name
+.I files
+.YS
+
+.SY federc
+.OP operation
+.OP arguments
+.YS
+.SH DESCRIPTION
+This page describes, how to write little programs with the Feder programming
+language and how to compile them. Currently Feder can only be compiled with
+the jfederc (Java Feder Compiler, a Feder compiler written in Java).
+.SS Basics
+In Feder bodies can be started with
+.IR class ", " namespace ", " type ", " func ", " if ", " else " and " while "."
+.RI "Bodies must be terminated with"
+.BR ';' ". All bodies have to be closed at the end of the source file."
+.RB "Bodies can contain other bodies, but some bodies mustn't contain specific"
+.RB "bodies."
+
+.RB "To comment the code use the " # " operator to make the compiler ignore the"
+.RB "source code from that point till"
+.RB "the end of the line. If you want to comment over several lines use the " ##
+.RB "operator. If you want to terminate the multi-line comment use the " ## 
+.RB "operator again."
+
+.B Examples
+
+.EX
+.BR # " comment"
+.IR code " # comment"
+.BR "## " I
+am a very,
+very long
+comment reaching
+over several
+.RB lines " ##"
+.EE
+.\" End of Basics
+.SS Objects
+Feder handles object in three different way: as an object created with a class,
+as an object created with an interface and as an object created with a type.
+Only the object created with a class can be a dynamic one, all others are
+static. The specifier of an object created with a class or a type can be
+guessed, but the specifier of an interface can't really be guessed, so you have
+to explicitly declare an object, which should be created with an interface, with
+an interface.
+.TP 10
+.B Create object with class
+[
+.I class
+] [
+.BI '[]'
+]
+.I name
+[
+.BI '='
+.I objectWithClass
+]
+.\" End object with class definition
+
+Examples:
+.EX
+String s = String
+s0 = String
+s1 = s0.cp ()
+.EE
+.TP
+.B Create object with type
+[
+.I type
+] [
+.BI '[]'
+]
+.I name
+[
+.BI '='
+.I objectWithArray
+]
+.\" End object with type definition
+.TP
+.B Create object with interface
+.I interface name
+[
+.BI '='
+.I objectWithInterface
+|
+.I function
+]
+.\" End object with interface definition
+.SS Classes
+Classes in Feder are structures that can contain objects and functions. They
+also can inherit class and objects from another class.
+
+Create a class:
+
+.BI 'class'
+.I name
+[
+.I ClassToInheritFrom
+]
+
+A class starts a new body, so if you want to close the body use
+.BI ';'

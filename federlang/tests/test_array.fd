@@ -1,0 +1,20 @@
+include "stdtype.fd"
+include "stdio.fd"
+
+test_Array = Array
+test_Array.add (object from Integer32.set (1))
+test_Array.add (object from Integer32.set (2))
+test_Array.set (object from Integer32.set (3), 0)
+i = 0
+while i < 10
+	test_Array.add (object from Integer32.set (i))
+	i++
+;
+
+if isEqual ((Integer32 from test_Array.at (0)).val, 3).isfalse ()
+	return false
+;
+
+if isEqual ((Integer32 from test_Array.at (1)).val, 2).isfalse ()
+	return false
+;

@@ -1,0 +1,3 @@
+::def STRING_USE_ARRAY
+include "stdtype.fd"
+include "test_string.fd"

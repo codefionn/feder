@@ -1,0 +1,62 @@
+##
+# types/numcomp.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of the Feder Standard Library and
+# provides functions for comparing numbers
+##
+
+include "stdc.fd"
+include "types/bool.fd"
+include "types/byte.fd"
+include "types/int.fd"
+include "types/double.fd"
+include "types/pnumber.fd"
+
+bool func isEqual (byte b0, byte b1)
+	return b0 == b1
+;
+
+bool func isEqual (int32 n0, int32 n1)
+	return n0 == n1
+;
+
+bool func isEqual (uint32 n0, uint32 n1)
+	return n0 == n1
+;
+
+bool func isEqual (int64 n0, int64 n1)
+	return n0 == n1
+;
+
+bool func isEqual (uint64 n0, uint64 n1)
+	return n0 == n1
+;
+
+bool func isEqual (double n0, double n1)
+	return n0 == n1
+;
+
+bool func isEqual (Byte b0, Byte b1)
+	return b0.val == b1.val
+;
+
+bool func isEqual_Byte_Byte (object obj0, object obj1)
+	return isEqual (Byte from obj0, Byte from obj1)
+;
+
+bool func isEqual (Integer32 n0, Integer32 n1)
+	return n0.val == n1.val
+;
+
+bool func isEqual_Integer32_Integer32 (object obj0, object obj1)
+	return isEqual (Integer32 from obj0, Integer32 from obj1)
+;
+
+bool func isEqual (Double n0, Double n1)
+	return n0.val == n1.val
+;
+
+bool func isEqual_Double_Double (object obj0, object obj1)
+	return isEqual (Double from obj0, Double from obj1)
+;

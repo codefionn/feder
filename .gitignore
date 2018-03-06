@@ -1,0 +1,14 @@
+bin/
+build/
+*.jar
+*.fd.h
+*.fd.c
+*.o
+*.class
+*.log
+/federlang/random/
+.~lock.*
+
+# Ignore valgrind files
+vgcore.*
+

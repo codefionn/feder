@@ -1,0 +1,89 @@
+\hypertarget{classfeder_1_1Syntax}{}\section{feder.\+Syntax Class Reference}
+\label{classfeder_1_1Syntax}\index{feder.\+Syntax@{feder.\+Syntax}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{classfeder_1_1Syntax_a198da2aacfac7f024efb627b2841bd83}{dboutln} (String s)
+\item 
+static String \hyperlink{classfeder_1_1Syntax_a2f56ae8134a76f0ad4d6ab7d32212540}{error} (\hyperlink{classfeder_1_1FederCompiler}{Feder\+Compiler} c, List$<$ String $>$ tokens, List$<$ String $>$ strings\+Of\+Tokens, int line, int index, String msg)
+\item 
+static void \hyperlink{classfeder_1_1Syntax_abc052dad01cea140ef0508050e1942fb}{error} (\hyperlink{classfeder_1_1Lexer}{Lexer} lexer, String msg)
+\item 
+static boolean \hyperlink{classfeder_1_1Syntax_a1a609489260f826347f03bdd34f94b98}{validate\+Syntax} (\hyperlink{classfeder_1_1Lexer}{Lexer} lexer)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class for syntax analysis \begin{DoxyAuthor}{Author}
+Fionn Langhans 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classfeder_1_1Syntax_a198da2aacfac7f024efb627b2841bd83}\label{classfeder_1_1Syntax_a198da2aacfac7f024efb627b2841bd83}} 
+\index{feder\+::\+Syntax@{feder\+::\+Syntax}!dboutln@{dboutln}}
+\index{dboutln@{dboutln}!feder\+::\+Syntax@{feder\+::\+Syntax}}
+\subsubsection{\texorpdfstring{dboutln()}{dboutln()}}
+{\footnotesize\ttfamily static void feder.\+Syntax.\+dboutln (\begin{DoxyParamCaption}\item[{String}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+debug output (with one line \textquotesingle{}ln\textquotesingle{}) 
+\begin{DoxyParams}{Parameters}
+{\em s} & The string, which should be printed \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classfeder_1_1Syntax_a2f56ae8134a76f0ad4d6ab7d32212540}\label{classfeder_1_1Syntax_a2f56ae8134a76f0ad4d6ab7d32212540}} 
+\index{feder\+::\+Syntax@{feder\+::\+Syntax}!error@{error}}
+\index{error@{error}!feder\+::\+Syntax@{feder\+::\+Syntax}}
+\subsubsection{\texorpdfstring{error()}{error()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static String feder.\+Syntax.\+error (\begin{DoxyParamCaption}\item[{\hyperlink{classfeder_1_1FederCompiler}{Feder\+Compiler}}]{c,  }\item[{List$<$ String $>$}]{tokens,  }\item[{List$<$ String $>$}]{strings\+Of\+Tokens,  }\item[{int}]{line,  }\item[{int}]{index,  }\item[{String}]{msg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & the compiler instance to use \\
+\hline
+{\em tokens} & The tokens, describing the elements in strings\+Of\+Tokens \\
+\hline
+{\em strings\+Of\+Tokens} & The values of tokens \\
+\hline
+{\em line} & the line, where the error happend \\
+\hline
+{\em index} & The index, where the error happend in \textquotesingle{}tokens\textquotesingle{} \\
+\hline
+{\em msg} & The error message (a short error description) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the error message 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1Syntax_abc052dad01cea140ef0508050e1942fb}\label{classfeder_1_1Syntax_abc052dad01cea140ef0508050e1942fb}} 
+\index{feder\+::\+Syntax@{feder\+::\+Syntax}!error@{error}}
+\index{error@{error}!feder\+::\+Syntax@{feder\+::\+Syntax}}
+\subsubsection{\texorpdfstring{error()}{error()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static void feder.\+Syntax.\+error (\begin{DoxyParamCaption}\item[{\hyperlink{classfeder_1_1Lexer}{Lexer}}]{lexer,  }\item[{String}]{msg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Prints an error of the lexer 
+\begin{DoxyParams}{Parameters}
+{\em lexer} & the lexer to use \\
+\hline
+{\em msg} & the error description \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classfeder_1_1Syntax_a1a609489260f826347f03bdd34f94b98}\label{classfeder_1_1Syntax_a1a609489260f826347f03bdd34f94b98}} 
+\index{feder\+::\+Syntax@{feder\+::\+Syntax}!validate\+Syntax@{validate\+Syntax}}
+\index{validate\+Syntax@{validate\+Syntax}!feder\+::\+Syntax@{feder\+::\+Syntax}}
+\subsubsection{\texorpdfstring{validate\+Syntax()}{validateSyntax()}}
+{\footnotesize\ttfamily static boolean feder.\+Syntax.\+validate\+Syntax (\begin{DoxyParamCaption}\item[{\hyperlink{classfeder_1_1Lexer}{Lexer}}]{lexer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Validate the syntax (with error catching) 
+\begin{DoxyParams}{Parameters}
+{\em lexer} & the lexer to use, the elements of lexer have to be analyzed already by \hyperlink{classfeder_1_1Lexer_a69679a02624d16be3b567fd2aa71be57}{lex } \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns true, if all operations were successfully executed. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/feder/Syntax.\+java\end{DoxyCompactItemize}

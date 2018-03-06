@@ -1,0 +1,8 @@
+include "stdio.fd"
+
+io.println (args.length ())
+io.println ()
+
+for i = 0, i < args.length (), i++
+	io.println (String from args.at (i))
+;

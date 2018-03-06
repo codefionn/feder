@@ -1,0 +1,4 @@
+include "stdio.fd"
+
+var = Integer32.set (10)
+var = "string"

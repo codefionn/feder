@@ -1,0 +1,11 @@
+##
+# hello_world.fd
+# created by Fionn Langhans <fionn.langhans@gmx.de>
+#
+# This is a traditional 'Hello World' program
+##
+
+include "stdio.fd"
+
+io.println ("Hello, World!")
+io.println ("こんにちは世界")

@@ -1,0 +1,24 @@
+##
+# file_hello_world.fd
+# created by Fionn Langhans
+#
+# This program prints "Hello, World!" to a file called hello_world.txt
+##
+
+include "stdio.fd"
+
+file towrite = file
+if towrite.open ("hello_world.txt", "w").isfalse ()
+	io.println ("Failed to file \"hello_world\"!")
+	return false
+;
+
+s = "Hello, World!"
+for i = 0, i < s.length (), i++
+	if towrite.write (s.at (i).val).isfalse ()
+		io.println ("Failed to write to file")
+		return false
+	;
+;
+
+io.println ("File has been created!")

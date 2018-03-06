@@ -1,0 +1,81 @@
+##
+# types/iterator.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of the Feder Standard Library
+##
+
+include "types/bool.fd"
+include "types/list.fd"
+include "types/array.fd"
+
+class Iterator
+	Array _ar
+	int32 _ar_current_index
+	List _li
+	List_node _li_current_node
+
+	Iterator func new (Array ar)
+		_ar = ar
+		_ar_current_index = 0
+		return this
+	;
+
+	Iterator func new (List li)
+		_li = li
+
+		if _li != null
+			_li_current_node = _li.first
+		;
+
+		return this
+	;
+
+	bool func hasNext
+		if _ar != null && _ar_current_index < _ar.length()
+			return true
+		;
+
+		if _li != null && _li_current_node != null
+			return true
+		;
+
+		return false
+	;
+
+	object func next
+		if _ar != null && _ar_current_index < _ar.length()
+			 result = _ar.at (_ar_current_index)
+			 _ar_current_index.addto (1)
+			 return result
+		;
+
+		if _li != null && _li_current_node != null
+			result = _li_current_node.data
+			_li_current_node = _li_current_node.next
+			return result
+		;
+
+		return null
+	;
+
+	Array func getArray
+		return _ar
+	;
+
+	List func getList
+		return _li
+	;
+;
+
+class List
+	Iterator func createIterator
+		return Iterator.new (this)
+	;
+;
+
+class Array
+	Iterator func createIterator
+		return Iterator.new (this)
+	;
+;

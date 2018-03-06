@@ -1,0 +1,97 @@
+\hypertarget{classfeder_1_1Feder}{}\section{feder.\+Feder Class Reference}
+\label{classfeder_1_1Feder}\index{feder.\+Feder@{feder.\+Feder}}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static final void \hyperlink{classfeder_1_1Feder_a360b544d8dba874e9598deee40d365b9}{main} (String\mbox{[}$\,$\mbox{]} args)
+\item 
+static String \hyperlink{classfeder_1_1Feder_ab5b50219501cdb885408354548a54cef}{get\+String\+From\+File} (File file)
+\item 
+static String \hyperlink{classfeder_1_1Feder_aa2c0ca836770cd11575122b9295c6b9b}{get\+String\+From\+File} (String filen)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static String \hyperlink{classfeder_1_1Feder_af14a275c06d1155a8cbe776cf7a156eb}{separator} = \char`\"{}/\char`\"{}
+\item 
+static String \hyperlink{classfeder_1_1Feder_a456aa8c75c4f593438f11c8bfccbc030}{obj\+End} = \char`\"{}o\char`\"{}
+\item 
+static String \hyperlink{classfeder_1_1Feder_a7d76dfb8e1cf17ae7b8183c4f0e9c303}{V\+E\+R\+S\+I\+ON} = \char`\"{}1.\+0\char`\"{}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class for the main method
+
+\begin{DoxyAuthor}{Author}
+Fionn Langhans 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classfeder_1_1Feder_ab5b50219501cdb885408354548a54cef}\label{classfeder_1_1Feder_ab5b50219501cdb885408354548a54cef}} 
+\index{feder\+::\+Feder@{feder\+::\+Feder}!get\+String\+From\+File@{get\+String\+From\+File}}
+\index{get\+String\+From\+File@{get\+String\+From\+File}!feder\+::\+Feder@{feder\+::\+Feder}}
+\subsubsection{\texorpdfstring{get\+String\+From\+File()}{getStringFromFile()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static String feder.\+Feder.\+get\+String\+From\+File (\begin{DoxyParamCaption}\item[{File}]{file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & The file, which should be read \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the contents of file. Throws an error if an I\+O\+Exception or anything like that occured 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1Feder_aa2c0ca836770cd11575122b9295c6b9b}\label{classfeder_1_1Feder_aa2c0ca836770cd11575122b9295c6b9b}} 
+\index{feder\+::\+Feder@{feder\+::\+Feder}!get\+String\+From\+File@{get\+String\+From\+File}}
+\index{get\+String\+From\+File@{get\+String\+From\+File}!feder\+::\+Feder@{feder\+::\+Feder}}
+\subsubsection{\texorpdfstring{get\+String\+From\+File()}{getStringFromFile()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static String feder.\+Feder.\+get\+String\+From\+File (\begin{DoxyParamCaption}\item[{String}]{filen }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em filen} & A path, which should point to a file \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the contents of the file described by filen 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1Feder_a360b544d8dba874e9598deee40d365b9}\label{classfeder_1_1Feder_a360b544d8dba874e9598deee40d365b9}} 
+\index{feder\+::\+Feder@{feder\+::\+Feder}!main@{main}}
+\index{main@{main}!feder\+::\+Feder@{feder\+::\+Feder}}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily static final void feder.\+Feder.\+main (\begin{DoxyParamCaption}\item[{String \mbox{[}$\,$\mbox{]}}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+This method processes the arguments given to the program and calls other functions to compile files given with the arguments No arguments given to the program =$>$ print help and exit (with error code)
+
+Set the default file separator used to the one of the operating system
+
+If the windows cl compiler options should be used, tell this program to use \char`\"{}obj\char`\"{} as a suffix for object files
+
+Guess the program name from the file name
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classfeder_1_1Feder_a456aa8c75c4f593438f11c8bfccbc030}\label{classfeder_1_1Feder_a456aa8c75c4f593438f11c8bfccbc030}} 
+\index{feder\+::\+Feder@{feder\+::\+Feder}!obj\+End@{obj\+End}}
+\index{obj\+End@{obj\+End}!feder\+::\+Feder@{feder\+::\+Feder}}
+\subsubsection{\texorpdfstring{obj\+End}{objEnd}}
+{\footnotesize\ttfamily String feder.\+Feder.\+obj\+End = \char`\"{}o\char`\"{}\hspace{0.3cm}{\ttfamily [static]}}
+
+The suffix/file type of object files \mbox{\Hypertarget{classfeder_1_1Feder_af14a275c06d1155a8cbe776cf7a156eb}\label{classfeder_1_1Feder_af14a275c06d1155a8cbe776cf7a156eb}} 
+\index{feder\+::\+Feder@{feder\+::\+Feder}!separator@{separator}}
+\index{separator@{separator}!feder\+::\+Feder@{feder\+::\+Feder}}
+\subsubsection{\texorpdfstring{separator}{separator}}
+{\footnotesize\ttfamily String feder.\+Feder.\+separator = \char`\"{}/\char`\"{}\hspace{0.3cm}{\ttfamily [static]}}
+
+This thing should describe the filename separator, which should be used by this program \mbox{\Hypertarget{classfeder_1_1Feder_a7d76dfb8e1cf17ae7b8183c4f0e9c303}\label{classfeder_1_1Feder_a7d76dfb8e1cf17ae7b8183c4f0e9c303}} 
+\index{feder\+::\+Feder@{feder\+::\+Feder}!V\+E\+R\+S\+I\+ON@{V\+E\+R\+S\+I\+ON}}
+\index{V\+E\+R\+S\+I\+ON@{V\+E\+R\+S\+I\+ON}!feder\+::\+Feder@{feder\+::\+Feder}}
+\subsubsection{\texorpdfstring{V\+E\+R\+S\+I\+ON}{VERSION}}
+{\footnotesize\ttfamily String feder.\+Feder.\+V\+E\+R\+S\+I\+ON = \char`\"{}1.\+0\char`\"{}\hspace{0.3cm}{\ttfamily [static]}}
+
+Current version of this program 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/feder/Feder.\+java\end{DoxyCompactItemize}

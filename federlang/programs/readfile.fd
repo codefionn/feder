@@ -1,0 +1,30 @@
+##
+# readfile.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This programs reads a file, which was given as an
+# argument to the program
+##
+
+include "stdio.fd"
+
+if isEqual (args.length (), 2).isfalse ()
+	io.print (String from args.at (0))
+	io.println (" [file]")
+	return false
+;
+
+file toread = file
+if toread.open (String from args.at (1), "r").isfalse ()
+	io.println ("Failed to open file")
+	return false
+;
+
+b = toread.readByte ()
+while toread.finished ().isfalse ()
+	io.print (b)
+	b = toread.readByte ()
+;
+
+io.println ("Stopped")
+return true

@@ -1,0 +1,12 @@
+include "stdtype.fd"
+include "stdio.fd"
+
+n0 = 5
+n1 = 7
+result = 0
+
+for i = 0, i < 100, i++
+	result = n0 * n1
+;
+
+io.println (result)

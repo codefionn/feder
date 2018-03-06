@@ -1,0 +1,37 @@
+##
+# test_global.fd
+# created by Fionn Langhans <fionn.langhans@gmx.de>
+#
+# This library tests the global keyword of Feder
+##
+
+include "stdio.fd"
+
+global index = 0
+global String test = "Hello"
+
+func changeIndex
+	# Normally we couldn't change index
+	index = 1
+;
+
+if isEqual (index, 0).isfalse ()
+	io.println ("Index is not 0")
+	return false
+;
+
+if !isEqual (test, "Hello")
+	io.println ("test is not Hello")
+	return false
+;
+
+changeIndex ()
+if isEqual (index, 1)
+	return true
+else
+	io.print ("Index is not 1: ")
+	io.println (index)
+	return false
+;
+
+return false

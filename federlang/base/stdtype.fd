@@ -1,0 +1,22 @@
+##
+# stdtype.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of the Feder Standard Library and
+# handles basic types like bool(ean), int(eger), double
+##
+
+include "stdc.fd"
+include "types/bool.fd"
+include "types/byte.fd"
+
+include "types/int.fd"
+include "types/double.fd"
+include "types/pnumber.fd"
+include "types/numcomp.fd"
+
+include "types/array.fd"
+include "types/list.fd"
+include "types/iterator.fd"
+include "types/string.fd"
+

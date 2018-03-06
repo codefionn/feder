@@ -1,0 +1,17 @@
+include "stdio.fd"
+
+int32 interface integerInterface (int32 v)
+
+int32 func twice (integerInterface fn, int32 n)
+	return fn(fn(n))
+;
+
+int32 func addThree (int32 v)
+	return v.add(3)
+;
+
+if isEqual (twice (addThree, 7), 13).isfalse ()
+	return false
+;
+
+return true

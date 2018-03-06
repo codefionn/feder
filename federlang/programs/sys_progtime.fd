@@ -1,0 +1,6 @@
+include "stdsystem.fd"
+include "stdio.fd"
+
+t0 = sys.Time.current ()
+sys.system ("./programs/build/progtime")
+io.println (sys.Time.current ().millisBetween (t0).div (double from 1000))

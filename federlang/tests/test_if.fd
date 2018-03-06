@@ -1,0 +1,11 @@
+include "stdtype.fd"
+
+if false
+	return false
+;
+
+if true
+	return true
+;
+
+return false

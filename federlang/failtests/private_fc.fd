@@ -1,0 +1,8 @@
+include "stdc.fd"
+
+class smth
+	func _abitrary
+	;
+;
+
+smth._abitrary

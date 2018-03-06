@@ -1,0 +1,14 @@
+##
+# stdio.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of the Feder Standard Library and
+# allows a programmer to use basic input/output
+# functions and classes.
+##
+
+include "stdc.fd"
+include "stdtype.fd"
+
+include "io/console.fd"
+include "io/file.fd"

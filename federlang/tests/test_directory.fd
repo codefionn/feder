@@ -1,0 +1,22 @@
+##
+# test_directory.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This program tests directory related libraries
+##
+
+include "stdio.fd"
+
+test_file = dir
+if test_file.open ("tests").isfalse ()
+	io.println ("Tests directory should exist!")
+	return false
+;
+
+contents = test_file.files ()
+
+if contents.contains (object from "test_directory.fd", isEqual_String_String).isfalse ()
+#if contents.contains (object from "test_directory.fd", null).isfalse ()
+	io.println ("test_directory.fd wasn't found!")
+	return false
+;

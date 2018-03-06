@@ -1,0 +1,9 @@
+include "stdio.fd"
+include "stdsystem.fd"
+
+c0 = sys.clock ()
+c1 = sys.clock ()
+
+io.println (c0)
+io.println (c1)
+io.println (c1.sub (c0))

@@ -1,0 +1,32 @@
+##
+# ui/window.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of the Feder Standard Library and
+# provides basic functions for displaying windows
+##
+
+namespace ui
+	class Window
+		##
+		# You mustn't call any other function of this class,
+		# before calling this one
+		##
+		Window func new (String title)
+			return this
+		;
+
+		##
+		# This function sets
+		##
+		func setPosition (int32 x, int32 y)
+		;
+		
+		func setPosition (math.Vector2n32 pos)
+			setPosition (pos.x0, pos.x1)
+		;
+
+		func setSize (int32 width, int32 height)
+		;
+	;
+;

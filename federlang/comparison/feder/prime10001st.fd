@@ -1,0 +1,31 @@
+include "stdtype.fd"
+include "stdio.fd"
+include "stdmath.fd"
+
+bool func isPrime (uint32[] primes, uint32 num)
+	max_num = math.sqrt (num)
+	len_primes = len (primes)
+	for i = 0, i < len_primes, i++
+		if primes[i] > max_num
+			return true
+		;
+
+		if (num % primes[i]) == 0
+			return false
+		;
+	;
+
+	return true
+;
+
+primes = uint32[0] # (Datatype-) Arrays :)
+append (primes, uint32 from 2, uint32 from 3, uint32 from 5)
+
+for current_num = uint32 from 6, len (primes) < 10001, current_num++
+	if isPrime (primes, current_num)
+		append (primes, current_num)
+	;
+;
+
+io.print ("10001st prime: ")
+io.println (primes[len (primes) - 1])

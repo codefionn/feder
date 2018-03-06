@@ -1,0 +1,257 @@
+\hypertarget{classfeder_1_1SyntaxTreeElement}{}\section{feder.\+Syntax\+Tree\+Element Class Reference}
+\label{classfeder_1_1SyntaxTreeElement}\index{feder.\+Syntax\+Tree\+Element@{feder.\+Syntax\+Tree\+Element}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classfeder_1_1SyntaxTreeElement_aa18b965a3e3f61eb3084f97958e6475b}{Syntax\+Tree\+Element} (\hyperlink{classfeder_1_1FederCompiler}{Feder\+Compiler} compiler0, \hyperlink{classfeder_1_1types_1_1FederBody}{Feder\+Body} body0, int line0)
+\item 
+\hyperlink{classfeder_1_1SyntaxTreeElement_a593f70c74e755db21ce8b8a8d96de0e2}{Syntax\+Tree\+Element} (\hyperlink{classfeder_1_1FederCompiler}{Feder\+Compiler} compiler0, \hyperlink{classfeder_1_1types_1_1FederBody}{Feder\+Body} body0, int line0, List$<$ String $>$ tokens0, List$<$ String $>$ strings\+Of\+Tokens0)
+\item 
+int \hyperlink{classfeder_1_1SyntaxTreeElement_a8b1d25adc7f3172a3901ce8e7bbbe4b4}{contains\+Comma\+In\+Current\+Scope} ()
+\item 
+\hyperlink{classfeder_1_1SyntaxTreeElement}{Syntax\+Tree\+Element} \hyperlink{classfeder_1_1SyntaxTreeElement_af872b6914a108058f01bbb8bf26a5c51}{get\+Main} ()
+\item 
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a68fcc8ceece002604df7be1f885ed4ab}\label{classfeder_1_1SyntaxTreeElement_a68fcc8ceece002604df7be1f885ed4ab}} 
+boolean {\bfseries is\+Assignment\+Operator\+In\+Current\+Scope} ()
+\item 
+String\+Builder \hyperlink{classfeder_1_1SyntaxTreeElement_ad0ea3bbe00ba7d3598fce939efef67de}{compile} ()
+\item 
+\hyperlink{interfacefeder_1_1types_1_1FederArguments}{Feder\+Arguments} \hyperlink{classfeder_1_1SyntaxTreeElement_a7d52c996d50eaa21099e6d745ac3e5ff}{get\+Function\+From\+Binding} (\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} binding, String name, List$<$ \hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} $>$ classes, boolean allow\+Parent)
+\item 
+\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} \hyperlink{classfeder_1_1SyntaxTreeElement_abb5559bc82f686020d3479f9b3fde116}{get\+From\+Binding} (\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} binding, String name, boolean allow\+Parent)
+\item 
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_af39968e65d469770c8e32504b2cbe456}\label{classfeder_1_1SyntaxTreeElement_af39968e65d469770c8e32504b2cbe456}} 
+\hyperlink{classfeder_1_1SyntaxTreeElement}{Syntax\+Tree\+Element} {\bfseries new\+Branch\+At} (int index)
+\item 
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a869f9c4a0922f75fbb67b0e32d72993c}\label{classfeder_1_1SyntaxTreeElement_a869f9c4a0922f75fbb67b0e32d72993c}} 
+void {\bfseries adjust\+Toke\+Index\+For\+Error} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classfeder_1_1types_1_1FederBody}{Feder\+Body} \hyperlink{classfeder_1_1SyntaxTreeElement_ab51b13755de9c3b80a8efc80623a0984}{body}
+\item 
+List$<$ String $>$ \hyperlink{classfeder_1_1SyntaxTreeElement_a182c15de3f81dc29277f2f0ed0cdbc75}{tokens}
+\item 
+List$<$ String $>$ \hyperlink{classfeder_1_1SyntaxTreeElement_af2b1da7d86435877aeaaa596757c9024}{strings\+Of\+Tokens}
+\item 
+int \hyperlink{classfeder_1_1SyntaxTreeElement_a981531bca4fc8278733070a75f527c2f}{line}
+\item 
+boolean \hyperlink{classfeder_1_1SyntaxTreeElement_a7663d58a44d59cc8387a2450f3711861}{is\+Main} = false
+\item 
+boolean \hyperlink{classfeder_1_1SyntaxTreeElement_acbef29db75b411ac807d29f771f713bd}{is\+Global} = false
+\item 
+\hyperlink{classfeder_1_1SyntaxTreeElement}{Syntax\+Tree\+Element} \hyperlink{classfeder_1_1SyntaxTreeElement_a2579fc657b1d11be61366cb13f0469f0}{parent} = null
+\item 
+\hyperlink{classfeder_1_1SyntaxTreeElement}{Syntax\+Tree\+Element} \hyperlink{classfeder_1_1SyntaxTreeElement_a4d6ca5319ab4dc3d6d79acd164fb9b23}{current\+In\+Use} = null
+\item 
+List$<$ \hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} $>$ \hyperlink{classfeder_1_1SyntaxTreeElement_ac46377f158537e18b24d6cbe149b22e2}{returned\+Classes} = new Linked\+List$<$$>$()
+\item 
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a11aeec41d48a2f634ffb6d40c3efdfba}\label{classfeder_1_1SyntaxTreeElement_a11aeec41d48a2f634ffb6d40c3efdfba}} 
+\hyperlink{classfeder_1_1types_1_1FederObject}{Feder\+Object} {\bfseries returned\+Object} = null
+\item 
+List$<$ String $>$ \hyperlink{classfeder_1_1SyntaxTreeElement_ab3e165455e8db28790bf4d4ccb17029e}{results\+\_\+list} = new Linked\+List$<$$>$()
+\item 
+\hyperlink{classfeder_1_1FederCompiler}{Feder\+Compiler} \hyperlink{classfeder_1_1SyntaxTreeElement_a8283f000200264146ea9786411a81f6c}{compiler}
+\item 
+int \hyperlink{classfeder_1_1SyntaxTreeElement_a5d5267b1145b143376dbc787a9ddb076}{index\+Token}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The heart of the Java \hyperlink{classfeder_1_1Feder}{Feder} compiler (j\+FC or jfederc). A syntax tree element can split itself if needed.
+
+\begin{DoxyAuthor}{Author}
+Fionn Langhans 
+\end{DoxyAuthor}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_aa18b965a3e3f61eb3084f97958e6475b}\label{classfeder_1_1SyntaxTreeElement_aa18b965a3e3f61eb3084f97958e6475b}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!Syntax\+Tree\+Element@{Syntax\+Tree\+Element}}
+\index{Syntax\+Tree\+Element@{Syntax\+Tree\+Element}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{Syntax\+Tree\+Element()}{SyntaxTreeElement()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily feder.\+Syntax\+Tree\+Element.\+Syntax\+Tree\+Element (\begin{DoxyParamCaption}\item[{\hyperlink{classfeder_1_1FederCompiler}{Feder\+Compiler}}]{compiler0,  }\item[{\hyperlink{classfeder_1_1types_1_1FederBody}{Feder\+Body}}]{body0,  }\item[{int}]{line0 }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em compiler0} & The compiler instance to use \\
+\hline
+{\em body0} & The current body of the current compiler instance \\
+\hline
+{\em line0} & The current line number in the source code \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a593f70c74e755db21ce8b8a8d96de0e2}\label{classfeder_1_1SyntaxTreeElement_a593f70c74e755db21ce8b8a8d96de0e2}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!Syntax\+Tree\+Element@{Syntax\+Tree\+Element}}
+\index{Syntax\+Tree\+Element@{Syntax\+Tree\+Element}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{Syntax\+Tree\+Element()}{SyntaxTreeElement()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily feder.\+Syntax\+Tree\+Element.\+Syntax\+Tree\+Element (\begin{DoxyParamCaption}\item[{\hyperlink{classfeder_1_1FederCompiler}{Feder\+Compiler}}]{compiler0,  }\item[{\hyperlink{classfeder_1_1types_1_1FederBody}{Feder\+Body}}]{body0,  }\item[{int}]{line0,  }\item[{List$<$ String $>$}]{tokens0,  }\item[{List$<$ String $>$}]{strings\+Of\+Tokens0 }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em compiler0} & The compiler instance to use \\
+\hline
+{\em body0} & The current body of the current compiler instance \\
+\hline
+{\em line0} & The current line number in the source code \\
+\hline
+{\em tokens0} & Tokens (keys) to analyze and compile \\
+\hline
+{\em strings\+Of\+Tokens0} & Values of the tokens, which are equal to the ones used in the source code \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_ad0ea3bbe00ba7d3598fce939efef67de}\label{classfeder_1_1SyntaxTreeElement_ad0ea3bbe00ba7d3598fce939efef67de}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!compile@{compile}}
+\index{compile@{compile}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{compile()}{compile()}}
+{\footnotesize\ttfamily String\+Builder feder.\+Syntax\+Tree\+Element.\+compile (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Throws error if it doesn\textquotesingle{}t want your input
+
+\begin{DoxyReturn}{Returns}
+Returns code for the compile file \char`\"{}$\ast$.\+c\char`\"{}, header file \char`\"{}$\ast$.\+h\char`\"{} or main method 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a8b1d25adc7f3172a3901ce8e7bbbe4b4}\label{classfeder_1_1SyntaxTreeElement_a8b1d25adc7f3172a3901ce8e7bbbe4b4}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!contains\+Comma\+In\+Current\+Scope@{contains\+Comma\+In\+Current\+Scope}}
+\index{contains\+Comma\+In\+Current\+Scope@{contains\+Comma\+In\+Current\+Scope}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{contains\+Comma\+In\+Current\+Scope()}{containsCommaInCurrentScope()}}
+{\footnotesize\ttfamily int feder.\+Syntax\+Tree\+Element.\+contains\+Comma\+In\+Current\+Scope (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+Returns true if the current scope (tokens between \textquotesingle{}(\textquotesingle{} and \textquotesingle{})\textquotesingle{} are ignored) contains a comma 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_abb5559bc82f686020d3479f9b3fde116}\label{classfeder_1_1SyntaxTreeElement_abb5559bc82f686020d3479f9b3fde116}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!get\+From\+Binding@{get\+From\+Binding}}
+\index{get\+From\+Binding@{get\+From\+Binding}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{get\+From\+Binding()}{getFromBinding()}}
+{\footnotesize\ttfamily \hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} feder.\+Syntax\+Tree\+Element.\+get\+From\+Binding (\begin{DoxyParamCaption}\item[{\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding}}]{binding,  }\item[{String}]{name,  }\item[{boolean}]{allow\+Parent }\end{DoxyParamCaption})}
+
+This function tries to return a binding with the name \textquotesingle{}name\textquotesingle{}
+
+
+\begin{DoxyParams}{Parameters}
+{\em binding} & \\
+\hline
+{\em name} & \\
+\hline
+{\em allow\+Parent} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the found binding. If nothing has been discovered, null is returned by this function. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a7d52c996d50eaa21099e6d745ac3e5ff}\label{classfeder_1_1SyntaxTreeElement_a7d52c996d50eaa21099e6d745ac3e5ff}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!get\+Function\+From\+Binding@{get\+Function\+From\+Binding}}
+\index{get\+Function\+From\+Binding@{get\+Function\+From\+Binding}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{get\+Function\+From\+Binding()}{getFunctionFromBinding()}}
+{\footnotesize\ttfamily \hyperlink{interfacefeder_1_1types_1_1FederArguments}{Feder\+Arguments} feder.\+Syntax\+Tree\+Element.\+get\+Function\+From\+Binding (\begin{DoxyParamCaption}\item[{\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding}}]{binding,  }\item[{String}]{name,  }\item[{List$<$ \hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding} $>$}]{classes,  }\item[{boolean}]{allow\+Parent }\end{DoxyParamCaption})}
+
+This method tries to return a function with the return type \textquotesingle{}binding\textquotesingle{}, the name \textquotesingle{}name and with the arguments \textquotesingle{}classes\textquotesingle{}
+
+
+\begin{DoxyParams}{Parameters}
+{\em binding} & \\
+\hline
+{\em name} & \\
+\hline
+{\em classes} & \\
+\hline
+{\em allow\+Parent} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns the found function. If nothing has been found, this function returns null. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_af872b6914a108058f01bbb8bf26a5c51}\label{classfeder_1_1SyntaxTreeElement_af872b6914a108058f01bbb8bf26a5c51}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!get\+Main@{get\+Main}}
+\index{get\+Main@{get\+Main}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{get\+Main()}{getMain()}}
+{\footnotesize\ttfamily \hyperlink{classfeder_1_1SyntaxTreeElement}{Syntax\+Tree\+Element} feder.\+Syntax\+Tree\+Element.\+get\+Main (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyReturn}{Returns}
+Returns the main syntax tree element (the first one, on which all other branches depend) 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_ab51b13755de9c3b80a8efc80623a0984}\label{classfeder_1_1SyntaxTreeElement_ab51b13755de9c3b80a8efc80623a0984}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!body@{body}}
+\index{body@{body}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{body}{body}}
+{\footnotesize\ttfamily \hyperlink{classfeder_1_1types_1_1FederBody}{Feder\+Body} feder.\+Syntax\+Tree\+Element.\+body}
+
+Current body \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a8283f000200264146ea9786411a81f6c}\label{classfeder_1_1SyntaxTreeElement_a8283f000200264146ea9786411a81f6c}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!compiler@{compiler}}
+\index{compiler@{compiler}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{compiler}{compiler}}
+{\footnotesize\ttfamily \hyperlink{classfeder_1_1FederCompiler}{Feder\+Compiler} feder.\+Syntax\+Tree\+Element.\+compiler}
+
+The compiler instance used \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a4d6ca5319ab4dc3d6d79acd164fb9b23}\label{classfeder_1_1SyntaxTreeElement_a4d6ca5319ab4dc3d6d79acd164fb9b23}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!current\+In\+Use@{current\+In\+Use}}
+\index{current\+In\+Use@{current\+In\+Use}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{current\+In\+Use}{currentInUse}}
+{\footnotesize\ttfamily \hyperlink{classfeder_1_1SyntaxTreeElement}{Syntax\+Tree\+Element} feder.\+Syntax\+Tree\+Element.\+current\+In\+Use = null}
+
+The branch currently in use (not reliable) \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a5d5267b1145b143376dbc787a9ddb076}\label{classfeder_1_1SyntaxTreeElement_a5d5267b1145b143376dbc787a9ddb076}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!index\+Token@{index\+Token}}
+\index{index\+Token@{index\+Token}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{index\+Token}{indexToken}}
+{\footnotesize\ttfamily int feder.\+Syntax\+Tree\+Element.\+index\+Token}
+
+Current read position in the list \textquotesingle{}tokens\textquotesingle{}$\vert$\textquotesingle{}strings\+Of\+Tokens\textquotesingle{} \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_acbef29db75b411ac807d29f771f713bd}\label{classfeder_1_1SyntaxTreeElement_acbef29db75b411ac807d29f771f713bd}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!is\+Global@{is\+Global}}
+\index{is\+Global@{is\+Global}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{is\+Global}{isGlobal}}
+{\footnotesize\ttfamily boolean feder.\+Syntax\+Tree\+Element.\+is\+Global = false}
+
+This boolean is true if the analyzed execution should be \textquotesingle{}global\textquotesingle{} (only value declarations allowed) \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a7663d58a44d59cc8387a2450f3711861}\label{classfeder_1_1SyntaxTreeElement_a7663d58a44d59cc8387a2450f3711861}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!is\+Main@{is\+Main}}
+\index{is\+Main@{is\+Main}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{is\+Main}{isMain}}
+{\footnotesize\ttfamily boolean feder.\+Syntax\+Tree\+Element.\+is\+Main = false}
+
+Main == true\+: Able to bind objects \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a981531bca4fc8278733070a75f527c2f}\label{classfeder_1_1SyntaxTreeElement_a981531bca4fc8278733070a75f527c2f}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!line@{line}}
+\index{line@{line}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{line}{line}}
+{\footnotesize\ttfamily int feder.\+Syntax\+Tree\+Element.\+line}
+
+Current line number \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a2579fc657b1d11be61366cb13f0469f0}\label{classfeder_1_1SyntaxTreeElement_a2579fc657b1d11be61366cb13f0469f0}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!parent@{parent}}
+\index{parent@{parent}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{parent}{parent}}
+{\footnotesize\ttfamily \hyperlink{classfeder_1_1SyntaxTreeElement}{Syntax\+Tree\+Element} feder.\+Syntax\+Tree\+Element.\+parent = null}
+
+The parent branch of this one \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_ab3e165455e8db28790bf4d4ccb17029e}\label{classfeder_1_1SyntaxTreeElement_ab3e165455e8db28790bf4d4ccb17029e}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!results\+\_\+list@{results\+\_\+list}}
+\index{results\+\_\+list@{results\+\_\+list}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{results\+\_\+list}{results\_list}}
+{\footnotesize\ttfamily List$<$String$>$ feder.\+Syntax\+Tree\+Element.\+results\+\_\+list = new Linked\+List$<$$>$()}
+
+This is only for argument like source code (with \textquotesingle{},\textquotesingle{}s) \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_ac46377f158537e18b24d6cbe149b22e2}\label{classfeder_1_1SyntaxTreeElement_ac46377f158537e18b24d6cbe149b22e2}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!returned\+Classes@{returned\+Classes}}
+\index{returned\+Classes@{returned\+Classes}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{returned\+Classes}{returnedClasses}}
+{\footnotesize\ttfamily List$<$\hyperlink{classfeder_1_1types_1_1FederBinding}{Feder\+Binding}$>$ feder.\+Syntax\+Tree\+Element.\+returned\+Classes = new Linked\+List$<$$>$()}
+
+The results of the source code (like classes, interfaces, functions, arrays) \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_af2b1da7d86435877aeaaa596757c9024}\label{classfeder_1_1SyntaxTreeElement_af2b1da7d86435877aeaaa596757c9024}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!strings\+Of\+Tokens@{strings\+Of\+Tokens}}
+\index{strings\+Of\+Tokens@{strings\+Of\+Tokens}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{strings\+Of\+Tokens}{stringsOfTokens}}
+{\footnotesize\ttfamily List$<$String$>$ feder.\+Syntax\+Tree\+Element.\+strings\+Of\+Tokens}
+
+The real thing used by the source code \mbox{\Hypertarget{classfeder_1_1SyntaxTreeElement_a182c15de3f81dc29277f2f0ed0cdbc75}\label{classfeder_1_1SyntaxTreeElement_a182c15de3f81dc29277f2f0ed0cdbc75}} 
+\index{feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}!tokens@{tokens}}
+\index{tokens@{tokens}!feder\+::\+Syntax\+Tree\+Element@{feder\+::\+Syntax\+Tree\+Element}}
+\subsubsection{\texorpdfstring{tokens}{tokens}}
+{\footnotesize\ttfamily List$<$String$>$ feder.\+Syntax\+Tree\+Element.\+tokens}
+
+Tokens describing the contents of strings\+Of\+Tokens 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/feder/Syntax\+Tree\+Element.\+java\end{DoxyCompactItemize}

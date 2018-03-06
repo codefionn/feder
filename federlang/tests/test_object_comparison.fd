@@ -1,0 +1,20 @@
+include "stdio.fd"
+
+object obj = object
+
+if obj != obj
+	io.println ("Test 01 failed")
+	return false
+;
+
+if obj == null
+	io.println ("Test 02 failed")
+	return false
+;
+
+if obj != null && obj == obj
+	return true
+;
+
+io.println ("Test 03 failed")
+return false

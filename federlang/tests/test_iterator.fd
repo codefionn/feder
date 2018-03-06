@@ -1,0 +1,77 @@
+include "stdtype.fd"
+include "stdio.fd"
+
+l = List
+i = 0
+for i < 10, i++
+	l.add (object from Integer32.set (i))
+;
+
+a = Array
+i = 0
+for i < 10, i++
+	a.add (object from Integer32.set (i))
+;
+
+if l == null
+	io.err.println ("Error l == null")
+	return false
+;
+
+if a == null
+	io.err.println ("Error: a == null")
+	return false
+;
+
+i = 0
+itl = l.createIterator ()
+ita = a.createIterator ()
+
+if itl.getList () == null
+	io.err.println ("Error: itl.getList () == null")
+	return false
+;
+
+if itl.getArray () != null
+	io.err.println ("Error: itl.getList () != null")
+	return false
+;
+
+if ita.getList () != null
+	io.err.println ("Error: ita.getList () != null")
+	return false
+;
+
+if ita.getArray () == null
+	io.err.println ("Error: ita.getArray () == null")
+	return false
+;
+
+while i < 10
+	if itl.hasNext ().isfalse ()
+		io.err.println ("Error: itl should have next")
+		return false
+	;
+
+	if ita.hasNext ().isfalse ()
+		io.err.println ("Error: ita should have next")
+		return false
+	;
+
+	itl.next ()
+	ita.next ()
+
+	i.addto (1)
+;
+
+if itl.hasNext ()
+	io.err.println ("Error: itl should not have next")
+	return false
+;
+
+if ita.hasNext ()
+	io.err.println ("Error: ita should not have next")
+	return false
+;
+
+return true

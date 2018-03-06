@@ -1,0 +1,344 @@
+include "stdc.fd"
+include "stdtype.fd"
+
+namespace h_intern_io
+	:#include <stdio.h>
+	# Include directories
+::if POSIX
+	:#include <dirent.h>
+	:#include <unistd.h> // rmdir
+	:#include <sys/stat.h>
+::elif WINDOWS
+	:#include <windows.h>
+	:#include <tchar.h>
+	:#include <strsafe.h>
+::fi
+;
+
+##
+# This function tries to create a directory at path.
+#
+# Returns false if the directory could not be created,
+# true, if everything is/was alright.
+##
+bool func mkdir (String path)
+	:char * cpath = fdStringToCString (federobj_path);
+::if POSIX
+	:if (mkdir (cpath, 0755) == -1) {
+		:free (cpath);
+		return false
+	:}
+::elif WINDOWS
+	:if (CreateDirectory(cpath, NULL) || GetLastError() == ERROR_ALREADY_EXISTS) {
+		:free (cpath);
+		return false
+	:}
+::fi
+
+	:free (cpath);
+	return true
+;
+
+class dir
+::if POSIX
+	:DIR * val0;
+	:char * val1;
+::elif WINDOWS
+	:TCHAR * val0;
+::fi
+
+	func init
+		:(*federobj_this)->val0 = NULL;
+::if POSIX
+		:(*federobj_this)->val1 = NULL;
+::fi
+	;
+
+	bool func isOpen
+		:if (!(*federobj_this)->val0) {
+			return false
+		:}
+		: else {
+			return true
+		:}
+	;
+
+	bool func open (String path)
+
+		:char * cString = fdStringToCString (federobj_path);
+
+::if POSIX
+		:(*federobj_this)->val0 = opendir (cString);
+		:if (!(*federobj_this)->val0) {
+			:free (cString);
+		:} else {
+			:(*federobj_this)->val1 = cString;
+		:}
+::elif WINDOWS
+		:TCHAR Current_dir [MAX_PATH];
+		:if (GetCurrentDirectory (MAX_PATH, Current_dir)) {
+			:if (!(*federobj_this)->val0) {
+				:(*federobj_this)->val0 = (TCHAR*) malloc (sizeof (TCHAR) * MAX_PATH);
+			:}
+			
+			:StringCchPrintf ((*federobj_this)->val0, MAX_PATH, cString);
+			:if (SetCurrentDirectory ((*federobj_this)->val0)) {
+				:SetCurrentDirectory (Current_dir);
+			:}
+			:else {
+				:free ((*federobj_this)->val0);
+				:(*federobj_this)->val0 = NULL;
+			:}
+		:}
+
+		:free (cString);
+::fi
+			
+		return isOpen ()
+	;
+
+	##
+	# This function Lists all files/directories, which are in the selected
+	# directory
+	#
+	# If an error occured, this function returns null, otherwise a List filled
+	# with objects, which have String as their type.
+	##
+	List func files
+		if isOpen ().isfalse ()
+			return null
+		;
+
+		result = List
+
+		String dir_res
+
+::if POSIX
+		:struct dirent *entry;
+		:while ((entry = readdir ((*federobj_this)->val0)) != NULL) {
+			:if (federobj_dir_res) fdRemoveObject ((fdobject*) federobj_dir_res);
+			:federobj_dir_res = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (entry->d_name));
+			result.add (object from dir_res)
+		:}
+		:rewinddir ((*federobj_this)->val0);
+
+::elif WINDOWS
+		:WIN32_FIND_DATA ffd;
+		:HANDLE hFind = INVALID_HANDLE_VALUE;
+		:StringCchCat ((*federobj_this)->val0, MAX_PATH, TEXT("\\*"));
+
+		:hFind = FindFirstFile ((*federobj_this)->val0, &ffd);
+		:if (hFind == INVALID_HANDLE_VALUE) {
+			# Ohhh, an error occured
+			return null
+		:}
+
+		:do {
+			:if (federobj_dir_res) fdRemoveObject ((fdobject*) federobj_dir_res);
+			:federobj_dir_res = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (ffd.cFileName));
+			result.add (object from dir_res)
+		:} while (FindNextFile (hFind, &ffd) != 0);
+		
+		:FindClose (hFind);
+::fi
+
+		return result
+	;
+
+	func close
+		:if ((*federobj_this)->val0) {
+::if POSIX
+			:closedir ((*federobj_this)->val0);
+			:free ((*federobj_this)->val1);
+			:(*federobj_this)->val1 = NULL;
+::elif WINDOWS
+			:free ((*federobj_this)->val0);
+::fi
+			:(*federobj_this)->val0 = NULL;
+		:}
+	;
+
+	func del
+		close ()
+	;
+
+	##
+	# This function tries to remove the directory
+	#
+	# Returns true if the directry has been removed, false if an
+	# error occured. This function closes the directory, even if
+	# deleting the directory fails.
+	##
+	bool func rm
+		if !isOpen()
+			return false
+		;
+
+::if POSIX
+		:if (rmdir((*federobj_this)->val1) == -1) {
+			close ()
+			return false
+		:}
+::elif WINDOWS
+		:if (!RemoveDirectory ((*federobj_this)->val0)) {
+			close()
+			return false
+		:}
+::fi
+
+		close ()
+		return true
+	;
+;
+
+# File operations
+# This is rather easy, because its a C Standard
+class file
+	:FILE * val0;
+	int32 file_length
+	
+	func init
+		file_length = 0
+		:(*federobj_this)->val0 = NULL;
+	;
+
+	bool func isOpen
+		:if (!(*federobj_this)->val0) {
+			return false
+		:} else {
+			return true
+		:}
+	;
+
+	bool func rereadFileLength
+		if isOpen ().isfalse ()
+			return false
+		;
+		
+		:fpos_t * current_pos = (fpos_t*) malloc (sizeof (fpos_t));
+		:if (fgetpos ((*federobj_this)->val0, current_pos) != 0) {
+		:	free (current_pos);
+			return false
+		:}
+
+		:if (fseek ((*federobj_this)->val0, 0, SEEK_END) != 0) {
+		:	free (current_pos);
+			return false
+		:}
+		
+		:long pos_end = ftell ((*federobj_this)->val0);
+		:(*federobj_this)->federobj_file_length = (int) pos_end;
+		:fsetpos ((*federobj_this)->val0, current_pos);
+		:free (current_pos);
+
+		file_length++
+		
+		return true
+	;
+
+	int32 func getpos
+		if isOpen ().isfalse ()
+			return -1
+		;
+	
+		int32 result
+		:federobj_result = (fdc_int32) ftell ((*federobj_this)->val0);
+		
+		return result
+	;
+
+	bool func finished
+		if isOpen ().isfalse ()
+			return true
+		;
+
+		return isEqual (file_length.sub (1), getpos ())
+	;
+
+	##
+	# Reads the next byte of the file.
+	# If a file has not been opened, the function returns null.
+	# Function can also return null, if the end of the file has been reached.
+	##
+	byte func readByte
+		if isOpen ().isfalse ()
+			byte eof
+			:federobj_eof = '\0';
+			return eof # Nothing to read anymore
+		;
+
+		if isEqual (file_length.sub (1), getpos ())
+			byte eof
+			:federobj_eof = '\0';
+			return eof # Nothing to read anymore
+		;
+		
+		byte result
+		:federobj_result = fgetc ((*federobj_this)->val0);
+		
+		return result
+	;
+
+	##
+	# Writes the byte b to file. If file is not open, this function returns
+	# false, if it is open and the byte was succesfully written to the file,
+	# this function returns true.
+	##
+	bool func write (byte b)
+		if isOpen ().isfalse ()
+			return false
+		;
+		
+		:fprintf ((*federobj_this)->val0, "%c", (char) federobj_b);
+		return true
+	;
+
+	##
+	# The following method opens a file at "path",
+	# operation is the same as the ones in C's fopen:
+	# r - read the file
+	# w - write to file
+	# a - append at file
+	# r+ - read & write file, file must exist
+	# w+ - read & write file, file gets overwritten if existing, created if not.
+	# a+ - read & append at file
+	#
+	# Returns false if file could not be opened or created, true if
+	# this function succeeded. Can also return false if a file is already opened
+	##
+	bool func open (String path, String operation)
+		if isOpen ()
+			return false
+		;
+		
+		:char * cString = fdStringToCString (federobj_path);
+
+		:char * cString_op = fdStringToCString (federobj_operation);
+::if WINDOWS
+		:fopen_s (&(*federobj_this)->val0, cString, cString_op);
+::else
+		:(*federobj_this)->val0 = fopen (cString, cString_op);
+::fi
+
+		:free (cString);
+		:free (cString_op);
+
+		if isOpen ()
+			rereadFileLength ()
+			return true
+		;
+		
+		return false
+	;
+
+	func close
+		:if ((*federobj_this)->val0) {
+		:	fclose ((*federobj_this)->val0);
+		:	(*federobj_this)->val0 = NULL;
+		:}
+	;
+
+	func del
+		close ()
+	;
+;

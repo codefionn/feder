@@ -1,0 +1,111 @@
+##
+# types/double.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of the Feder Standard Library and
+# provides a double like type
+##
+
+include "stdc.fd"
+include "types/bool.fd"
+include "types/int.fd"
+
+type "double" double
+	func addto (double n)
+		:*federobj_this += federobj_n;
+	;
+
+	func subto (double n)
+		:*federobj_this -= federobj_n;
+	;
+
+	func multto (double n)
+		:*federobj_this *= federobj_n;
+	;
+
+	func divto (double n)
+		:*federobj_this /= federobj_n;
+	;
+
+	
+	double func add (double n)
+		double result = this
+		result.addto (n)
+		return result
+	;
+
+	double func sub (double n)
+		double result = this
+		result.subto (n)
+		return result
+	;
+
+	double func mult (double n)
+		double result = this
+		result.multto (n)
+		return result
+	;
+
+	double func div (double n)
+		double result = this
+		result.divto (n)
+		return result
+	;
+
+	double func makeNegative
+		:if (*federobj_this > 0) {
+			:*federobj_this *= -1;
+		:}
+
+		return this
+	;
+;
+
+namespace h_intern_double
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_double (fdtypearray* ar, double n);
+;
+
+namespace c_intern_double
+	:fdtypearray*
+	:fdAppendToTypeArray_fdc_double (fdtypearray* ar, double n) {
+		:return fdAppendToTypeArray (ar, (char*) &n);
+	:}
+;
+
+::rule buildin double "(fdc_double) {0}" double
+
+# Feder ::rules
+::rule pattern + "{0} + {1}" double double double
+::rule pattern - "{0} - {1}" double double double
+::rule pattern * "{0} * {1}" double double double
+::rule pattern / "{0} / {1}" double double double
+
+::rule pattern - "-{1}" double null double
+
+::rule pattern += "{0} += {1}" null double double
+::rule pattern -= "{0} -= {1}" null double double
+::rule pattern *= "{0} *= {1}" null double double
+::rule pattern /= "{0} /= {1}" null double double
+
+::rule pattern > "{0} > {1}" bool double double
+::rule pattern < "{0} < {1}" bool double double
+::rule pattern >= "{0} >= {1}" bool double double
+::rule pattern <= "{0} <= {1}" bool double double
+::rule pattern == "{0} == {1}" bool double double
+::rule pattern != "{0} != {1}" bool double double
+
+# Rules for int32 and double
+::rule pattern > "{0} > {1}" bool int32 double
+::rule pattern < "{0} < {1}" bool int32 double
+::rule pattern >= "{0} >= {1}" bool int32 double
+::rule pattern <= "{0} <= {1}" bool int32 double
+::rule pattern == "{0} == {1}" bool int32 double
+::rule pattern != "{0} != {1}" bool int32 double
+
+::rule pattern > "{0} > {1}" bool double int32
+::rule pattern < "{0} < {1}" bool double int32
+::rule pattern >= "{0} >= {1}" bool double int32
+::rule pattern <= "{0} <= {1}" bool double int32
+::rule pattern == "{0} == {1}" bool double int32
+::rule pattern != "{0} != {1}" bool double int32

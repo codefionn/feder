@@ -1,0 +1,24 @@
+include "stdio.fd"
+
+l = List
+
+if l.length () != 0
+	io.println ("Test 01 failed")
+	return false
+;
+
+l.add (object from Integer32.set (1))
+
+if l.length () != 1
+	io.println ("Test 02 failed")
+	return false
+;
+
+l.add (object from Integer32.set (2))
+
+if l.length () != 2
+	io.println ("Test 03 failed")
+	return false
+;
+
+return true

@@ -1,0 +1,21 @@
+multiply.txt
+created by Fionn Langhans <fionn.langhans@gmail.com>
+--------------------------------------------------------------------------------
+The program "multiply" multiplies two variables, which were previously defined
+as objects (which could prevent an intelligent compiler from multiplying the two
+numbers at compile time). After mutliplying the two objects, the program should
+save the result and print it to the console.
+
+The program multiplies the two objects 100 times, so that the environment of the
+programming language doesn't have a big impact on the time, the "program only"
+consumes.
+
+Pseudo-Code:
+
+repeat 100 times
+	n0 = 5
+	n1 = 7
+;
+
+result = n0 * n1
+printToConsole (result)

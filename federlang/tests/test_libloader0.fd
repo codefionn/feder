@@ -1,0 +1,3 @@
+# The variable n will be set in the library loader
+include "stdtype.fd"
+global n = 1

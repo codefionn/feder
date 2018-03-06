@@ -1,0 +1,76 @@
+##
+# types/bool.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of the Feder Standard Library and
+# provides a boolean like type
+##
+
+include "stdc.fd"
+
+namespace h_intern_types_bool_include
+	:#include <stdbool.h> // A standard C header
+;
+
+type "bool" bool
+	func set (bool val)
+		:*federobj_this = federobj_val;
+	;
+
+	bool func isfalse
+		:return !(*federobj_this);
+	;
+;
+
+# Feder rules
+::rule struct "conditional_statement_bool" "{0}"
+##::rule buildin "compare_objects" "fdCompareObjects ((fdobject*) {0} , (fdobject*) {1})" bool
+::rule buildin "bool_isnull" "fdIsNull ((fdobject*) {0})" bool
+::rule func "bool_isfalse" bool.isfalse##
+
+::rule pattern == "fdCompareObjects ((fdobject*) {0}, (fdobject*) {1})" bool !class !class
+::rule pattern != "!fdCompareObjects ((fdobject*) {0}, (fdobject*) {1})" bool !class !class
+::rule pattern == "fdIsNull((fdobject*) {0})" bool !class null
+::rule pattern != "!fdIsNull((fdobject*) {0})" bool !class null
+
+::rule pattern == "{0} == {1}" bool !interface !interface
+::rule pattern != "{0} != {1}" bool !interface !interface
+::rule pattern == "{0} == {1}" bool !interface null
+::rule pattern != "{0} != {1}" bool !interface null
+
+::rule pattern == "fdCompareObjects ((fdobject*) {0}, (fdobject*) {1})" bool !array !array
+::rule pattern != "fdCompareObjects ((fdobject*) {0}, (fdobject*) {1})" bool !array !array
+::rule pattern == "fdIsNull((fdobject*) {0})" bool !array null
+::rule pattern != "!fdIsNull((fdobject*) {0})" bool !array null
+
+::rule pattern == "{0} == {1}" bool bool bool
+::rule pattern != "{0} != {1}" bool bool bool
+
+bool interface int_isEqual (object obj0, object obj1)
+
+namespace h_intern_types_bool
+	:fdc_bool
+	:fdIsNull (fdobject * obj);
+
+	:fdc_bool
+	:fdCompareObjects (fdobject * obj0, fdobject * obj1);
+;
+
+namespace c_intern_types_bool
+	:fdc_bool
+	:fdIsNull (fdobject * obj) {
+		:if (!obj) {
+			:return true;
+		:}
+
+		:fdRemoveObject_func (obj);
+		:return false;
+	:}
+
+	:fdc_bool
+	:fdCompareObjects (fdobject * obj0, fdobject * obj1) {
+		:return obj0 == obj1;
+	:}
+;
+
+::rule buildin bool "{0}" bool

@@ -1,0 +1,140 @@
+##
+# test.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file tests the performance (the amount of consumed time)
+# of severel examples in some languages (C, Feder, Python, Java)
+##
+
+include "stdtype.fd"
+include "stdio.fd"
+include "stdsystem.fd"
+
+list_build_dirs = List
+list_build_dirs.add (object from "comparison/go/build")
+list_build_dirs.add (object from "comparison/c/build")
+list_build_dirs.add (object from "comparison/feder/build")
+
+it_dirs = list_build_dirs.createIterator()
+while it_dirs.hasNext()
+	path = String from it_dirs.next()
+	if !dir.open (path)
+		mkdir (path)
+	;
+;
+
+startTime = sys.Time.current ()
+
+global toolchain = "cc"
+
+func compile_feder (String name)
+	sys.system ("./jfederc -I base -D comparison/feder/build -O ".add (name).add (" comparison/feder/").add (name).add (".fd --toolchain ").add (toolchain))
+;
+
+func compile_java (String name)
+	sys.system ("javac -classpath comparison/java -source 8 comparison/java/".add (name).add (".java"))
+;
+
+func compile_c (String name)
+	sys.system (toolchain.add (" comparison/c/").add (name).add (".c -O2 -lm -o comparison/c/build/").add (name))
+;
+
+func compile_go (String name)
+	sys.system ("go build -o comparison/go/build/".add (name).add (" comparison/go/").add (name).add (".go"))
+;
+
+func compile (String name)
+	compile_feder (name)
+	compile_c (name)
+	compile_go (name)
+	name.at (0).toUpper ()
+	compile_java (name)
+;
+
+int32 func run_feder (String name)
+	return sys.system ("./comparison/feder/build/".add (name).add (" > /dev/null"))
+;
+
+int32 func run_java (String name)
+	return sys.system ("java -cp comparison/java ".add (name).add (" > /dev/null"))
+;
+
+int32 func run_python (String name)
+	return sys.system ("python comparison/python/".add (name).add (".py").add (" > /dev/null"))
+;
+
+int32 func run_c (String name)
+	return sys.system ("./comparison/c/build/".add (name).add (" > /dev/null"))
+;
+
+int32 func run_go (String name)
+	return sys.system ("./comparison/go/build/".add (name).add (" > /dev/null"))
+;
+
+int32 interface run_test (String name)
+
+double func test_a (int32 amount, String name, run_test fn)
+	if isEqual (fn (name), 0).isfalse ()
+		return (1.0).makeNegative ()
+	;
+
+	deltas = 0.0
+
+	t0 = sys.Time.current ()
+
+	for i = 0, i < amount, i++
+		fn (name)
+	;
+
+	t1 = sys.Time.current ()
+
+	deltas = t1.millisBetween (t0)
+
+	return deltas / (double from amount)
+;
+
+func test (String name, String lang)
+	run_test fn = null
+	if isEqual (lang, "C")
+		fn = run_c
+	else if isEqual (lang, "Go")
+		fn = run_go
+	else if isEqual (lang, "Java")
+		fn = run_java
+	else if isEqual (lang, "Feder")
+		fn = run_feder
+	else if isEqual (lang, "Python")
+		fn = run_python
+	;
+
+	delta = test_a (100, name, fn) 
+	io.println ("Tested ".add (name).add (" written with ").add (lang))
+	io.print ("Program needed ")
+	io.print (delta)
+	io.println (" ms")
+;
+
+func run (String name)
+	io.println ("# Running ".add (name))
+
+	test (name, "C")
+	test (name, "Feder")
+	test (name, "Go")
+	test (name, "Python")
+	name.at (0).toUpper ()
+	test (name, "Java")
+;
+
+compile ("multiply")
+run ("multiply")
+
+compile ("read_readme")
+run ("read_readme")
+
+compile ("prime10001st")
+run ("prime10001st")
+
+endTime = sys.Time.current ()
+io.print ("\nNeeded ")
+io.print (endTime.millisBetween (startTime).div (double from 1000))
+io.println (" seconds for comparing")
