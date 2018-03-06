@@ -522,7 +522,7 @@ public class FederRule {
 		rule |= RULE_FUNCTION;
 		return new FederRule(rule, operator, fun);
 	}
-
+	
 	/**
 	 * ::rule buildin [buildin_name] [pattern] [type]
 	 * [buildin_name] = "int"|"double"|"string"|"char"
@@ -581,9 +581,9 @@ public class FederRule {
 			}
 		}
 		
-		if (binding == null) {
+		/*if (binding == null) {
 			throw new RuntimeException("The current binding isn't a valid one!");
-		}
+		}*/
 
 		int rule = 0;
 		rule |= RULE_BUILDIN;

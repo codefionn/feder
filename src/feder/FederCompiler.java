@@ -472,12 +472,25 @@ public class FederCompiler
 							 * System.out.println("# " + getName() + " | L. "+ elements.size() + " | " +
 							 * ste.returnedClasses.get(0).getName());
 							 */
-							currentBody.compile_file_text.append("fdRemoveObject_func ((fdobject*) ");
+							
+							FederRule ruleRemoveFunc = getApplyableRuleForStruct("remove_func");
+							if (ruleRemoveFunc == null) {
+								throw new RuntimeException("struct rule 'remove_func' doesn't exist!");
+							}
+							
+							//currentBody.compile_file_text.append("fdRemoveObject_func ((fdobject*) ");
+							if (compiled.toString().endsWith(";")) {
+								compiled.replace(compiled.length() - 1,
+								                 compiled.length(), "");
+							}
+
+							compiled = new StringBuilder(ruleRemoveFunc.applyRule(currentBody, compiled.toString()));
+							compiled.append(";");
 						}
 
 						currentBody.compile_file_text.append(compiled.toString());
 
-						if (ste.returnedClasses.size() == 1 && ste.returnedClasses.get(0) != null
+						/*if (ste.returnedClasses.size() == 1 && ste.returnedClasses.get(0) != null
 						        && ste.returnedClasses.get(0) instanceof FederClass
 						        && !((FederClass) ste.returnedClasses.get(0)).isType()) {
 							if (currentBody.compile_file_text.toString().endsWith(";")) {
@@ -486,7 +499,7 @@ public class FederCompiler
 							}
 
 							currentBody.compile_file_text.append(");");
-						}
+						}*/
 
 						currentBody.compile_file_text.append("\n");
 					}

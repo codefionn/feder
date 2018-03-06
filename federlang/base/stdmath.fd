@@ -13,27 +13,26 @@ namespace h_intern_stdmath
 ::use -lm
 
 namespace math
+	::rule buildin func_sqrt "sqrt ({0})" double
+
 	double func sqrt (double n)
-		double result
-		:federobj_result = sqrt (federobj_n);
+		double result = sqrt!(n)
+		#:federobj_result = sqrt (federobj_n);
 		return result
 	;
 
 	int64 func sqrt (int64 n)
-		int64 result
-		:federobj_result = (fdc_int64) sqrt ((double) federobj_n);
+		int64 result = int64 from sqrt!(double from n)
 		return result
 	;
 
 	uint64 func sqrt (uint64 n)
-		uint64 result
-		:federobj_result = (fdc_uint64) sqrt ((double) federobj_n);
+		uint64 result = uint64 from sqrt!(uint64 from n)
 		return result
 	;
 
 	int32 func sqrt (int32 n)
-		int32 result
-		:federobj_result = (fdc_int32) sqrt ((double) federobj_n);
+		int32 result = int32 from sqrt!(double from n)
 		return result
 	;
 

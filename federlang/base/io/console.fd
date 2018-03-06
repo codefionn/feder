@@ -44,6 +44,8 @@ namespace io
 		return result
 	;
 
+	::rule buildin func_printf_str "printf (\"%s\", {0})" null
+
 	# This function "prints" a String to the
 	# current terminal
 	func print (String s)
@@ -53,9 +55,12 @@ namespace io
 		;
 		
 #		:printf ("%s", ((fdc_String*)federobj_s)->cString);
-		:char * achars = fdStringToCString (federobj_s);
-		:printf ("%s", achars);
-		:free (achars);
+		#:char * achars = fdStringToCString (federobj_s);
+		#:printf ("%s", achars);
+		#:free (achars);
+		c.cstring tmp_str = fdStringToCString!(s)
+		printf_str!(tmp_str)
+		free (tmp_str)
 	;
 
 	# This function prints a new line

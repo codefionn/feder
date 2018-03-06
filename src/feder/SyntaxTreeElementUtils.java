@@ -128,8 +128,15 @@ public class SyntaxTreeElementUtils
 			 */
 			if (obj == ignore) {
 				// Ignore
-				compileTo.append(body.inFrontOfSyntax()).append("fdDecreaseUsage ((fdobject*) ")
-				.append(obj.generateCName()).append(");\n");
+				FederRule ruleDecrease = body.getCompiler().getApplyableRuleForStruct("decrease");
+				if (ruleDecrease == null) {
+					throw new RuntimeException("struct rule 'decrease' doesn't exist!");
+				}
+
+				//compileTo.append(body.inFrontOfSyntax()).append("fdDecreaseUsage ((fdobject*) ")
+				//	.append(obj.generateCName()).append(");\n");
+				
+				compileTo.append(body.inFrontOfSyntax()).append(ruleDecrease.applyRule(body, obj.generateCName()));
 				continue;
 			}
 
@@ -138,10 +145,16 @@ public class SyntaxTreeElementUtils
 				compileTo.append(body.inFrontOfSyntax())
 				.append("printf (\"" + pos + ". Removing object " + obj.getName() + "\\n\");\n");
 			}
+			
+			FederRule ruleRemove = body.getCompiler().getApplyableRuleForStruct("remove");
+			if (ruleRemove == null) {
+				throw new RuntimeException("struct rule 'remove' doesn't exist!");
+			}
 
 			// Append source code which removes the selected object
-			compileTo.append(body.inFrontOfSyntax()).append("fdRemoveObject ((fdobject*)").append(obj.generateCName())
-			.append(");\n");
+			//compileTo.append(body.inFrontOfSyntax()).append("fdRemoveObject ((fdobject*)").append(obj.generateCName())
+			//.append(");\n");
+			compileTo.append(body.inFrontOfSyntax()).append(ruleRemove.applyRule(body, obj.generateCName()) + ";\n");
 		}
 	}
 
@@ -168,7 +181,12 @@ public class SyntaxTreeElementUtils
 			if (bind instanceof FederObject) {
 				FederObject obj = (FederObject) bind;
 				if (obj.isGlobal && obj.isGarbagable()) {
-					mainMethod.append("fdRemoveObject ((fdobject*) " + obj.generateCName() + ");\n");
+					FederRule ruleRemove = fmn.getCompiler().getApplyableRuleForStruct("remove");
+					if (ruleRemove == null) {
+						throw new RuntimeException("struct rule 'remove' doesn't exist!");
+					}
+
+					mainMethod.append(ruleRemove.applyRule(fmn, obj.generateCName()) + ";\n");
 				} else if(obj.isGlobal && obj.isDataType()) {
 					mainMethod.append("free (" + obj.generateCNameOnly() + ");\n");
 				}
@@ -385,7 +403,7 @@ public class SyntaxTreeElementUtils
 			//System.out.println();
 			
 			FederRule rule = FederRule.define(currentBody, topasstofunc, ste);
-			compiler.feder_rules.add(0, rule);
+			if (rule != null) compiler.feder_rules.add(0, rule);
 			return new StringBuilder();
 		}
 

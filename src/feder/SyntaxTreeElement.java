@@ -503,7 +503,7 @@ public class SyntaxTreeElement {
 
 				indexToken++;
 				token = tokens.get(indexToken);
-				stoken = tokens.get(indexToken);
+				stoken = stringsOfTokens.get(indexToken);
 
 				FederBinding binding0 = getFromBinding(getfrombinding, stoken, false);
 				if (binding0 == null) {
@@ -926,6 +926,39 @@ public class SyntaxTreeElement {
 		}
 
 		String nextToken = (indexToken < tokens.size() ? tokens.get(indexToken) : "newline");
+		String nextsToken = (indexToken < tokens.size() ? stringsOfTokens.get(indexToken) : "");
+		
+		if (nextsToken.equals("!") && indexToken+1 < tokens.size() && tokens.get(indexToken+1).equals("(")) {
+			// Must be a buildin function call
+			
+			/*if (!isMain) {
+				throw new RuntimeException("Buildin function must be called in main context!");
+			}*/
+			
+			if (isGlobal) {
+				throw new RuntimeException("Invalid use of the 'global' keyword");
+			}
+			
+			SyntaxTreeElement ste = newBranchAt(indexToken+1);
+			int tokenslen = ste.tokens.size();
+			StringBuilder compiled = ste.compile();
+			
+			FederRule ruleBuildin = compiler.getApplyableRuleForBuildin("func_" + stoken);
+			if (ruleBuildin != null) {
+				getfrombinding = ruleBuildin.getResultValue();
+				getfromhistory.add(ruleBuildin.getResultValue());
+				returnedClasses.clear();
+				returnedClasses.add(ruleBuildin.getResultValue());
+				
+				result = new StringBuilder(ruleBuildin.applyRule(body, compiled.toString()));
+			} else {
+				getfrombinding = null;
+				result.append(stoken + "(" + compiled.toString() + ")");
+			}
+			
+			indexToken += 3 + tokenslen;
+			return;
+		}
 
 		FederBinding funcassign = getFromBinding(getfrombinding, stoken, !wasdotinfront);
 
@@ -1516,7 +1549,13 @@ public class SyntaxTreeElement {
 				String last = parts.get(2);
 				if (stes.get(2).returnedClasses.size() == 1) {
 					if (FederBinding.IsGarbagable(stes.get(2).returnedClasses.get(0))) {
-						last = "fdRemoveObject_func ((fdobject*) " + last + ")";
+						FederRule ruleRemoveFunc = compiler.getApplyableRuleForStruct("remove_func");
+						if (ruleRemoveFunc == null) {
+							throw new RuntimeException("struct rule 'remove_func' doesn't exist!");
+						}
+
+//						last = "fdRemoveObject_func ((fdobject*) " + last + ")";
+						last = ruleRemoveFunc.applyRule(body, last);
 					}
 				}
 
@@ -1531,7 +1570,13 @@ public class SyntaxTreeElement {
 				String last = parts.get(1);
 				if (stes.get(1).returnedClasses.size() == 1) {
 					if (FederBinding.IsGarbagable(stes.get(1).returnedClasses.get(0))) {
-						last = "fdRemoveObject_func ((fdobject*) " + last + ")";
+						FederRule ruleRemoveFunc = compiler.getApplyableRuleForStruct("remove_func");
+						if (ruleRemoveFunc == null) {
+							throw new RuntimeException("struct rule 'remove_func' doesn't exist!");
+						}
+
+						//last = "fdRemoveObject_func ((fdobject*) " + last + ")";
+						last = ruleRemoveFunc.applyRule(body, last);
 					}
 				}
 
@@ -2235,6 +2280,16 @@ public class SyntaxTreeElement {
 					generateEnding("File=" + compiler.getName() + ", Line=" + (line), true, null);
 					return new StringBuilder ("return return_result;\n");
 				}
+				
+				FederRule ruleIncrease = compiler.getApplyableRuleForStruct("increase");
+				if (ruleIncrease == null) {
+					throw new RuntimeException("struct rule 'increase' doesn't exist!");
+				}
+				
+				FederRule ruleDecrease = compiler.getApplyableRuleForStruct("decrease");
+				if (ruleDecrease == null) {
+					throw new RuntimeException("struct rule 'decrease' doesn't exist!");
+				}
 
 				body.compile_file_text.append(body.inFrontOfSyntax());
 				body.compile_file_text.append(body.getUpperFunction().getReturnType().generateCName() + " ");
@@ -2242,13 +2297,13 @@ public class SyntaxTreeElement {
 				body.compile_file_text.append(compiled.toString() + ";\n");
 				// body.compile_file_text.append("int old_rr_usage = return_result->usage;\n");
 
-				body.compile_file_text.append(body.inFrontOfSyntax()).
-				append("fdIncreaseUsage ((fdobject*) return_result);\n");
+				body.compile_file_text.append(body.inFrontOfSyntax());
+				body.compile_file_text.append(ruleIncrease.applyRule(body, "return_result") + ";\n");
 				generateEnding("File=" + compiler.getName() + ", Line=" + (line), true, null);
 				// body.compile_file_text.append("/*if (old_rr_usage == return_result->usage)
 				// */\n");
 				body.compile_file_text.append(body.inFrontOfSyntax());
-				body.compile_file_text.append("fdDecreaseUsage ((fdobject*) return_result);\n");
+				body.compile_file_text.append(ruleDecrease.applyRule(body, "return_result") + ";\n");
 
 				return new StringBuilder("return return_result;");
 			}

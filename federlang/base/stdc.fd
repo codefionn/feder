@@ -356,5 +356,10 @@ namespace c_intern
 	:}
 ;
 
+::rule struct increase "fdIncreaseUsage ((fdobject*) {0})"
+::rule struct decrease "fdDecreaseUsage ((fdobject*) {0})"
+::rule struct remove "fdRemoveObject ((fdobject*) {0})"
+::rule struct remove_func "fdRemoveObject_func ((fdobject*) {0})"
+
 class object
 ;
