@@ -10,7 +10,7 @@ bool func isPrime (uint32[] primes, uint32 num)
 			return true
 		;
 
-		if (num % primes[i]) == 0
+		if (num % primes[i]) == uint32 from 0
 			return false
 		;
 	;

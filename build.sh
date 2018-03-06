@@ -8,3 +8,7 @@ fi
 cd bin
 jar -cfe ../jfederc.jar feder.Feder feder/*.class feder/utils/*.class feder/types/*.class
 cd ..
+
+if which doxygen > /dev/null ; then
+	doxygen doxyconf
+fi

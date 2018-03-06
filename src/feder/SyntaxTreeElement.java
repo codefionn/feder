@@ -849,10 +849,10 @@ public class SyntaxTreeElement {
 		int incurrentscope = 0; // if 0 it is in current scope
 		for (int i = 0; i <= tokens.size(); i++) {
 			String token0 = (i < tokens.size() ? tokens.get(i) : "");
-			if (token0.equals("(")) {
+			if (token0.equals("(") || token0.equals("[")) {
 				// Scope 'out'
 				incurrentscope++;
-			} else if (token0.equals(")")) {
+			} else if (token0.equals(")") || token0.equals("]")) {
 				// Scope 'in'
 				incurrentscope--;
 			} else if ((token0.equals("||") || token0.equals("&&") || (token0.equals("") && stes.size() > 0))
@@ -883,8 +883,8 @@ public class SyntaxTreeElement {
 				continue;
 			}
 
-			if (token0.equalsIgnoreCase("") && incurrentscope > 0) {
-				throw new RuntimeException("There was a problem: ");
+			if (token0.equals("") && incurrentscope > 0) {
+				throw new RuntimeException("There was a problem: Expected one or more ')'");
 			}
 
 			if (i == tokens.size())

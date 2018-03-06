@@ -7,6 +7,7 @@ build/
 *.class
 *.log
 /federlang/random/
+/doc/java_api
 .~lock.*
 
 # Ignore valgrind files
