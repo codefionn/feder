@@ -158,6 +158,14 @@ public class SyntaxTreeElementUtils
 		}
 	}
 
+	/**
+	 * Generates an ending of 'body' (remove objects). If 'completely' is true, the objects
+	 * of the parents (to a specific one) are deleted, too.
+	 * @param pos String representing the position of the current instance (for errors only)
+	 * @param body
+	 * @param completely
+	 * @param ignore
+	 */
 	public static void generateEnding(String pos, FederBody body, boolean completely, FederObject ignore)
 	{
 		generateEnding(pos, body, completely, ignore, body.getMainNamespace().getCompiler().allowMain);
@@ -197,6 +205,11 @@ public class SyntaxTreeElementUtils
 	}
 
 
+	/**
+	 * @param fmn
+	 * @return Returns a string, which contains an initializing process for all
+	 * global values used
+	 */
 	public static String generateGlobalStart(FederBody fmn)
 	{
 		StringBuilder sb = new StringBuilder();

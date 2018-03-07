@@ -2,8 +2,9 @@
 
 Conditional statements are operations, which need a condition (a bool\_ean).
 If the condition is 'true' the body below the conditional statement will be
-executed. The following program prints "Hello World", if the condition 'true'
-is true and "Error" if the condition false is true.
+executed (looking for loops ? /doc/tutorials/loops.md). The following program
+prints "Hello World", if the condition 'true' is true and "Error" if the
+condition false is true.
 
 ```
 include "stdio.fd"

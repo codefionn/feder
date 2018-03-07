@@ -60,6 +60,10 @@ public class SyntaxTreeElement {
 	 */
 	public List<FederBinding> returnedClasses = new LinkedList<>();
 
+	/**
+	 * Not really supported ...
+	 * returns an object (if possible), used by the 'current' source code
+	 */
 	public FederObject returnedObject = null;
 
 	/**

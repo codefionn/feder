@@ -37,11 +37,11 @@ public class Feder
 	 * @link SyntaxTreeElementUtils SyntaxTreeElementUtils @endlink.
 	 * 
 	 * If you want to modify the behavior of certain types or structures
-	 * analyze @link FederClass FederClass @endlink,
-	 * @link FederInterface FederInterface @endlink,
-	 * @link FederFunction FederFunction @endlink,
-	 * @link FederArray FederArray @endlink
-	 * and @link FederObject FederObject @endlink.
+	 * analyze @link feder.types.FederClass FederClass @endlink,
+	 * @link feder.types.FederInterface FederInterface @endlink,
+	 * @link feder.types.FederFunction FederFunction @endlink,
+	 * @link feder.types.FederArray FederArray @endlink
+	 * and @link feder.types.FederObject FederObject @endlink.
 	 * 
 	 * If your aim is to hack a bit and create new operators give the
 	 * @link Syntax syntax analysis @endlink,

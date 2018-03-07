@@ -119,19 +119,47 @@ public class FederCompiler
 	 */
 	private boolean debug = false;
 
+	/**
+	 * Was one of the last preprocessor statements true ?
+	 */
 	public boolean preprocessorWasTrue = false;
+	
+	/**
+	 * Should the compiler skip the code
+	 */
 	public boolean preprocessorSkipCode = false;
+	
+	/**
+	 * Did the preprocessor use an (unclosed) conditional statement (if) ?
+	 */
 	public boolean preprocessorIfCame = false;
+	
+	/**
+	 * All preprocessor macros
+	 */
 	public List<String> preprocessorMacros = new LinkedList<>();
 	
 	/**
-	 * Feder Rules ...
+	 * Contains Feder rules, which were defined in Feder source code
 	 */
 	public List<FederRule> feder_rules = new LinkedList<>();
 
-	// If true, the build process will be stopped
+	/**
+	 * If true, the thrown error is fatal, meaning that the compile
+	 * instance will immediately stop processing the source code and
+	 * return an error (state)
+	 */
 	public boolean fatalError = false;
 
+	/**
+	 * @param name0 The name of the compiler (file name)
+	 * @param debug0 Debug mode ? (print more information, when running a compiled program)
+	 * @param systemName The name of the system (WINDOWS, POSIX)
+	 * @param progCC0 the cc compiler to use
+	 * @param usewincl0 use the options of microsoft visual studio compiler ?
+	 * @param nomultithread0 Not implement, maybe in later versions
+	 * @param printCommands0 print the executed build command ?
+	 */
 	public FederCompiler(String name0, boolean debug0, String systemName, String progCC0, boolean usewincl0,
 	                     boolean nomultithread0, boolean printCommands0)
 	{
@@ -147,6 +175,8 @@ public class FederCompiler
 
 	/**
 	 * Create a compiler, which depends on an other compiler
+	 * @param name0 The name (file name)
+	 * @param compiler the compiler instance to use (the 'parent' of this one)
 	 */
 	public FederCompiler(String name0, FederCompiler compiler)
 	{
@@ -166,6 +196,15 @@ public class FederCompiler
 		feder_rules = compiler.feder_rules;
 	}
 	
+	/**
+	 * @param operator An operator
+	 * @param lvalue The type of the left side
+	 * @param rvalue The type of the right side
+	 * @param lvalue_nothing Is left of the operator nothing ?
+	 * @param rvalue_nothing Is right of the operator nothing ?
+	 * @return Returns a rule, which is can be applied to the given arguments (operator, lvalue,
+	 * rvalue, lvalue_nothing, rvalue_nothing)
+	 */
 	public FederRule getApplyRuleFor (String operator, FederBinding lvalue, FederBinding rvalue,
 			boolean lvalue_nothing, boolean rvalue_nothing) {
 		for (FederRule rule : feder_rules) {
@@ -177,6 +216,11 @@ public class FederCompiler
 		return null;
 	}
 
+	/**
+	 * @param buildin_name
+	 * @return Returns a rule, which has the type 'buildin' and the name 'buildin_name'.
+	 * If nothing was found, this method returns null.
+	 */
 	public FederRule getApplyableRuleForBuildin(String buildin_name) {
 		for (FederRule rule : feder_rules) {
 			if (rule.isApplyable (buildin_name) && (rule.getRule() & FederRule.RULE_BUILDIN) != 0) {
@@ -187,9 +231,14 @@ public class FederCompiler
 		return null; // no rule found
 	}
 
-	public FederRule getApplyableRuleForStruct(String buildin_name) {
+	/**
+	 * @param struct_name
+	 * @return Returns a rule, which has the type 'struct' and the name 'struct_name'.
+	 * If nothing was found, this method returns null.
+	 */
+	public FederRule getApplyableRuleForStruct(String struct_name) {
 		for (FederRule rule : feder_rules) {
-			if (rule.isApplyable (buildin_name) && (rule.getRule() & FederRule.RULE_STRUCT) != 0) {
+			if (rule.isApplyable (struct_name) && (rule.getRule() & FederRule.RULE_STRUCT) != 0) {
 				return rule;
 			}
 		}
@@ -197,6 +246,10 @@ public class FederCompiler
 		return null; // no rule found
 	}
 
+	/**
+	 * @return Returns true, if debug mode is switched on
+	 * (massive code flow informations)
+	 */
 	public boolean isDebug()
 	{
 		return debug;
@@ -265,6 +318,9 @@ public class FederCompiler
 		return (buildDir + name + ".fd." + Feder.objEnd).replace("/", Feder.separator);
 	}
 
+	/**
+	 * @return Returns the name of the object file, without a path in front
+	 */
 	public String getNameFileObjectOnly()
 	{
 		return (name + ".fd." + Feder.objEnd).replace("/", Feder.separator);
@@ -386,7 +442,7 @@ public class FederCompiler
 		List<String> stringsOfTokens0 = new LinkedList<>();
 		FederBody currentBody = main;
 
-		/**
+		/*
 		 * If this value is greater than 0, the compiler
 		 * will return an error code
 		 */
@@ -401,7 +457,7 @@ public class FederCompiler
 		for (int i = 0; i < lexer.tokens.size(); i++) {
 			if (lexer.tokens.get(i).equals("newline")) {
 
-				/**
+				/*
 				 * A new line has been started
 				 */
 
@@ -817,6 +873,9 @@ public class FederCompiler
 
 	/**
 	 * Write the main code of the generated bodies to the files
+	 * @param compileFile The compile file to write to
+	 * @param headerFile The header file to write to
+	 * @param body1 the binding, where the generate process should be started.
 	 */
 	public void writeToFile(BufferedWriter compileFile,
 	                        BufferedWriter headerFile, FederBinding body1)
@@ -886,6 +945,7 @@ public class FederCompiler
 
 	/**
 	 * This method tries to set the type of "args" to List, whenever possible
+	 * @param name1 The name of compiled instance
 	 */
 	public void informInclude(String name1)
 	{

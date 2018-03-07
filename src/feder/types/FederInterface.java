@@ -11,21 +11,40 @@ import feder.FederCompiler;
  */
 public class FederInterface extends FederBody implements FederArguments, FederHeaderGen
 {
-
+	/**
+	 * The arguments of the interface
+	 */
 	public List<FederObject> arguments = new LinkedList<>();
+	
+	/**
+	 * The result type of the interface/function
+	 */
 	public FederBinding returnType;
+	
+	/**
+	 * False: You can't call the function described by this object
+	 * 
+	 * True: You can call the function described by this object
+	 */
 	private boolean cancall = false;
 
-	/**
-	 * @param name0
-	 *            Name of the Interface
-	 */
 	@SuppressWarnings("unchecked")
+	/**
+	 * @param compiler0 The compiler instance to use
+	 * @param name0 The name of the interface
+	 * @param parent The parent of this body
+	 */
 	public FederInterface(FederCompiler compiler0, String name0, FederBody parent)
 	{
 		super(compiler0, name0, parent);
 	}
 
+	/**
+	 * @param compiler0 The compiler instance to use
+	 * @param name The name of the callable interface
+	 * @param parent The parent of the interface
+	 * @return Returns a callable interface from a not callable one
+	 */
 	public FederInterface interfaceFrom(FederCompiler compiler0, String name, FederBody parent)
 	{
 		if (cancall) {
@@ -36,6 +55,13 @@ public class FederInterface extends FederBody implements FederArguments, FederHe
 	}
 
 	@SuppressWarnings("unchecked")
+	/**
+	 * @param compiler0 The compiler instance to use
+	 * @param name0 The name of the interface
+	 * @param parent The parent of this body
+	 * @param arguments0 The arguments of the interface
+	 * @param returnType0 The result type of this interface
+	 */
 	public FederInterface(FederCompiler compiler0, String name0, FederBody parent, List<FederObject> arguments0,
 	                      FederBinding returnType0)
 	{
@@ -47,6 +73,9 @@ public class FederInterface extends FederBody implements FederArguments, FederHe
 	}
 
 	@Override
+	/**
+	 * @return Returns the name for C source code
+	 */
 	public String generateCName()
 	{
 		if (canBeCalled()) {
@@ -58,12 +87,20 @@ public class FederInterface extends FederBody implements FederArguments, FederHe
 	}
 
 	@Override
+	/**
+	 * @return Returns the arguments required by this interface
+	 */
 	public List<FederObject> getArguments()
 	{
 		return arguments;
 	}
 
 	@Override
+	/**
+	 * @param name If null, every name gets accepted
+	 * @param arguments0 The arguments if the function/interface
+	 * @return Returns true, if this interface is "the same" as the one described by name and arguments0
+	 */
 	public boolean isEqual(String name, List<FederBinding> arguments0)
 	{
 		return FederFunction.isEqual(name, arguments0, getArguments(), getName());
@@ -79,11 +116,17 @@ public class FederInterface extends FederBody implements FederArguments, FederHe
 	}
 
 	@Override
+	/**
+	 * @return Set the return type of this interface
+	 */
 	public void setReturnType(FederBinding fc)
 	{
 		returnType = fc;
 	}
 
+	/**
+	 * @return Returns true, if this interface can be called (is an object)
+	 */
 	@Override
 	public boolean canBeCalled()
 	{

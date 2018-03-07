@@ -3,13 +3,13 @@ package feder.types;
 import feder.FederCompiler;
 
 /**
- * Diese Klasse ist für die Syntaxkörper: while, if, else, else if
+ * This class is for the lexical names: for, while, if, else
  *
  * @author Fionn Langhans
+ * @ingroup utils
  */
 public class FederAutomat extends FederBody
 {
-
 	private String type;
 
 	@SuppressWarnings("unchecked")
@@ -20,12 +20,19 @@ public class FederAutomat extends FederBody
 		type = type0;
 	}
 
+	/**
+	 * @return Returns the type of this automat (conditional statement):
+	 * for, while, if, else, else if
+	 */
 	public String getType()
 	{
 		return type;
 	}
 
 	@Override
+	/**
+	 * @return Returns the name for C source code
+	 */
 	public String generateCName()
 	{
 		return null;

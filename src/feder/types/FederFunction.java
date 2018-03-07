@@ -6,6 +6,7 @@ import feder.FederCompiler;
 
 /**
  * @author Fionn Langhans
+ * @ingroup compiler
  */
 public class FederFunction extends FederBody implements FederHeaderGen, FederArguments, FederCompileGen
 {
