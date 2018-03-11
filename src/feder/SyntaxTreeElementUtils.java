@@ -416,13 +416,80 @@ public class SyntaxTreeElementUtils
 			//System.out.println();
 			
 			FederRule rule = FederRule.define(currentBody, topasstofunc, ste);
-			if (rule != null) compiler.feder_rules.add(0, rule);
+			if (rule != null) {
+				compiler.feder_rules.add(0, rule);
+				
+				if ((rule.getRule() & FederRule.RULE_BUILDIN) != 0) {
+					compiler.feder_buildin_rules.add(0, rule);
+				}
+
+				if ((rule.getRule() & FederRule.RULE_STRUCT) != 0) {
+					compiler.feder_struct_rules.add(0, rule);
+				}
+			}
+
 			return new StringBuilder();
+		} else if (args[0].equals("assume")) {
+			assume(currentBody, args);
 		}
 
 		throw new RuntimeException("That command is invalid!");
 	}
 
+	private static void assume (FederBody currentBody, String[] args) {
+		int turn = 0;
+		
+		FederBinding b0 = null;
+		FederBinding b1 = null;
+		
+		for (int i = 1; i < args.length; i++) {
+			String stoken = args[i];
+			
+			String nextToken = (i+1 == args.length ? "" : args[i+1]);
+			
+			FederBinding current_type = null;
+			if (turn == 0)
+				current_type = b0;
+			else if (turn == 1)
+				current_type = b1;
+			
+			if (!stoken.equals("null") && !stoken.equals(".")) {
+				if (current_type == null) {
+					current_type = currentBody.getBinding(currentBody, stoken, true);
+					if (current_type == null && !stoken.equals("null")) {
+						throw new RuntimeException("'" + stoken + "' doesn't exist!");
+					}
+				} else {
+					if (!(current_type instanceof FederBody)) {
+						throw new RuntimeException("The current element '" + current_type.getName() + "' is not a body!");
+					}
+					
+					current_type = ((FederBody) current_type).getBinding((FederBody) current_type, stoken, false);
+					if (current_type == null && !stoken.equals("null")) {
+						throw new RuntimeException("The current element '" + stoken + "' wasn't found by the compiler!");
+					}
+				}
+			}
+			
+			if (turn == 0)
+				b0 = current_type;
+			else if (turn == 1)
+				b1 = current_type;
+			
+			if ((!nextToken.equals(".") && !nextToken.isEmpty())
+					|| nextToken.equals("null")) {
+				if (turn > 2) {
+					throw new RuntimeException("You can't mention a third type!");
+				}
+
+				turn++;
+			} else if ((!nextToken.equals("") && !nextToken.equals("."))
+					|| (nextToken.equals(".") && stoken.equals("null"))) {
+
+				throw new RuntimeException("Invalid " + i + " element: " + args[i+1]);
+			}
+		}
+	}
 
 	/**
 	 * This function fails, if the include file could not be found.

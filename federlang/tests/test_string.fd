@@ -190,3 +190,32 @@ if !isEqual (s0, "Hello World Hello")
 ;
 
 io.println ("\tTest 11 passed")
+
+# Test 12: Int add
+s = "Hello World"
+s0 = s.add (12)
+
+if !isEqual (s0, "Hello World12")
+	io.println ("\tTest 12-01 failed")
+	return false
+;
+
+s0 = s.add (12.0)
+if !s0.startsWith("Hello World12")
+	io.println ("\tTest 12-02 failed")
+	return false
+;
+
+s0 = s + 12
+if !isEqual (s0, "Hello World12")
+	io.println ("\tTest 12-03 failed")
+	return false
+;
+
+s0 = s + 12.0
+if !s0.startsWith ("Hello World12")
+	io.println ("\tTest 12-04 failed")
+	return false
+;
+
+io.println ("\tTest 12 passed")

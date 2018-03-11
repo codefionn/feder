@@ -10,10 +10,21 @@ import feder.FederCompiler;
  */
 public class FederFunction extends FederBody implements FederHeaderGen, FederArguments, FederCompileGen
 {
-
+	/**
+	 * The arguments (objects) of the function
+	 */
 	public List<FederObject> arguments = new LinkedList<>();
+	
+	/**
+	 * The type, which is returned by the function. Can be null.
+	 */
 	public FederBinding returnClass = null;
 
+	/**
+	 * @param compiler0 The compiler instance to use
+	 * @param name0 The name of the function
+	 * @param parent0 The body's parent
+	 */
 	@SuppressWarnings("unchecked")
 	public FederFunction(FederCompiler compiler0, String name0, FederBody parent0)
 	{
@@ -30,11 +41,23 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 	}
 
 	@Override
+	/**
+	 * @param name0 If null, every name will be accepted
+	 * @param arguments0 The expected arguments (types)
+	 * @return Returns true, if the given arguments are similiar to this function
+	 */
 	public boolean isEqual(String name0, List<FederBinding> arguments0)
 	{
 		return isEqual(name0, arguments0, arguments, getName());
 	}
 
+	/**
+	 * @param name If null, every name will be accepted (First function)
+	 * @param arguments0 Expected arguments (types) (First function)
+	 * @param arguments Expected arguments (types) (Second function)
+	 * @param name0 The name of the second function
+	 * @return Returns true, if the given arguments are similar to each other
+	 */
 	public static boolean isEqual(String name, List<FederBinding> arguments0, List<FederObject> arguments,
 	                              String name0)
 	{
@@ -64,6 +87,10 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 		return true;
 	}
 
+	/**
+	 * @return Returns the current arguments in this function as a string
+	 * (separated by '_', each argument type starting with '0')
+	 */
 	public String argumentsToString()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -76,6 +103,12 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 		return sb.toString();
 	}
 
+	/**
+	 * @param parent
+	 * @param arguments
+	 * @return Returns the arguments, that should be between
+	 * the brackets, which are in the function declaration
+	 */
 	public static String generateArgumentsListString(FederBody parent, List<FederObject> arguments)
 	{
 		return generateArgumentsListString(parent, arguments, true);
@@ -105,6 +138,9 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 		return sb.toString();
 	}
 
+	/**
+	 * @return Returns the name of this function, which should be used in C source code
+	 */
 	@Override
 	public String generateCName()
 	{
@@ -112,6 +148,10 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 		       + getNamespacesToString() + argumentsToString() + getName();
 	}
 
+	/**
+	 * @param list
+	 * @return Returns the given objects as a list containing types
+	 */
 	public static List<FederBinding> objectListToClassList(List<FederObject> list)
 	{
 		List<FederBinding> classes = new LinkedList<>();
@@ -125,6 +165,10 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 		return classes;
 	}
 
+	/**
+	 * @return Returns a string, which should be generated
+	 * in the header file
+	 */
 	@Override
 	public String generateInHeader()
 	{
@@ -153,6 +197,10 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 		return result.toString();
 	}
 
+	/**
+	 * @return Returns a string, which should be generated
+	 * in a compile/code file
+	 */
 	@Override
 	public String generateInCompile()
 	{
@@ -202,24 +250,37 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 		return result.toString();
 	}
 
+	/**
+	 * @return Returns the expected arguments (objects)
+	 */
 	@Override
 	public List<FederObject> getArguments()
 	{
 		return arguments;
 	}
 
+	/**
+	 * @return Returns the type, which is returned by this function
+	 */
 	@Override
 	public FederBinding getReturnType()
 	{
 		return returnClass;
 	}
 
+	/**
+	 * Sets the current type, which should be returned by this function,
+	 * with 'fc'
+	 */
 	@Override
 	public void setReturnType(FederBinding fc)
 	{
 		returnClass = fc;
 	}
 
+	/**
+	 * @return Always true
+	 */
 	@Override
 	public boolean canBeCalled()
 	{

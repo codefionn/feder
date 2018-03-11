@@ -133,6 +133,10 @@ public class FederInterface extends FederBody implements FederArguments, FederHe
 		return cancall;
 	}
 
+	/**
+	 * @return Returns a string, which should be generated
+	 * in the header file
+	 */
 	@Override
 	public String generateInHeader()
 	{
@@ -153,6 +157,11 @@ public class FederInterface extends FederBody implements FederArguments, FederHe
 		       + FederFunction.generateArgumentsListString(getParent(), getArguments()) + ");\n";
 	}
 
+	/**
+	 * @param args
+	 * @return Returns true if the given 'args' are similiar to the
+	 * ones of this interface
+	 */
 	public boolean similiarToArguments(FederArguments args)
 	{
 		return isEqual(null, FederFunction.objectListToClassList(args.getArguments()));

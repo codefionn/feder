@@ -1,9 +1,14 @@
-package feder.types;
+package feder;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import feder.SyntaxTreeElement;
+import feder.types.FederArguments;
+import feder.types.FederBinding;
+import feder.types.FederBody;
+import feder.types.FederClass;
+import feder.types.FederFunction;
+import feder.types.FederObject;
 
 /**
  * @author Fionn Langhans
@@ -62,7 +67,12 @@ public class FederRule {
 	/**
 	 * The right type of the operator
 	 */
-	private FederBinding rvalue; 
+	private FederBinding rvalue;
+	
+	/**
+	 * The result type description
+	 */
+	private String result_desc = null;
 	
 	/**
 	 * The left type description of the operator
@@ -103,13 +113,18 @@ public class FederRule {
 	 * @param returnValue0
 	 * @param lvalue0
 	 * @param rvalue0
+	 * @param result0_desc
+	 * @param lvalue0_desc
+	 * @param rvalue0_desc
 	 */
 	public FederRule (int rule0, String operator0, String toApply0,
 	                  FederBinding returnValue0,
 	                  FederBinding lvalue0, FederBinding rvalue0,
+	                  String result0_desc,
 	                  String lvalue0_desc, String rvalue0_desc) {
 		rule = rule0;
 		returnValue = returnValue0;
+		result_desc = result0_desc;
 		lvalue = lvalue0;
 		rvalue = rvalue0;
 		
@@ -185,6 +200,12 @@ public class FederRule {
 		}
 	}
 	
+	/**
+	 * @param rule0 Should be defined by the constants in @link FederRule FederRule @endlink
+	 * starting with 'RULE_'.
+	 * @param operator0 The 'operator' to use
+	 * @param toApply0 The text to apply, when @link FederRule.applyRule @endlink is called.
+	 */
 	public FederRule (int rule0, String operator0, String toApply0) {
 		rule = rule0;
 		operator = operator0;
@@ -241,6 +262,8 @@ public class FederRule {
 	 * @param operator0 the operator separating the two types
 	 * @param lvalue0 type, which is on the left of the operator
 	 * @param rvalue0 type, which is on the right of the operator
+	 * @param lvalue0_nothing Should be true, if the left side is nothing
+	 * @param rvalue0_nothing Should be true, if the right side is nothing
 	 * @return Returns true, if this rule is applyable to a certain context
 	 */
 	public boolean isApplyable(String operator0,
@@ -263,6 +286,9 @@ public class FederRule {
 	}
 	
 	/**
+	 * @param currentBody the body to use
+	 * @param lstring The string generated at the left side of the operator
+	 * @param rstring The string generated at the right side of the operator
 	 * @return Returns the result of the rule
 	 */
 	public String applyRule (FederBody currentBody,
@@ -297,6 +323,22 @@ public class FederRule {
 	}
 	
 	/**
+	 * @param currentBody
+	 * @param s0 Replaces '{0}'
+	 * @param s1 Replaces '{1}'
+	 * @param s2 Replaces '{2}'
+	 * @return Returns the result of the rule
+	 */
+	public String applyRule (FederBody currentBody,
+			                 String s0, String s1, String s2) {
+		if ((rule & RULE_BUILDIN) != 0 || (rule & RULE_STRUCT) != 0) {
+			return toApply.replace("{0}", s0).replace("{1}", s1).replace("{2}", s2);
+		}
+		
+		throw new RuntimeException("Only buildin and struct rules can have 3 arguments!");
+	}
+	
+	/**
 	 * @return Returns the left value from the operator
 	 */
 	public FederBinding getLValue() {
@@ -311,9 +353,29 @@ public class FederRule {
 	}
 	
 	/**
+	 * @param ltype
+	 * @param rtype
+	 * @return Returns ltype or rtype of specified by the rule or
+	 * @link FederRule.getSpecifiedResultValue getSpecifiedResultValue @endlink .
+	 */
+	public FederBinding getResultValue(FederBinding ltype, FederBinding rtype) {
+		if (result_desc != null) {
+			if (result_desc.equals("!first")) {
+				return ltype;
+			} else if (result_desc.equals("!second")) {
+				return rtype;
+			} else {
+				return null;
+			}
+		}
+		
+		return returnValue;
+	}
+	
+	/**
 	 * @return Returns the result of the operation/rule
 	 */
-	public FederBinding getResultValue() {
+	public FederBinding getSpecifiedResultValue() {
 		return returnValue;
 	}
 	
@@ -334,6 +396,10 @@ public class FederRule {
 		return operator;
 	}
 	
+	/**
+	 * @return Returns the pattern, which is applied by this rule
+	 * (can be null)
+	 */
 	public String getToApply() {
 		return toApply;
 	}
@@ -356,6 +422,7 @@ public class FederRule {
 		FederBinding rtype = null;
 		int turn = 0;
 		
+		String result_desc = null;
 		String ltype_desc = null;
 		String rtype_desc = null;
 		
@@ -365,7 +432,9 @@ public class FederRule {
 			
 			if (stoken.trim().startsWith("!")) {
 				if (turn == 0) {
-					throw new RuntimeException("No general description of the type allowd for the result type!");
+					result_desc = stoken;
+					turn++;
+					continue;
 				} else if (turn == 1) {
 					ltype_desc = stoken;
 					turn++;
@@ -446,7 +515,7 @@ public class FederRule {
 		rule |= RULE_PATTERN;
 		
 		return new FederRule(rule, operator, ruletoapply, returnValue,
-				ltype, rtype, ltype_desc, rtype_desc);
+				ltype, rtype, result_desc, ltype_desc, rtype_desc);
 	}
 	
 	private static final FederRule define_func(FederBody currentBody,
@@ -492,11 +561,29 @@ public class FederRule {
 			}
 		}
 		
-		arguments.add(binding);
-		binding = arguments.remove(0);
+		if (arguments.size() > 0)
+			binding = arguments.remove(0);
 		
 		if (binding == null) {
 			throw new RuntimeException("The current binding isn't a valid one!");
+		}
+		
+		if (arguments.size() > 0) {
+			String func_name = binding.getName();
+			binding = (FederBinding) binding.getParent().getFunction(binding.getParent(), binding.getName(), arguments,
+					binding.getParent() == currentBody);
+			if (binding == null) {
+				// Error
+				StringBuilder argss = new StringBuilder();
+				for (FederBinding b : arguments) {
+					if (b != arguments.get(0))
+						argss.append(", ");
+
+					argss.append(b.getName());
+				}
+				
+				throw new RuntimeException("Function for name '" + func_name + "' and arguments '" + argss + "'.");
+			}
 		}
 		
 		FederArguments fun = null;
@@ -608,7 +695,7 @@ public class FederRule {
 	 * @param ste the syntax tree element to use
 	 * @return Returns a new rule definition
 	 * 
-	 * @error Throws an error, if the rule call was invalid
+	 * Throws an error, if the rule call was invalid
 	 */
 	public static final FederRule define (FederBody currentBody,
 			List<String> args, SyntaxTreeElement ste) {

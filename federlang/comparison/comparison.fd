@@ -28,19 +28,24 @@ startTime = sys.Time.current ()
 global toolchain = "cc"
 
 func compile_feder (String name)
-	sys.system ("./jfederc -I base -D comparison/feder/build -O ".add (name).add (" comparison/feder/").add (name).add (".fd --toolchain ").add (toolchain))
+	(sys.system ("./jfederc -I base -D comparison/feder/build -O "
+		.add (name).add (" comparison/feder/")
+		.add (name).add (".fd --toolchain ").add (toolchain)))
 ;
 
 func compile_java (String name)
-	sys.system ("javac -classpath comparison/java -source 8 comparison/java/".add (name).add (".java"))
+	(sys.system ("javac -classpath comparison/java -source 8 comparison/java/"
+		.add (name).add (".java")))
 ;
 
 func compile_c (String name)
-	sys.system (toolchain.add (" comparison/c/").add (name).add (".c -O2 -lm -o comparison/c/build/").add (name))
+	(sys.system (toolchain.add (" comparison/c/").add (name)
+		.add (".c -O2 -lm -o comparison/c/build/").add (name)))
 ;
 
 func compile_go (String name)
-	sys.system ("go build -o comparison/go/build/".add (name).add (" comparison/go/").add (name).add (".go"))
+	(sys.system ("go build -o comparison/go/build/"
+		.add (name).add (" comparison/go/").add (name).add (".go")))
 ;
 
 func compile (String name)

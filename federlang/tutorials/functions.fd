@@ -1,0 +1,10 @@
+include "stdio.fd"
+
+int32 func sum (int32 n0, int32 n1)
+	return n0 + n1
+;
+
+result = sum (5, 7)
+
+# Print the result
+io.println (result)

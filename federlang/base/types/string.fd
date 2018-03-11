@@ -29,6 +29,7 @@ func free (c.cstring str)
 # "STRING_USE_ARRAY" should be defined, if the String implementation should
 # use the 'Array' class instead of the 'String' class.
 ##
+
 #::def STRING_USE_ARRAY
 
 ##
@@ -61,9 +62,11 @@ class String
 		::fi
 	;
 	
+	##
 	# Returns the Byte at position 'index'. 'index'
 	# has to be greater than or equal to 0 and smaller
 	# than this.length ()
+	##
 	Byte func at (int32 index)
 		return Byte from chars.at (index)
 	;
@@ -92,6 +95,11 @@ class String
 		;
 	;
 
+	##
+	# Inserts the strings str0 at position index
+	# (the position index is where the string str0
+	# will start in this string)
+	##
 	String func insert (String str0, int32 index)
 		if chars.insert (str0.chars, index) != null
 			return this
@@ -165,10 +173,6 @@ class String
 		return result
 	;
 
-	String func addString (String str0)
-		return add (str0)
-	;
-	
 	bool func isNumber (bool allowFloatingPoint32)
 		if this == null
 			return false
@@ -400,6 +404,34 @@ String func getStringUse
 		::fi
 ;
 
+type "int16_t" int16
+	##
+	# This function returns a String which is a 
+	# decimal number, created from int32 (this)
+	##
+	String func toString
+		String result
+		:char cstring[20];
+		:sprintf (cstring, "%hi", *federobj_this);
+		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		return result
+	;
+;
+
+type "uint16_t" uint16
+	##
+	# This function returns a String which is a 
+	# decimal number, created from uint32 (this)
+	##
+	String func toString
+		String result
+		:char cstring[20];
+		:sprintf (cstring, "%hu", *federobj_this);
+		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		return result
+	;
+;
+
 type "int32_t" int32
 	##
 	# This function returns a String which is a 
@@ -517,6 +549,140 @@ bool func isEqualIgnoreCase_String_String (object s0, object s1)
 
 class String
 	##
+	# Adds n to the end of the string
+	# @param n A number
+	# @return Returns this
+	##
+	String func addto (int16 n)
+		addto (n.toString ())
+		return this
+	;
+
+	##
+	# Adds n to the end of the string
+	# @param n A number
+	# @return Returns this
+	##
+	String func addto (uint16 n)
+		addto (n.toString ())
+		return this
+	;
+
+	##
+	# Adds n to the end of the string
+	# @param n A number
+	# @return Returns this
+	##
+	String func addto (int32 n)
+		addto (n.toString ())
+		return this
+	;
+
+	##
+	# Adds n to the end of the string
+	# @param n A number
+	# @return Returns this
+	##
+	String func addto (uint32 n)
+		addto (n.toString ())
+		return this
+	;
+
+	##
+	# Adds n to the end of the string
+	# @param n A number
+	# @return Returns this
+	##
+	String func addto (int64 n)
+		addto (n.toString ())
+		return this
+	;
+
+	##
+	# Adds n to the end of the string
+	# @param n A number
+	# @return Returns this
+	##
+	String func addto (uint64 n)
+		addto (n.toString ())
+		return this
+	;
+
+	##
+	# Adds n to the end of the string
+	# @param n A number
+	# @return Returns this
+	##
+	String func addto (double n)
+		addto (n.toString ())
+		return this
+	;
+
+
+	##
+	# Adds n to the end of a copy of this string
+	# @param n
+	# @return Returns the copy
+	##
+	String func add (int16 n)
+		return cp ().addto (n)
+	;
+
+	##
+	# Adds n to the end of a copy of this string
+	# @param n
+	# @return Returns the copy
+	##
+	String func add (uint16 n)
+		return cp ().addto (n)
+	;
+
+	##
+	# Adds n to the end of a copy of this string
+	# @param n
+	# @return Returns the copy
+	##
+	String func add (int32 n)
+		return cp ().addto (n)
+	;
+
+	##
+	# Adds n to the end of a copy of this string
+	# @param n
+	# @return Returns the copy
+	##
+	String func add (uint32 n)
+		return cp ().addto (n)
+	;
+
+	##
+	# Adds n to the end of a copy of this string
+	# @param n
+	# @return Returns the copy
+	##
+	String func add (int64 n)
+		return cp ().addto (n)
+	;
+
+	##
+	# Adds n to the end of a copy of this string
+	# @param n
+	# @return Returns the copy
+	##
+	String func add (uint64 n)
+		return cp ().addto (n)
+	;
+
+	##
+	# Adds n to the end of a copy of this string
+	# @param n
+	# @return Returns the copy
+	##
+	String func add (double n)
+		return cp ().addto (n)
+	;
+
+	##
 	# This function returns the index, where the first occurence of str0
 	# has been found. If nothing has been found, this function return null.
 	##
@@ -614,7 +780,14 @@ class String
 	;
 ;
 
-::rule func + String.addString
+::rule func + String.add String
+::rule func + String.add int16
+::rule func + String.add uint16
+::rule func + String.add int32
+::rule func + String.add uint32
+::rule func + String.add int64
+::rule func + String.add uint64
+::rule func + String.add double
 
 # An intern namespace for the String class
 namespace h_intern_String

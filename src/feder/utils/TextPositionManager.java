@@ -13,12 +13,25 @@ public class TextPositionManager
 	public int line;
 	
 	/**
-	 * Current index in @link text text @linkend
+	 * Current index in @link TextPositionManager.text text @endlink
 	 */
 	public int indexChar;
+	
+	/**
+	 * Text to work on
+	 */
 	public String text;
+	
+	/**
+	 * The filename, where (optionally) the text was found
+	 */
 	public String filename;
 
+	/**
+	 * @param line0 Current line
+	 * @param indexChar0 current index in @link TextPositionManager.text text @endlink
+	 * @param text0 The text to use
+	 */
 	public TextPositionManager(int line0, int indexChar0, String text0)
 	{
 		line = line0;
@@ -28,7 +41,7 @@ public class TextPositionManager
 
 	/**
 	 * Report an error at 'index0' and print the error message 'msg'
-	 * @param index0 Index in @link text text @endlink
+	 * @param index0 Index in @link TextPositionManager.text text @endlink
 	 * @param msg
 	 */
 	public void error(int index0, String msg)
@@ -90,7 +103,7 @@ public class TextPositionManager
 		// Print line
 		System.err.println(sbline);
 
-		/**
+		/*
 		 * Saves the column where the string ends
 		 */
 		int oldcolumn = column - 1;

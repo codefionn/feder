@@ -8,8 +8,8 @@ way to create graphical user interfaces.
 
 The following program creates an object from a class called Person. That class
 has the attributes 'name' with the type String and the attribut 'age' with the
-type 'int32'. The function 'printData' of the class 'Person' will be called wit
-help of the object 'obj'.
+type 'int32'. The function 'printData' of the class 'Person' will be called with
+the help of the object 'obj'.
 
 ```
 include "stdio.fd"

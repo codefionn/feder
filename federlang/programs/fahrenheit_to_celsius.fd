@@ -19,8 +19,6 @@ if (String from args.at (1)).isNumber (true).isfalse ()
 fahrenheit = (String from args.at (1)).todouble ()
 
 celsius = fahrenheit.sub (32.0).mult ((5.0).div (9.0))
-io.print (fahrenheit)
-io.print (" °F convert to °C are: ")
-io.println (celsius)
+io.println ("" + fahrenheit + " °F convert to °C are: " + celsius)
 
 return true

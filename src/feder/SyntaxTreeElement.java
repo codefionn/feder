@@ -454,7 +454,13 @@ public class SyntaxTreeElement {
 
 			if (body.getParent() instanceof FederClass && !((FederClass) body.getParent()).isType()) {
 				result.append("\n").append(body.inFrontOfSyntax());
-				result.append("fdIncreaseUsage (" + "(fdobject*) (*federobj_this));\n");
+				
+				FederRule ruleIncrase = compiler.getApplyableRuleForStruct("increase");
+				if (ruleIncrase == null) {
+					throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
+				}
+				//result.append("fdIncreaseUsage (" + "(fdobject*) (*federobj_this));\n");
+				result.append(ruleIncrase.applyRule(body, "(*federobj_this)") + ";\n");
 			}
 
 			if (compiler.isDebug()) {
@@ -527,7 +533,13 @@ public class SyntaxTreeElement {
 			} else if (token.equals("name")) {
 				if (expectObjectName) {
 					if (!(getfrombinding instanceof FederClass) && !(getfrombinding instanceof FederInterface)) {
-						throw new RuntimeException("Object can only declared with a class or interface!");
+						throw new RuntimeException("Object can only declared with a class/interface/datatype/array!");
+					}
+					
+					for (FederObject obj0 : func.arguments) {
+						if (obj0.getName().equals(stoken)) {
+							throw new RuntimeException("The function already contains an argument with the same name!");
+						}
 					}
 
 					FederObject obj = new FederObject(stoken, null);
@@ -606,7 +618,7 @@ public class SyntaxTreeElement {
 			body = (FederFunction) func0;
 			return new StringBuilder();
 		} else if (func0 != null) {
-			throw new RuntimeException("Already define, can't define interface!");
+			throw new RuntimeException("Already defined, can't define interface!");
 		}
 
 		if (tokbeg.equals("interface")) {
@@ -654,12 +666,25 @@ public class SyntaxTreeElement {
 			if (!arg.isGarbagable())
 				continue;
 
-			result.append(body.inFrontOfSyntax()).append("fdIncreaseUsage ((fdobject*) ").append(arg.generateCName())
-			.append(");");
+/*			result.append(body.inFrontOfSyntax()).append("fdIncreaseUsage ((fdobject*) ").append(arg.generateCName())
+			.append(");");*/
+			
+			FederRule ruleIncrease = compiler.getApplyableRuleForStruct("increase");
+			if (ruleIncrease == null) {
+				throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
+			}
+
+			result.append(body.inFrontOfSyntax()).append(ruleIncrease.applyRule(body, arg.generateCName())).append(";");
 		}
 
 		if (func.getParent() instanceof FederClass && !((FederClass) body.getParent()).isType()) {
-			result.append("\n" + body.inFrontOfSyntax() + "fdIncreaseUsage ((fdobject*) (*federobj_this));");
+			FederRule ruleIncrease = compiler.getApplyableRuleForStruct("increase");
+			if (ruleIncrease == null) {
+				throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
+			}
+
+			//result.append("\n" + body.inFrontOfSyntax() + "fdIncreaseUsage ((fdobject*) (*federobj_this));");
+			result.append("\n" + body.inFrontOfSyntax()).append(ruleIncrease.applyRule(body, "(*federobj_this)") + ";");
 		}
 
 		if (compiler.isDebug()) {
@@ -768,45 +793,20 @@ public class SyntaxTreeElement {
 				if (obj.isForced) {
 					result.append("(").append(obj.getResultType().generateCName()).append(") ");
 				}
-
-				result.append("fdAssignObject ((fdobject*) ");
-				result.append(compiled);
-				result.append(")");
-			} else if (obj.isGarbagable()) {
-				if (obj.isForced) {
-					result.append("(").append(obj.getResultType().generateCName()).append(") ");
+				
+				FederRule ruleAssign = compiler.getApplyableRuleForStruct("assign_obj");
+				if (ruleAssign == null) {
+					throw new RuntimeException("The struct rule 'assign_obj' doesn't exist!");
 				}
 
-				// result.append("fdAssignObjectOld ((fdobject**) ");
-				result = new StringBuilder("fdAssignObjectOld ((fdobject**) ");
-				result.append("&(" + resultold0 + ")");
-				result.append(", (fdobject*) ");
-
-				/*
-				 * result.insert (0, "fdRemoveObject (" + resultold0 + ");\n");
-				 * result.append("fdAssignObject ((fdobject*) ");
-				 */
-
-				result.append(compiled);
-				result.append(")");
-
-				/*
-				 * String obj_name = "obj_" + line + "_" + indexToken; result = new
-				 * StringBuilder("fdobject ** " + obj_name + " = &(" + resultold0 + ");\n");
-				 * result.append("if (*" + obj_name + ") fdRemoveObject (*" + obj_name +
-				 * ");\n"); result.append ("*" + obj_name + " = fdAssignObject ((fdobject*) " +
-				 * compiled + ")");
-				 */
-
-				/*
-				 * if (obj.parent instanceof FederClass) { String atfront = oldresultpointerto;
-				 * if (oldresultpointerto.length() == 0) { atfront = "federobj_this"; }
-				 *
-				 * result.insert (0, "if (" + atfront + " && " + resultold0 + ") " + resultold0
-				 * + "->usage -= 1;\n"); result.insert (0, body.inFrontOfSyntax());
-				 * result.append(";\n").append(body.inFrontOfSyntax()); result.append("if (" +
-				 * atfront + " && " + resultold0 + ")" + resultold0 + "->usage += 1"); }
-				 */
+				result.append(ruleAssign.applyRule(body, compiled.toString()));
+			} else if (obj.isGarbagable()) {
+				FederRule ruleAssignOld = compiler.getApplyableRuleForStruct("assign_obj_old");
+				if (ruleAssignOld == null) {
+					throw new RuntimeException("The struct rule 'assign_obj_old' doesn't exist");
+				}
+				
+				result = new StringBuilder(ruleAssignOld.applyRule(body, resultold0.toString(), compiled.toString()));
 			} else if (obj.isDataType()) {
 				if (isNew)
 					result = new StringBuilder(
@@ -843,7 +843,8 @@ public class SyntaxTreeElement {
 	}
 
 	/**
-	 * Search for || and && and !, in current scope
+	 * Search for || and && and !, in current scope. If found it
+	 * creates several 
 	 */
 	private boolean fixBoolOperatorsInCurrentScope() {
 		List<String> tokens0 = new ArrayList<>();
@@ -853,6 +854,10 @@ public class SyntaxTreeElement {
 		int incurrentscope = 0; // if 0 it is in current scope
 		for (int i = 0; i <= tokens.size(); i++) {
 			String token0 = (i < tokens.size() ? tokens.get(i) : "");
+			if (token0.equals("=") && incurrentscope == 0) {
+				return false;
+			}
+			
 			if (token0.equals("(") || token0.equals("[")) {
 				// Scope 'out'
 				incurrentscope++;
@@ -899,22 +904,18 @@ public class SyntaxTreeElement {
 		}
 
 		if (stes.size() > 0) {
-			FederBinding binding = getFromBinding(body, "bool", true);
-			if (binding == null) {
-				throw new RuntimeException("The class/type 'bool' has to exist for that operation!");
+			FederRule rule = compiler.getApplyableRuleForBuildin("bool");
+			if (rule == null) {
+				compiler.fatalError = true;
+				throw new RuntimeException("The buildin rule 'bool' doesn't exist!");
 			}
-
-			if (!(binding instanceof FederClass)) {
-				throw new RuntimeException("The name 'bool' does already exist, but is not a class/type");
-			}
-
-			FederClass fc = (FederClass) binding;
-
-			if (!fc.isType()) {
-				result = new StringBuilder("fdCreateBool (" + result.toString() + ")");
-			}
-
-			returnedClasses.add(body.getBinding(body, "bool", true));
+			
+			returnedClasses.clear();
+			returnedClasses.add(rule.getSpecifiedResultValue());
+			getfromhistory.add(rule.getSpecifiedResultValue());
+			getfrombinding = rule.getSpecifiedResultValue();
+			
+			result = new StringBuilder(rule.applyRule(body, result.toString()));
 		}
 
 		return stes.size() > 0;
@@ -922,7 +923,11 @@ public class SyntaxTreeElement {
 
 
 	/**
-	 * This method tries to interpret a random name as something useful
+	 * This method tries to interpret a random name as something useful.
+	 * The result is stored in result, getfrombinding/getfromhistory or returnedClasses.
+	 * 
+	 * This method handles function calls, object calls, object declaration, object initialization
+	 * or anything else related to bindings (objects, classes, namespaces, functions, interface, ...).
 	 */
 	private void workOnName() {
 		if (!wasdotinfront) {
@@ -949,10 +954,10 @@ public class SyntaxTreeElement {
 			
 			FederRule ruleBuildin = compiler.getApplyableRuleForBuildin("func_" + stoken);
 			if (ruleBuildin != null) {
-				getfrombinding = ruleBuildin.getResultValue();
-				getfromhistory.add(ruleBuildin.getResultValue());
+				getfrombinding = ruleBuildin.getSpecifiedResultValue();
+				getfromhistory.add(ruleBuildin.getSpecifiedResultValue());
 				returnedClasses.clear();
-				returnedClasses.add(ruleBuildin.getResultValue());
+				returnedClasses.add(ruleBuildin.getSpecifiedResultValue());
 				
 				result = new StringBuilder(ruleBuildin.applyRule(body, compiled.toString()));
 			} else {
@@ -1130,37 +1135,6 @@ public class SyntaxTreeElement {
 
 		if (getfrombinding != null && getfrombinding instanceof FederArguments
 		        && ((FederArguments) getfrombinding).canBeCalled() && !nextToken.equals("=")) {
-			/*
-			 * if (func instanceof FederFunction && ((FederFunction) func).getParent()
-			 * instanceof FederClass && (getfrombinding instanceof FederObject ||
-			 * getfrombinding instanceof FederClass || getfrombinding instanceof
-			 * FederFunction)) {
-			 *
-			 * result = new StringBuilder(func.generateCName() + "(" + result.toString() +
-			 * ")"); } else if (func instanceof FederFunction && ((FederFunction)
-			 * func).getParent() instanceof FederClass && body.getClassInBody() != null) {
-			 * // Needs a class // The last getfrombinding should be class
-			 *
-			 * result = new StringBuilder( ((FederFunction) func).generateCName() +
-			 * "(federobj_this" + ")"); } else if (func instanceof FederFunction &&
-			 * ((FederFunction) func).getParent() instanceof FederClass) { // Function is in
-			 * need of a class, but can't get one throw new RuntimeException(
-			 * "The function \"" + func.getName() +
-			 * "\" needs a class, but there wasn't found any object, " +
-			 * "which would satisfy that requirement!")); } else { // Functions doesn't need
-			 * a class result = new StringBuilder(func.generateCName() + "()"); }
-			 *
-			 * // Finalize function call
-			 *
-			 * if (func.getReturnType() != null) { result.insert(0, "((" +
-			 * func.getReturnType().generateCName() + "*) "); result.append(")"); }
-			 *
-			 * getfrombinding = (FederBinding) func; returnedClasses.clear(); if
-			 * (func.getReturnType() != null) returnedClasses.add(func.getReturnType());
-			 *
-			 * continue;
-			 */
-
 			if (isGlobal) {
 				throw new RuntimeException("Invalid used of the 'global' keyword");
 			}
@@ -1249,12 +1223,6 @@ public class SyntaxTreeElement {
 				if (type_of_object != null) {
 					throw new RuntimeException("You can't specify an object, that was already declared!");
 				}
-
-				// Remove old object
-				/*
-				 * if (!obj.isInterface()) { result.append("fdRemoveObject ((fdobject*) ");
-				 * result.append(obj.generateCName()); result.append("); "); }
-				 */
 
 				if (result.length() > 0) {
 					result.append("->");
@@ -1435,6 +1403,10 @@ public class SyntaxTreeElement {
 		return steparent;
 	}
 
+	/**
+	 * @return Returns true, if an assignment operator ('=') is in 
+	 * the current scope (not between () or [])
+	 */
 	public boolean isAssignmentOperatorInCurrentScope () {
 		int scope = 0;
 		for (int i = 0; i < tokens.size(); i++) {
@@ -1454,16 +1426,49 @@ public class SyntaxTreeElement {
 	}
 
 	/**
-	 * Throws error if it doesn't want your input
-	 *
-	 * @return Returns code for the compile file "*.c", header file "*.h" or main method
+	 * This method walks through the given elements (
+	 * @link SyntaxTreeElement.tokens tokens @endlink ,
+	 * @link SyntaxTreeElement.stringsOfTokens stringsOfTokens @endlink ) and forms a
+	 * syntax tree while doing that (Elements that can be compiled with another instance
+	 * of SyntaxTreeElement are a new branch of the tree). The given elements should have
+	 * been analyzed by @link Syntax.validateSyntax validateSyntax @endlink , otherwise
+	 * something like a NullPointerException can occur.
+	 * 
+	 * If @link SyntaxTreeElement.isMain isMain @endlink is true, the source code can declare
+	 * functions, classes, namespaces, types, interfaces or conditional statements. If true, it
+	 * is also possible to create new bound objects or assign bound object to another object.
+	 * 
+	 * If @link SyntaxTreeElement.isGlobal isGlobal @endlink is true, the source code can
+	 * declare global objects. Anything else must not work (is prohibited).
+	 * 
+	 * If @link SyntaxTreeElement.body body @endlink changes to the main parent and the last body
+	 * was an automate (conditional statement), the operation executing this method, should generate
+	 * and end to that body. If the body is not the parent body, an end should be generated, because
+	 * a new else (if) statement has started.
+	 * 
+	 * If something is 'returned' (not the 'return' keyword) by the analysed code it will be
+	 * stored in getfrombinding and getfromhistory. If the 'returned' thing is an object, it
+	 * will also be added to @link SyntaxTreeElement.returnedClasses returnedClasses @endlink .
+	 * 
+	 * Specific bodies must not be declared in certain bodies. E.g.: You can't declare a method
+	 * in another method or a class in class. This is managed by @link FederBody.blacklist_classes
+	 * blacklist_classes @endlink
+	 * 
+	 * @return Returns code for the compile file "*.c", header file "*.h" or main method.
+	 * This depends on the body (SyntaxTreeElement.body) the current branch uses, so
+	 * another instance should decide, where to put this source code (you probably should append
+	 * it to @link feder.types.FederBody.compile_file_text FederBody.compile_file_text @endlink
+	 * and later decide where to put it).
+	 * 
+	 * Normally throws a RuntimeException, if the input was wrong. If other errors
+	 * are thrown by this method, then there is a problem in the source code.
 	 */
 	public StringBuilder compile() {
 		if (getfrombinding == null) {
 			getfrombinding = body;
 			wasdotinfront = false;
 		}
-
+		
 		indexToken = 0;
 
 		if (parent == null) {
@@ -1558,7 +1563,6 @@ public class SyntaxTreeElement {
 							throw new RuntimeException("struct rule 'remove_func' doesn't exist!");
 						}
 
-//						last = "fdRemoveObject_func ((fdobject*) " + last + ")";
 						last = ruleRemoveFunc.applyRule(body, last);
 					}
 				}
@@ -1652,7 +1656,7 @@ public class SyntaxTreeElement {
 		}
 
 		/*
-		 * Fix operators: all of them
+		 * Bool_ean operators: ||, &&
 		 */
 		if (fixBoolOperatorsInCurrentScope())
 			return result;
@@ -1720,22 +1724,6 @@ public class SyntaxTreeElement {
 					throw new RuntimeException("Only array[int] is acceptable: Invalid argument size.");
 				}
 
-				FederBinding returned = ste.returnedClasses.get(0);
-				if (returned.getName().equals("int32") && !(returned instanceof FederClass)) {
-					throw new RuntimeException("The class/data type 'int' has to be returned: Returned something like 'int' but not a data type/class");
-				} else if (!returned.getName().equals("int32")) {
-					throw new RuntimeException("The class/data type 'int' has to be returned: Nothing like 'int' returned.");
-				}
-
-				/*if (compiled.charAt(0) == '(' && compiled.charAt(compiled.length()-1) == ')') {
-					compiled.deleteCharAt(0); compiled.deleteCharAt(compiled.length()-1);
-				}*/
-
-				if (!((FederClass) returned).isType()) {
-					compiled.insert(0, "fdGetInt_func (");
-					compiled.append(")");
-				}
-
 				FederArray ar;
 				if (getfrombinding instanceof FederArray) {
 					ar = (FederArray) getfrombinding;
@@ -1745,14 +1733,30 @@ public class SyntaxTreeElement {
 
 				indexToken += lentokens + 1;
 				if (FederBinding.isDataType (ar.getType())) {
-					result.insert(0, "((" + ar.getType().generateCName() + "*)");
-					result.append("->data)[" + compiled.toString() + "]");
-					/*if (indexToken < tokens.size())
-						System.out.println(tokens.get(indexToken));
-					System.out.println("Hello");*/
+					/*result.insert(0, "((" + ar.getType().generateCName() + "*)");
+					result.append("->data)[" + compiled.toString() + "]");*/
+					
+					FederRule ruleArrayDataAt = compiler.getApplyableRuleForBuildin("at_dataarray");
+					if (ruleArrayDataAt == null) {
+						throw new RuntimeException("The buildin rule 'at_dataarray' doesn't exist");
+					}
+					
+					if (!FederBinding.areSameTypes(ste.returnedClasses.get(0), ruleArrayDataAt.getSpecifiedResultValue())) {
+						throw new RuntimeException("Result type of 'at_dataarray' is not the same as in the '[]' brackets!");
+					}
+					
+					result = new StringBuilder (ruleArrayDataAt.applyRule(body, result.toString(), compiled.toString(), ar.getType().generateCName()));
 				} else {
-					result.insert(0, "((" + ar.getType().generateCName() + ") fdGetClassArrayObjectAt (");
-					result.append (", " + compiled.toString() + "))");
+					FederRule ruleClassArrayAt = compiler.getApplyableRuleForBuildin("at_classarray");
+					if (ruleClassArrayAt == null) {
+						throw new RuntimeException("The buildin rule 'at_classarray' doesn't exist!");
+					}
+					
+					if (!FederBinding.areSameTypes(ste.returnedClasses.get(0), ruleClassArrayAt.getSpecifiedResultValue())) {
+						throw new RuntimeException("Result type of 'at_dataarray' is not the same as in the '[]' brackets!");
+					}
+					
+					result = new StringBuilder(ruleClassArrayAt.applyRule(body, result.toString(), compiled.toString(), ar.getType().generateCName()));
 				}
 
 				returnedClasses.add(ar.getType());
@@ -1984,118 +1988,6 @@ public class SyntaxTreeElement {
 				continue;
 			}
 
-			/*
-			 * The equals (or equals not operator) is an operator, which compares two
-			 * objects, if the second object is the token 'null', special comparison is done
-			 */
-
-			/* if (token.equals("==") || token.equals("!=")) {
-
-				if (returnedClasses.size() != 1) {
-					indexToken--;
-					throw new RuntimeException("In front of a compare operator must be only one object/interface! "
-					                           + "Size=" + returnedClasses.size());
-				}
-
-				FederBinding b0 = returnedClasses.get(0);
-
-				FederRule ruleBool = compiler.getApplyableRuleForBuildin("bool");
-				if (ruleBool == null) {
-					throw new RuntimeException("Requires buildin rule 'bool'");
-				}
-
-				returnedClasses.clear();
-				returnedClasses.add(ruleBool.getResultValue());
-
-				if (indexToken < tokens.size() && tokens.get(indexToken).equals("null")) {
-					indexToken++;
-
-					if (getfrombinding != null
-					        && getfrombinding instanceof FederObject
-					        && ((FederObject) getfrombinding).isDataType()) {
-						throw new RuntimeException("Can't compare an object (the type is a datatype) with 'null'");
-					}
-
-					if (getfrombinding instanceof FederArguments
-					        || (getfrombinding instanceof FederObject && ((FederObject) getfrombinding).isInterface())) {
-						if (token.equals("!=")) {
-							result = new StringBuilder ("!!" + result);
-						} else {
-							result = new StringBuilder ("!" + result);
-						}
-
-						result = new StringBuilder (ruleBool.applyRule(body, result.toString()));
-
-						continue;
-					}
-
-					if ((getfrombinding instanceof FederObject && ((FederObject) getfrombinding).isDataType())
-					        || (getfrombinding instanceof FederClass && ((FederClass) getfrombinding).isType())) {
-						System.err.println("File=" + compiler.getName() + ", Line=" + line);
-						System.err.println("Warning: Comparing type with 'null' keyword");
-					}
-
-					// "x == null" uses double bang !!
-					//result = new StringBuilder("fdIsNull ((fdobject*) " + result + ")");
-					
-					FederRule ruleIsNull = compiler.getApplyableRuleForBuildin("bool_isnull");
-					if (ruleIsNull == null) {
-						throw new RuntimeException("buildin type 'bool_isnull' has to be available to check if an object"
-								+ " is (not) null.");
-					}
-					
-					result = new StringBuilder(ruleIsNull.applyRule(body, result.toString()));
-					if (token.equals("!=")) {
-						FederRule ruleIsFalse = compiler.getApplyRuleFor("bool_isfalse",
-								ruleIsNull.getResultValue(), null, false, true);
-						if (ruleIsFalse == null) {
-							throw new RuntimeException("Rule 'bool_isfalse' has to exist for using the '[!=]= null' operation!");
-						}
-						
-						result = new StringBuilder(ruleIsFalse.applyRule(body, result.toString(), ""));
-					}
-
-					continue;
-				}
-
-				SyntaxTreeElement ste = newBranchAt(indexToken - 1);
-				int tokensize = ste.tokens.size();
-				StringBuilder compiled = ste.compile();
-				if (ste.returnedClasses.size() != 1) {
-					throw new RuntimeException("After a compare operator must be only one object/interface");
-				}
-
-				FederBinding b1 = ste.returnedClasses.get(0);
-
-				indexToken += tokensize;
-
-				if (FederBinding.isDataType(b0) && FederBinding.isDataType(b1)) {
-					result = new StringBuilder(result + " " + stoken + " " + compiled);
-					result = new StringBuilder (ruleBool.applyRule(body, result.toString()));
-					continue;
-				} else if (FederBinding.isDataType(b0) || FederBinding.isDataType(b1)) {
-					throw new RuntimeException("Can't compare a data type to non data type object!");
-				} else {
-					FederRule ruleCompare = compiler.getApplyableRuleForBuildin("compare_objects");
-					if (ruleCompare == null) {
-						throw new RuntimeException("To be able to compare objects the buildin rule 'compare_objects' has to exist");
-					}
-
-					result = new StringBuilder(ruleCompare.applyRule(body, result.toString(), compiled.toString()));
-					if (token.equals("!=")) {
-						FederRule ruleIsFalse = compiler.getApplyRuleFor("bool_isfalse",
-								ruleCompare.getResultValue(), null, false, true);
-						if (ruleIsFalse == null) {
-							throw new RuntimeException("Rule 'bool_isfalse' has to exist for using the '!=' operator!");
-						}
-
-						result = new StringBuilder(ruleIsFalse.applyRule(body, result.toString(), ""));
-					}
-
-					continue;
-				}
-			}*/
-
 			if (token.equals("from")) {
 				/*
 				 * The 'from' operator is an operator to cast an object's class to another
@@ -2165,24 +2057,6 @@ public class SyntaxTreeElement {
 			// String ?
 
 			if (token.equals("string") && result.length() == 0) {
-/*				result = new StringBuilder("fdCreateString (\"" + stoken + "\")");
-				returnedClasses.clear();
-				FederBinding fcbinding = body.getBinding(body, "String", true);
-				if (fcbinding == null) {
-					throw new RuntimeException(
-					    "Can't use string, if there hasn't been declared a class called \"String\"!"
-					    + "\nCurrent body: " + body.getClass().getName() + " | " + body.getName());
-				} else if (!(fcbinding instanceof FederClass)) {
-					throw new RuntimeException(
-					    "A name 'String' has been created, but" + "that is not a class!");
-				}
-
-				FederClass fc = (FederClass) fcbinding;
-
-				returnedClasses.add(fc);
-				getfrombinding = fc;
-				continue;*/
-
 				FederRule rule = compiler.getApplyableRuleForBuildin ("string");
 				if (rule == null) {
 					throw new RuntimeException("No rule found for \"buildin\" type \"string\"");
@@ -2191,8 +2065,8 @@ public class SyntaxTreeElement {
 				result = new StringBuilder (rule.applyRule (body, stoken));
 				
 				returnedClasses.clear();
-				returnedClasses.add(rule.getResultValue());
-				getfrombinding = rule.getResultValue();
+				returnedClasses.add(rule.getSpecifiedResultValue());
+				getfrombinding = rule.getSpecifiedResultValue();
 
 				continue;
 			} else if (token.equals("string")) {
@@ -2328,27 +2202,6 @@ public class SyntaxTreeElement {
 			 */
 
 			if ((token.equals("false") || token.equals("true")) && !isMain) {
-				/*FederBinding fcbinding = body.getBinding(body, "bool", true);
-				if (fcbinding == null) {
-					throw new RuntimeException(
-					    "Can't use boolean value, if there hasn't been declared a class called \"bool\"!");
-				} else if (!(fcbinding instanceof FederClass)) {
-					throw new RuntimeException(
-					    "Can't use boolean value, if there's a name with the value 'bool'. But that name is not a class!");
-				}
-
-				FederClass fc = (FederClass) fcbinding;
-				returnedClasses.clear();
-				returnedClasses.add(fc);
-
-				if (fc.isType()) {
-					result = new StringBuilder(token);
-					continue;
-				}
-
-				result = new StringBuilder("fdCreateBool (" + (token.equals("true") ? "true" : "false") + ")");
-				continue;*/
-				
 				FederRule rule = compiler.getApplyableRuleForBuildin ("bool");
 				if (rule == null) {
 					throw new RuntimeException ("No applyable rule found for \"buildin\" type bool");
@@ -2357,8 +2210,8 @@ public class SyntaxTreeElement {
 				result = new StringBuilder (rule.applyRule (body, stoken));
 
 				returnedClasses.clear();
-				returnedClasses.add(rule.getResultValue());
-				getfrombinding = rule.getResultValue();
+				returnedClasses.add(rule.getSpecifiedResultValue());
+				getfrombinding = rule.getSpecifiedResultValue();
 
 				continue;
 			}
@@ -2397,8 +2250,8 @@ public class SyntaxTreeElement {
 				result = new StringBuilder (rule.applyRule (body, stoken));
 
 				returnedClasses.clear();
-				returnedClasses.add(rule.getResultValue());
-				getfrombinding = rule.getResultValue();
+				returnedClasses.add(rule.getSpecifiedResultValue());
+				getfrombinding = rule.getSpecifiedResultValue();
 
 				continue;
 			}
@@ -2408,27 +2261,6 @@ public class SyntaxTreeElement {
 			 */
 
 			if (token.equals("double") && !isMain) {
-				/*FederBinding fcbinding = body.getBinding(body, "double", true);
-				if (fcbinding == null) {
-					throw new RuntimeException(
-					    "Can't use double, if there hasn't been declared" + " a class called \"double\"!");
-				} else if (!(fcbinding instanceof FederClass)) {
-					throw new RuntimeException("The name with the value 'double' is in use, but not as a class!");
-				}
-
-				FederClass fc = (FederClass) fcbinding;
-				returnedClasses.clear();
-				returnedClasses.add(fc);
-				getfrombinding = fc;
-
-				if (fc.isType()) {
-					result = new StringBuilder(stoken);
-					continue;
-				}
-
-				result = new StringBuilder("fdCreateDouble (" + stoken + ")");
-				continue;*/
-
 				FederRule rule = compiler.getApplyableRuleForBuildin ("double");
 				if (rule == null) {
 					throw new RuntimeException ("No applyable rule found for \"buildin\" type double");
@@ -2437,8 +2269,8 @@ public class SyntaxTreeElement {
 				result = new StringBuilder (rule.applyRule (body, stoken));
 
 				returnedClasses.clear();
-				returnedClasses.add(rule.getResultValue());
-				getfrombinding = rule.getResultValue();
+				returnedClasses.add(rule.getSpecifiedResultValue());
+				getfrombinding = rule.getSpecifiedResultValue();
 
 				continue;
 			}
@@ -2453,11 +2285,16 @@ public class SyntaxTreeElement {
 				int scope = 0;
 				for (; indexToken < tokens.size(); indexToken++) {
 					//System.out.print (stringsOfTokens.get(indexToken) + " ");
-					if ((tokens.get(indexToken).equals("roperator")
+					if (!(token.equals("&&") || token.equals("||"))
+							&& (tokens.get(indexToken).equals("roperator")
 					        || tokens.get(indexToken).equals("operator")
 					        || tokens.get(indexToken).equals("!=")
 					        || tokens.get(indexToken).equals("=="))
 					        && scope == 0) {
+						break;
+					} else if ((token.equals("&&") || token.equals("||")) 
+							&& (tokens.get(indexToken).equals("&&")
+									|| tokens.get(indexToken).equals("||"))) {
 						break;
 					}
 
@@ -2510,7 +2347,7 @@ public class SyntaxTreeElement {
 					boolean found_rule = false;
 					for (FederRule rule : compiler.feder_rules) {
 						if (rule.isApplyable(stoken, lvalue, rvalue, lvalue_nothing, rvalue_nothing)) {
-							FederBinding return_value = rule.getResultValue();
+							FederBinding return_value = rule.getResultValue(lvalue, rvalue);
 							getfrombinding = return_value;
 							getfromhistory.add(return_value);
 							returnedClasses.clear();
@@ -2682,6 +2519,13 @@ public class SyntaxTreeElement {
 		    "There seems to be something wrong with the binding \"" + binding.getName() + "\"!");
 	}
 
+	/**
+	 * This method conveniently calls @link SyntaxTreeElementUtils.newBranchAt
+	 * newBranchAt @endlink with @link SyntaxTreeElement this @endlink as the
+	 * first argument.
+	 * @param index An index in the bounds of @link SyntaxTreeElement.tokens tokens @endlink.
+	 * @return Returns a new syntax tree branch
+	 */
 	public SyntaxTreeElement newBranchAt(int index) {
 		return SyntaxTreeElementUtils.newBranchAt(this, index);
 	}

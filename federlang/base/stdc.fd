@@ -282,6 +282,7 @@ namespace c_intern
 		:result->usage = 0;
 		:result->delfn = fdDeleteClassArray;
 		:result->usagefn = fdIncreaseUsageClassArray;
+		:result->length = size;
 		
 		# Create the data
 		:result->data = (fdobject**) malloc (size * sizeof (fdobject*));
@@ -290,12 +291,14 @@ namespace c_intern
 			:result->data[i] = NULL;
 		:}
 
-		:result->length = size;
 		:return result;
 	:}
 
 	:void
 	:fdDeleteClassArray (void * data) {
+		:if (!data)
+			:return;
+
 		:fdclassarray* todel = (fdclassarray*) data;
 		:for (int i = 0; i < todel->length; i++) {
 			:fdRemoveObject (todel->data[i]);
@@ -331,8 +334,11 @@ namespace c_intern
 			:return NULL;
 
 		:ar->length += 1;
-		:ar->data = (fdobject**) malloc (ar->length * sizeof (fdobject*));
-		:ar->data[ar->length-1] = fdAssignObject (obj);
+		:ar->data = (fdobject**) realloc ((void*) ar->data, ar->length * sizeof (fdobject*));
+		:if (!obj)
+		  :ar->data[ar->length - 1] = NULL;
+		:else
+		  :ar->data[ar->length - 1] = fdAssignObject (obj);
 		
 		:return ar;
 	:}
@@ -360,6 +366,8 @@ namespace c_intern
 ::rule struct decrease "fdDecreaseUsage ((fdobject*) {0})"
 ::rule struct remove "fdRemoveObject ((fdobject*) {0})"
 ::rule struct remove_func "fdRemoveObject_func ((fdobject*) {0})"
+::rule struct assign_obj "fdAssignObject ((fdobject*) {0})"
+::rule struct assign_obj_old "fdAssignObjectOld ((fdobject**) &{0}, (fdobject*) {1})"
 
 class object
 ;

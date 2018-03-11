@@ -23,8 +23,11 @@ if [ $# -eq 1 ] ; then
 fi
 
 function feder_test_program_compile {
-	./jfederc $FEDER_ADDITIONAL -I base -I tests -O "$2" -D tests/build "$1" $FDC_OPTIONS
-	return $?
+	if ./jfederc $FEDER_ADDITIONAL -I base -I tests -O "$2" -D tests/build "$1" $FDC_OPTIONS ; then
+		return 0
+	else
+		return 1
+	fi
 }
 
 feder_test_program_compile "tests/test_return_false.fd" "ret_false"
@@ -45,8 +48,7 @@ function feder_test_program_test {
 
 function feder_test {
 	echo "# Test " $1$FEDER_OUTPUT_ENDING
-	feder_test_program_compile $@
-	if [ $?  == 0 ] ; then
+	if feder_test_program_compile $@ ; then
 		feder_test_program_test tests/build/$2
 	else
 		echo "Compiler error"
@@ -55,9 +57,11 @@ function feder_test {
 
 # feder_test_program_compile "tests/test_empty.fd" "empty"
 feder_test "tests/test_bool.fd" "bool"
+feder_test "tests/test_lines.fd" "lines"
 feder_test "tests/test_if.fd" "testif"
 feder_test "tests/test_whileinif.fd" "whileinif"
 feder_test "tests/test_object_comparison.fd" "object_comparison"
+feder_test "tests/test_hexadecimal.fd" "hexadecimal"
 feder_test "tests/test_int.fd" "tint"
 feder_test "tests/test_loops.fd" "loops"
 feder_test "tests/test_real_array.fd" "real_array"

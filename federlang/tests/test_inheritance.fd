@@ -30,6 +30,11 @@ if !isEqual (p0.getAge (), 18)
 ;
 
 if !isEqual (p0.age, 18)
-	io.println ("Test 03 failed!")
+	io.println ("Test 03 failed")
+	return false
+;
+
+if !isEqual (p0.name, "Fionn Langhans")
+	io.println ("Test 04 failed")
 	return false
 ;

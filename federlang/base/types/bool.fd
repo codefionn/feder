@@ -22,11 +22,11 @@ type "bool" bool
 	;
 ;
 
+
 # Feder rules
+::rule buildin bool "{0}" bool
+
 ::rule struct "conditional_statement_bool" "{0}"
-##::rule buildin "compare_objects" "fdCompareObjects ((fdobject*) {0} , (fdobject*) {1})" bool
-::rule buildin "bool_isnull" "fdIsNull ((fdobject*) {0})" bool
-::rule func "bool_isfalse" bool.isfalse##
 
 ::rule pattern == "fdCompareObjects ((fdobject*) {0}, (fdobject*) {1})" bool !class !class
 ::rule pattern != "!fdCompareObjects ((fdobject*) {0}, (fdobject*) {1})" bool !class !class
@@ -45,6 +45,9 @@ type "bool" bool
 
 ::rule pattern == "{0} == {1}" bool bool bool
 ::rule pattern != "{0} != {1}" bool bool bool
+
+#::rule pattern && "{0} && {1}" bool bool bool
+#::rule pattern || "{0} || {1}" bool bool bool
 
 bool interface int_isEqual (object obj0, object obj1)
 
@@ -73,4 +76,3 @@ namespace c_intern_types_bool
 	:}
 ;
 
-::rule buildin bool "{0}" bool

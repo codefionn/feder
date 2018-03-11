@@ -12,5 +12,8 @@ if uname -s | grep "Cygwin" > /dev/null ; then
 	DIR_OF_JAR=$(cygpath -w ${DIR_OF_JAR})
 fi
 
-java -jar ${DIR_OF_JAR} --loption "-O2" --coption "-O2" $@ 
-exit $?
+if java -jar ${DIR_OF_JAR} --loption "-O2" --coption "-O2" $@ ; then
+	exit 0
+else
+	exit 1
+fi

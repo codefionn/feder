@@ -135,6 +135,10 @@ namespace c_intern_int
 
 # Feder ::rules
 
+# arrays
+::rule buildin at_dataarray "(({2}*) {0}->data) [{1}]" int32
+::rule buildin at_classarray "({2}) fdGetClassArrayObjectAt ({0}, {1})" int32
+
 # int16
 ::rule pattern + "{0} + {1}" int16 int16 int16
 ::rule pattern - "{0} - {1}" int16 int16 int16

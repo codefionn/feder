@@ -131,7 +131,12 @@ public class Lexer
 
 	/**
 	 * This method performs a lexical analysis. The results of the method are
-	 * softokens and tokens
+	 * saved in softokens and tokens. The method searches for strings, names,
+	 * operators, keywords and other stuff.
+	 * 
+	 * If an error occurred (something is not defined by the lexical rules), one
+	 * will be added to @link Lexer.errors errors @endlink . The error will be
+	 * printed to the console (standard output).
 	 *
 	 * @param text0 (hopefully) Feder source code
 	 */
@@ -143,14 +148,23 @@ public class Lexer
 		tpm = new TextPositionManager(0, 0, text0);
 		tpm.filename = compiler.getName();
 		errors = 0;
+		
+		int scope = 0;
 
 		while (tpm.isPosValid()) {
 
 			if (tpm.getNewLineOperatorLength(tpm.indexChar) > 0) {
-				while (linestoadd-- > 0) {
-					softokens.add("\n");
-					tokens.add("newline");
+				if (scope > 0) {
+					linestoadd++;
+					tpm.toNextLine();
+					continue;
 				}
+
+				for (; linestoadd > 0; linestoadd--) {
+					tokens.add("newline");
+					softokens.add("\n");
+				}
+
 				// New Line
 				softokens.add("\n");
 				tokens.add("newline");
@@ -159,6 +173,12 @@ public class Lexer
 			}
 
 			if (isOperator()) {
+				if (tokens.get(tokens.size()-1).equals("(")) {
+					scope++;
+				} else if (tokens.get(tokens.size()-1).equals(")")) {
+					scope--;
+				}
+
 				continue;
 			}
 			
@@ -198,8 +218,7 @@ public class Lexer
 				while (tpm.isPosValid() && !tpm.startsWith("##")) {
 					int linessc = tpm.getNewLineOperatorLength(tpm.indexChar);
 					if (linessc > 0) {
-						tokens.add("newline");
-						softokens.add("\n");
+						linestoadd++;
 						tpm.toNextLine();
 						continue;
 					}
@@ -216,11 +235,18 @@ public class Lexer
 				continue;
 			}
 
+			// One liners (comments)
 			if (tpm.startsWith("#")) {
 				tokens.add("newline");
 				softokens.add("\n");
 
 				tpm.toNextLine();
+				
+				for (; linestoadd > 0; linestoadd--) {
+					tokens.add("newline");
+					softokens.add("\n");
+				}
+				
 				continue;
 			}
 
@@ -287,7 +313,7 @@ public class Lexer
 					// Its a named operator!
 					softokens.add(name.toString());
 					tokens.add(name.toString());
-				} else if (NumberUtils.isInteger(name.toString())) {
+				} else if (NumberUtils.isInteger(name.toString()) || NumberUtils.isHexadecimalNumber(name.toString(), true)) {
 					softokens.add(name.toString());
 					tokens.add("int");
 				} else if (NumberUtils.isFloat(name.toString())) {

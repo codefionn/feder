@@ -1,0 +1,23 @@
+include "stdio.fd"
+
+class Person
+	int32 age
+	String name
+
+	Person func set (int32 age0, String name0)
+		age = age0
+		name = name0
+		return this # Never forget this, otherwise: segmentation fault
+	;
+
+	func printData
+		io.print ("Age: ")
+		io.println (age)
+		io.print ("Name: ")
+		io.println (name)
+	;
+;
+
+obj = Person.set (18, "Fionn Langhans")
+obj.printData ()
+

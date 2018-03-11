@@ -1,0 +1,18 @@
+# Testing if the lines are correctly analyzed
+# in the lexical analysis
+
+include "stdio.fd"
+
+# Multi-line string
+io.println ("Long, 
+long, 
+long, 
+String")
+
+io.println ("Short string " ## comment ## + " with comment in between")
+
+func long_func (String s0,
+String s1,
+               String s3)
+
+;
