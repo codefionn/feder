@@ -14,6 +14,11 @@ namespace h_intern_int_include
 ;
 
 type "int16_t" int16
+	##
+	# Makes 'this' negative (if you used a bound object,
+	# that object will be negetive)
+	# @return Returns 'this' (or a copy)
+	##
 	int16 func makeNegative
 		:if (*federobj_this > 0) {
 			:*federobj_this *= -1;
@@ -22,6 +27,9 @@ type "int16_t" int16
 		return this
 	;
 
+	##
+	# @return Returns a copy of 'this' type
+	##
 	int16 func cp
 		result = this
 		return result
@@ -29,6 +37,9 @@ type "int16_t" int16
 ;
 
 type "uint16_t" uint16
+	##
+	# @return Returns a copy of 'this' type
+	##
 	uint16 func cp
 		result = this
 		return result
@@ -36,6 +47,11 @@ type "uint16_t" uint16
 ;
 
 type "int32_t" int32
+	##
+	# Makes 'this' negative (if you used a bound object,
+	# that object will be negetive)
+	# @return Returns 'this' (or a copy)
+	##
 	int32 func makeNegative
 		:if (*federobj_this > 0) {
 			:*federobj_this *= -1;
@@ -44,6 +60,9 @@ type "int32_t" int32
 		return this
 	;
 
+	##
+	# @return Returns a copy of 'this' type
+	##
 	int32 func cp
 		result = this
 		return result
@@ -53,6 +72,9 @@ type "int32_t" int32
 ::rule buildin int "(fdc_int32) {0}" int32
 
 type "uint32_t" uint32
+	##
+	# @return Returns a copy of 'this' type
+	##
 	uint32 func cp
 		result = this
 		return result
@@ -60,6 +82,11 @@ type "uint32_t" uint32
 ;
 
 type "int64_t" int64
+	##
+	# Makes 'this' negative (if you used a bound object,
+	# that object will be negetive)
+	# @return Returns 'this' (or a copy)
+	##
 	int64 func makeNegative
 		:if (*federobj_this > 0) {
 			:*federobj_this *= -1;
@@ -68,6 +95,9 @@ type "int64_t" int64
 		return this
 	;
 
+	##
+	# @return Returns a copy of 'this' type
+	##
 	int64 func cp
 		result = this
 		return result
@@ -75,6 +105,9 @@ type "int64_t" int64
 ;
 
 type "uint64_t" uint64
+	##
+	# @return Returns a copy of 'this' type
+	##
 	uint64 func cp
 		result = this
 		return result
@@ -215,6 +248,9 @@ namespace c_intern_int
 ::rule pattern -= "{0} -= {1}" null int32 int32
 ::rule pattern *= "{0} *= {1}" null int32 int32
 ::rule pattern /= "{0} /= {1}" null int32 int32
+::rule pattern %= "{0} %= {1}" null int32 int32
+::rule pattern |= "{0} |= {1}" null int32 int32
+::rule pattern &= "{0} &= {1}" null int32 int32
 
 ::rule pattern > "{0} > {1}" bool int32 int32
 ::rule pattern < "{0} < {1}" bool int32 int32

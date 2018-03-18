@@ -73,7 +73,12 @@ public class Feder
 	
 	/**
 	 * @defgroup types Types
-	 * Describing types objects can have
+	 * Describing types objects can have.
+	 * These are:
+	 * 	- Arrays
+	 * 	- Classes
+	 * 	- datatypes
+	 * 	- interfaces
 	 */
 	
 	private Feder()

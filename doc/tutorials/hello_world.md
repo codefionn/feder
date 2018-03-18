@@ -22,5 +22,5 @@ functions, interfaces, types, ...) in 'io'. Next are the brackets '(' and
 ')', these mark after coming println (a binding), that we try to call 'println'
 as a function with the things inside the brackets '(' and ')'. That 'thing'
 between the brackets are arguments, in this case just one: "Hello World". This
-called a string (the class in Feder is called 'String'). "Hello World" is an
-object.
+is called a string (the class in the Feder Standard Library is called 'String').
+"Hello World" is an object.

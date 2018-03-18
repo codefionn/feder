@@ -15,9 +15,7 @@ namespace h_intern
 	:#include <string.h>
 	:#include <stdint.h>
 
-	:#ifdef DEBUG
-	:# include <stdio.h>
-	:#endif
+	:#include <stdio.h>
 
 	# Feder's classes need this typedef to be able
 	# to declare and define an interface, which deletes
@@ -368,6 +366,8 @@ namespace c_intern
 ::rule struct remove_func "fdRemoveObject_func ((fdobject*) {0})"
 ::rule struct assign_obj "fdAssignObject ((fdobject*) {0})"
 ::rule struct assign_obj_old "fdAssignObjectOld ((fdobject**) &{0}, (fdobject*) {1})"
+
+::rule struct this_is_null "if (!{0}) puts (\"This is null in file {1} in line {2}\") ;"
 
 class object
 ;

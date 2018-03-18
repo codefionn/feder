@@ -100,12 +100,17 @@ How to call the rule 'struct' ?
 The names operator can have:
 	
 	- increase: Increase the usage of an object
+
 	- decrease: Decrease the usage of an object
+
 	- remove: 'Remove' an object
 	  (decrease it's usage and if usage 0 => delete it)
-	- remove\_func: Delete object if usage 0
-	- assign\_obj: Increase the usage of the object and
+
+	- remove_func: Delete object if usage 0
+
+	- assign_obj: Increase the usage of the object and
 	  return the object
-	- assign\_obj\_old: Assign an old object to a new one => remove
+
+	- assign_obj\_old: Assign an old object to a new one => remove
 	  the old object and increase the object of the new one and return
 	  the new one

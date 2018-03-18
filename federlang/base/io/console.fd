@@ -20,7 +20,7 @@ namespace io
 		:int c;
 		:while ((c = fgetc (stdin)) != EOF && c != '\n' && c != '\r') {
 			:federobj_b = (signed char) c;
-			result.add (Byte.set (b))
+			result.addto (Byte.set (b))
 		:}
 
 		return result
@@ -58,7 +58,7 @@ namespace io
 		#:char * achars = fdStringToCString (federobj_s);
 		#:printf ("%s", achars);
 		#:free (achars);
-		c.cstring tmp_str = fdStringToCString!(s)
+		cstring tmp_str = fdStringToCString!(s)
 		printf_str!(tmp_str)
 		free (tmp_str)
 	;

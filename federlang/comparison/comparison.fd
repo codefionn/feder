@@ -28,7 +28,7 @@ startTime = sys.Time.current ()
 global toolchain = "cc"
 
 func compile_feder (String name)
-	(sys.system ("./jfederc -I base -D comparison/feder/build -O "
+	(sys.system ("./jfederc --coption -ggdb --loption -ggdb -I base -D comparison/feder/build -O "
 		.add (name).add (" comparison/feder/")
 		.add (name).add (".fd --toolchain ").add (toolchain)))
 ;
@@ -133,9 +133,11 @@ func run (String name)
 compile ("multiply")
 run ("multiply")
 
+io.println ()
 compile ("read_readme")
 run ("read_readme")
 
+io.println ()
 compile ("prime10001st")
 run ("prime10001st")
 

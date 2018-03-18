@@ -97,6 +97,8 @@ $ ./build/hello_world
 Hello, World!
 ```
 
+Examples are in /federlang/programs and little tutorials in /doc/tutorials/.
+
 ## Files
 
 ```

@@ -29,7 +29,7 @@ public class FederNamespace extends FederBody implements FederHeaderGen
 	public String generateCName()
 	{
 		// 1 to avoid any name issues
-		return "1" + getName();
+		return getName();
 	}
 
 	/**

@@ -95,7 +95,6 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 	{
 		StringBuilder sb = new StringBuilder();
 		for (FederObject arg : arguments) {
-			sb.append("0");
 			sb.append(arg.getResultType().getCodeFriendlyName());
 			sb.append("_");
 		}
@@ -144,8 +143,11 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 	@Override
 	public String generateCName()
 	{
-		return "fdfunc_" + ((getParent() instanceof FederClass) ? "3" + getParent().getName() + "_" : "")
-		       + getNamespacesToString() + argumentsToString() + getName();
+		String argstostr = argumentsToString();
+		String namespacestostr = getNamespacesToString();
+		return "fdfunc_" + ((getParent() instanceof FederClass) ? /*"3" +*/ getParent().getName() + "_" : "")
+		       + (namespacestostr.isEmpty() ? "" : ("2" + getNamespacesToString()))
+		       + (argstostr.isEmpty() ? "" : ("1" + argumentsToString())) + "0" + getName();
 	}
 
 	/**

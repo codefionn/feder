@@ -77,6 +77,32 @@ public class SyntaxTreeElement {
 	public FederCompiler compiler;
 
 	/**
+	 * The result of the 'compile' method
+	 */
+	private StringBuilder result = new StringBuilder();
+
+	/**
+	 * The currently used binding (at default the current body)
+	 * Changes if source code calls classes, objects and so on
+	 */
+	private FederBinding getfrombinding = null;
+
+	/**
+	 * This value is true if the last list element of 'tokens' was a dot
+	 */
+	private boolean wasdotinfront = false;
+
+	/**
+	 * The currently used token
+	 */
+	private String token;
+
+	/**
+	 * The currently used value of the token
+	 */
+	private String stoken;
+
+	/**
 	 * @param compiler0 The compiler instance to use
 	 * @param body0 The current body of the current compiler instance
 	 * @param line0 The current line number in the source code
@@ -154,32 +180,6 @@ public class SyntaxTreeElement {
 	private void generateEnding(String pos, boolean completely, FederObject ignore, boolean global) {
 		SyntaxTreeElementUtils.generateEnding(pos, body, completely, ignore, global);
 	}
-
-	/**
-	 * The result of the 'compile' method
-	 */
-	private StringBuilder result = new StringBuilder();
-
-	/**
-	 * The currently used binding (at default the current body)
-	 * Changes if source code calls classes, objects and so on
-	 */
-	private FederBinding getfrombinding = null;
-
-	/**
-	 * This value is true if the last list element of 'tokens' was a dot
-	 */
-	private boolean wasdotinfront = false;
-
-	/**
-	 * The currently used token
-	 */
-	private String token;
-
-	/**
-	 * The currently used value of the token
-	 */
-	private String stoken;
 
 	/**
 	 * If there's a ',' in the current scope (not between '(', ')', '[', ']') this
@@ -683,6 +683,12 @@ public class SyntaxTreeElement {
 				throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
 			}
 
+			FederRule ruleThisNull = compiler.getApplyableRuleForStruct("this_is_null");
+			if (ruleThisNull != null) {
+				result.append("\n" + body.inFrontOfSyntax())
+					.append(ruleThisNull.applyRule(body, "(*federobj_this)", compiler.getName(), String.valueOf(line)));
+			}
+
 			//result.append("\n" + body.inFrontOfSyntax() + "fdIncreaseUsage ((fdobject*) (*federobj_this));");
 			result.append("\n" + body.inFrontOfSyntax()).append(ruleIncrease.applyRule(body, "(*federobj_this)") + ";");
 		}
@@ -1093,7 +1099,12 @@ public class SyntaxTreeElement {
 				    + "which would satisfy that requirement!");
 			} else {
 				// Functions doesn't need a class
-				result = new StringBuilder(func.generateCName() + "(" + compiled + ")");
+				if (!(func instanceof FederInterface))
+					result = new StringBuilder();
+				else if (result.length() > 0)
+					result.append("->");
+
+				result.append(func.generateCName() + "(" + compiled + ")");
 			}
 
 			// Finalize function call
@@ -1214,6 +1225,10 @@ public class SyntaxTreeElement {
 					result.append(obj.getResultType().generateCName());
 				}
 			} else {
+				if (!(getfrombinding instanceof FederObject)) {
+					throw new RuntimeException ("Cannot assign a '" + getfrombinding.getClass().getName() + "'");
+				}
+
 				obj = (FederObject) getfrombinding;
 
 				if (isGlobal) {

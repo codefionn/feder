@@ -82,8 +82,8 @@ public class FederInterface extends FederBody implements FederArguments, FederHe
 			return "federobj_" + getName();
 		}
 
-		String result = "federint_" + getName();
-		return getNamespacesToString() + result;
+		String result = "0" + getName();
+		return "fdint_" + getNamespacesToString() + result;
 	}
 
 	@Override

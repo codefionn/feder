@@ -232,7 +232,7 @@ public class Syntax
 				lexer.getTokenWhitelist("newline");
 			} else if (token.equals("(")) {
 				lexer.indexList++;
-				lexer.getTokenWhitelist("name", "(", ")", "true", "false", "null", "string", "int", "double", "append", "len");
+				lexer.getTokenWhitelist("roperator", "name", "(", ")", "true", "false", "null", "string", "int", "double", "append", "len");
 			} else if (token.equals(")")) {
 				lexer.indexList++;
 				lexer.getTokenWhitelist(".", "newline", ")", ",", "(", "||", "&&", "!=", "==", "[", "]", "roperator");

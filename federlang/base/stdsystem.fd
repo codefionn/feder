@@ -18,6 +18,26 @@ namespace h_intern_stdargs
 ;
 
 namespace sys
+	namespace std
+		::if POSIX
+		global newline = "\n"
+		::elif WINDOWS
+		global newline =  "\n\r"
+		::fi
+
+		::if POSIX
+		global pathSeparator = ":"
+		::elif WINDOWS
+		global pathSeparator = ";"
+		::fi
+
+		::if POSIX
+		global pathNameSeparator = "/"
+		::elif WINDOWS
+		global pathNameSeparator = "\\"
+		::fi
+	;
+
 	::if POSIX
 	type "struct timespec " _posix_time
 	;

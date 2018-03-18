@@ -4,6 +4,11 @@ include "types/byte.fd"
 include "types/int.fd"
 include "types/double.fd"
 include "types/numcomp.fd"
+
+::ifn STRING_USE_NOT_ARRAY
+::def STRING_USE_ARRAY
+::fi
+
 ::if STRING_USE_ARRAY
 include "types/array.fd"
 ::else
@@ -14,12 +19,10 @@ namespace h_intern_string_include
 	:#include <stdio.h>
 ;
 
-namespace c
-	type "char*" cstring
-	;
+type "char*" cstring
 ;
 
-func free (c.cstring str)
+func free (cstring str)
 	:free (federobj_str);
 ;
 
@@ -45,11 +48,16 @@ class String
 	::else
 	List chars
 	::fi
+
+	bool func isEmpty
+		return chars.isEmpty ()
+	;
 ;
 
 ::rule buildin string "fdCreateString (\"{0}\")" String
+::rule buildin string_raw "fdCreateString ({0})" String
 ::rule buildin func_fdCreateString "fdCreateString ({0})" String
-::rule buildin func_fdStringToCString "fdStringToCString ({0})" c.cstring
+::rule buildin func_fdStringToCString "fdStringToCString ({0})" cstring
 
 class String
 	func init
@@ -72,10 +80,10 @@ class String
 	;
 
 	##
-	# Adds the Byte 'append_Byte' to the String
-	# AFter that, the String returns itself (this)
+	# @param append_Byte This byte will be added to the string
+	# @return Returns 'this' (itself)
 	##
-	String func add (Byte append_Byte)
+	String func addto (Byte append_Byte)
 		chars.add (object from append_Byte)
 		return this
 	;
@@ -84,7 +92,7 @@ class String
 	# This function inserts the character 'append_Byte' at
 	# position 'index'.
 	#
-	# Returns itself, if an error occured (index out of bounds),
+	# @return Returns itself. If an error occured (index out of bounds),
 	# this function will return null.
 	##
 	String func insert (Byte append_Byte, int32 index)
@@ -136,7 +144,7 @@ class String
 		len0 = length ()
 		i = 0
 		while i < len0
-			result.add (at (i).cp ())
+			result.addto (at (i).cp ())
 			i.addto (1)
 		;
 		
@@ -156,7 +164,7 @@ class String
 		i = 0
 		len0 = str0.length ()
 		while i < len0
-			add (str0.at (i))
+			addto (str0.at (i))
 			i.addto (1)
 		;
 		
@@ -282,18 +290,15 @@ class String
 	bool func startsWith (String str0, int32 index)
 		len0 = length ()
 		len1 = str0.length ()
-		i = 0
-		while i < len1
-			ii = index.add (i)
-			if !(ii < len0)
+		for i = 0, i < len1, i++
+			ii = index + i
+			if ii >= len0
 				return false
 			;
 			
 			if isEqual (at (ii), str0.at (i)).isfalse ()
 				return false
 			;
-
-			i.addto (1)
 		;
 
 		return true
@@ -310,6 +315,42 @@ class String
 	## 
 	bool func startsWith (String str0)
 		return startsWith (str0, 0)
+	;
+
+	##
+	# This function checks if this String ends with the String
+	# str0, beginning at position 'index'.
+	#
+	# @return Returns true, if the String ends with 'str0' and
+	# false if not.
+	##
+	bool func endsWith (String str0, int32 index)
+		int32 len0 = length ()
+		# Check if out of bounds
+		if (index < 0) || (index > len0)
+			return false
+		;
+
+		int32 len1 = str0.length ()
+
+		if (index - len1) < (-1)
+			# Can't end with 'str0', 'str0' is to big
+			return false
+		;
+
+		for i = len1 - 1, i >= 0, i--
+			ii = index - (len1 - 1 - i)
+			if !isEqual (at (ii), str0.at (i))
+				# Signs not equals == string doesn't end with 'str0'
+				return false
+			;
+		;
+
+		return true
+	;
+
+	bool func endsWith (String str0)
+		return endsWith (str0, length () - 1)
 	;
 
 	##
@@ -335,7 +376,7 @@ class String
 				return null
 			;
 
-			result.add (character.cp ())
+			result.addto (character.cp ())
 			i.addto (1)
 		;
 
@@ -380,7 +421,7 @@ class String
 		result = String
 		i = index_start.cp ()
 		while !(i > index_end)
-			result.add (at (index_start))
+			result.addto (at (index_start))
 			if removeAt (index_start) == null
 				return null
 			;
@@ -683,7 +724,8 @@ class String
 	;
 
 	##
-	# This function returns the index, where the first occurence of str0
+	# @param str0 The string the function should search for
+	# @return This function returns the index, where the first occurence of str0
 	# has been found. If nothing has been found, this function return null.
 	##
 	int32 func find (String str0)
@@ -701,7 +743,8 @@ class String
 	;
 
 	##
-	# This function returns 'false' if the String 'str0' was
+	# @param str0 The string the function should search for
+	# @return This function returns 'false' if the String 'str0' was
 	# not found in this String
 	##
 	bool func contains (String str0)
@@ -714,7 +757,7 @@ class String
 	# argument. If you want to replace an infinite amount of occurences, pass
 	# -1 as the count argument
 	#
-	# Returns the number of replaces elements
+	# @return Returns the number of replaces elements
 	##
 	int32 func replace (String str0, String str1, int32 count)
 		len0 = length ()
@@ -778,6 +821,52 @@ class String
 	int32 func remove (String str0)
 		return remove (str0, (1).makeNegative ())
 	;
+
+	##
+	# This function removes all space signs (turbolator: \ŧ and space: ' ')
+	# at the left side
+	# @return Returns 'this'
+	##
+	String func ltrim
+		len0 = length ()
+		for i = 0, i < len0, i++
+			if startsWith ("\t", i) || startsWith (" ", i)
+				removeAt (i)
+				len0--
+				i--
+			else
+				return this
+			;
+		;
+
+		return this
+	;
+
+	##
+	# This function removes all space signs (turbolator: \t and space: ' ')
+	# at the right side
+	# @return Returns 'this'
+	##
+	String func rtrim
+		for i = length() - 1, i >= 0, i--
+			if endsWith ("\t", i) || endsWith (" ", i)
+				removeAt (i)
+			else
+				return this
+			;
+		;
+
+		return this
+	;
+
+	##
+	# This function removes all space signs (turbolator: \t and space: ' ')
+	# at the right and left side of the string
+	# @return Returns 'this'
+	##
+	String func trim
+		return ltrim ().rtrim ()
+	;
 ;
 
 ::rule func + String.add String
@@ -809,10 +898,10 @@ namespace c_intern_String
 		:fdc_int32 i = -1;
 		:while (++i < len0) {
 		::if STRING_USE_ARRAY
-			:fdfunc_3Array_0object_add (&result->federobj_chars,
+			:fdfunc_Array_1object_0add (&result->federobj_chars,
 				:(fdc_object*) fdCreateByte ((signed char) cString [i]));
 		::else
-			:fdfunc_3List_0object_add (&result->federobj_chars,
+			:fdfunc_List_1object_0add (&result->federobj_chars,
 				:(fdc_object*) fdCreateByte ((signed char) cString [i]));
 		::fi
 		:}
@@ -824,12 +913,12 @@ namespace c_intern_String
 	:char * fdStringToCString (fdc_String * arg0) {
 	:	fdIncreaseUsage ((fdobject*) arg0);
 	:
-	:	fdc_int32 len0 = fdfunc_3String_length (&arg0);
+	:	fdc_int32 len0 = fdfunc_String_0length (&arg0);
 	:	
 	:	char * cString = (char*) malloc (sizeof (char) * (len0+1));
 	:	cString[len0] = '\0'; // 0 Terminator
 	:	for (fdc_int32 i = 0; i < len0; i++) {
-	:		fdc_Byte * fdByte = (fdc_Byte*) fdfunc_3String_0int32_at (&arg0, (fdc_int32) i);
+	:		fdc_Byte * fdByte = (fdc_Byte*) fdfunc_String_1int32_0at (&arg0, (fdc_int32) i);
 	:		cString [i] = (char) fdByte->federobj_val;
 	:	}
 	:

@@ -2,25 +2,6 @@
 .\" Copyright (C) 2018 Fionn Langhans
 .\" (fionn.langhans@gmail.com)
 .\"
-.\" %%%LICENSE_START(VERBATIM)
-.\" Permission is granted to make and distribute verbatim copies of this
-.\" manual provided the copyright notice and this permission notice are
-.\" preserved on all copies.
-.\"
-.\" Permission is granted to copy and distribute modified versions of this
-.\" manual under the conditions for verbatim copying, provided that the
-.\" entire resulting derived work is distributed under the terms of a
-.\" permission notice identical to this one.
-.\"
-.\" Since the Feder programming language is constantly changing,
-.\" this manual page may be incorrect or out-of-date.  The author(s)
-.\" assume no responsibility for errors or omissions, or for damages resulting
-.\" from the use of the information contained herein.
-.\"
-.\" Formatted or processed versions of this manual, if unaccompanied by
-.\" the source, must acknowledge the copyright and authors of this work.
-.\" %%%LICENSE_END
-.\"
 .TH FEDER 7 2018-02-15 "Feder" "Feder Manual"
 .SH NAME
 feder \- A short introduction to Feder
@@ -68,12 +49,15 @@ over several
 .\" End of Basics
 .SS Objects
 Feder handles object in three different way: as an object created with a class,
-as an object created with an interface and as an object created with a type.
+as an object created with an interface, as an object created with a type or as
+object object created with an array.
 Only the object created with a class can be a dynamic one, all others are
 static. The specifier of an object created with a class or a type can be
 guessed, but the specifier of an interface can't really be guessed, so you have
 to explicitly declare an object, which should be created with an interface, with
 an interface.
+
+The '[]' show that the object could be declared as an array with the given type.
 .TP 10
 .B Create object with class
 [

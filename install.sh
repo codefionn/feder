@@ -9,7 +9,7 @@
 # /usr/bin should be in your path variable, if you want to use jfederc instead
 # of /usr/bin/jfederc
 #
-# This script is detects Cygwin, if you use it to execute this shell script.
+# This script detects Cygwin, if you use it to execute this shell script.
 
 if (! [ -w /usr/lib ] ) ; then
   echo "Insufficient permissions, run this program as a privileged user"

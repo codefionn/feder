@@ -216,19 +216,25 @@ public class FederObject extends FederBinding implements FederHeaderGen, FederCo
 	 */
 	public String generateCName()
 	{
+		String infrontofname = "";
+		if (getParent() != null && getParent() instanceof FederNamespace) {
+			String namespacetostr = ((FederNamespace) getParent()).getNamespacesToNormalString();
+			infrontofname = (namespacetostr.isEmpty() ? "" : ("0" + namespacetostr)) + "0";
+		}
+
 		if (raw_c_gen) {
 			return getName();
 		}
 		
 		if (isGlobal && isDataType()) {
-			return "(*federobj_" + getName() + ")";
+			return "(*federobj_" + infrontofname + getName() + ")";
 		}
 
 		if (isOut) {
-			return "(*federobj_" + getName() + ")";
+			return "(*federobj_" + infrontofname + getName() + ")";
 		}
 
-		return "federobj_" + getName();
+		return "federobj_" + infrontofname + getName();
 	}
 
 	/**
@@ -236,11 +242,17 @@ public class FederObject extends FederBinding implements FederHeaderGen, FederCo
 	 */
 	public String generateCNameOnly()
 	{
+		String infrontofname = "";
+		if (getParent() != null && getParent() instanceof FederNamespace) {
+			String namespacetostr = ((FederNamespace) getParent()).getNamespacesToNormalString();
+			infrontofname = (namespacetostr.isEmpty() ? "" : ("0" + namespacetostr)) + "0";
+		}
+
 		if (raw_c_gen) {
 			return getName();
 		}
 		
-		return "federobj_" + getName();
+		return "federobj_" + infrontofname + getName();
 	}
 
 	private static final String infront = "";

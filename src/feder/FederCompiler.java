@@ -713,16 +713,42 @@ public class FederCompiler
 				if (binding_list_class == null || !(binding_list_class instanceof FederClass)) {
 					System.err.println(
 					    "WARNING: Program arguments are not supported, because 'List' hasn't been created as class!");
-					compileFile.write("\tfdobject * federobj_args = NULL;\n");
+					compileFile.write("\tfdobject * federobj_0args = NULL;\n");
 				} else {
 					FederObject args_obj = (FederObject) main.getBinding(main, "args", false);
 					args_obj.setTypeManual(binding_list_class);
 
-					compileFile.write("\tfdc_List * federobj_args = fdCreateClass_fdc_List ();\n");
-					compileFile.write("\tfdIncreaseUsage ((fdobject*) federobj_args);\n");
+					compileFile.write("\tfdc_List * " + args_obj.generateCNameOnly() + " = fdCreateClass_fdc_List ();\n");
+					
+					FederRule ruleIncrease = getApplyableRuleForStruct("increase");
+					if (ruleIncrease == null) {
+						throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
+					}
+					
+					//compileFile.write("\tfdIncreaseUsage ((fdobject*) federobj_args);\n");
+					compileFile.write(ruleIncrease.applyRule(main, args_obj.generateCName()) + ";\n");
+					
+					FederRule ruleString = getApplyableRuleForBuildin ("string_raw");
+					if (ruleString == null) {
+						throw new RuntimeException("No rule found for \"buildin\" type \"string_raw\"");
+					}
+
 					compileFile.write("\tfor (int i = 0; i < lenargs; i++) {\n");
+					FederBinding class_obj = main.getBinding(main, "object", true);
+					if (class_obj == null || !(class_obj instanceof FederClass)) {
+						throw new RuntimeException("For 'args': List has been defined, but not the class 'object'");
+					}
+
+					FederArguments list_class_add = ((FederClass) binding_list_class).getFunction(main, "add", Arrays.asList(class_obj), true);
+					if (list_class_add == null) {
+						throw new RuntimeException("For 'args': List has been created, but not a function add (object) in that class!");
+					}
+
 					compileFile.write(
-					    "\t\tfdfunc_3List_0object_add (&federobj_args, (fdc_object*) fdCreateString (vargs[i]));\n");
+					    "\t\t" + list_class_add.generateCName()
+					    + " (&" + args_obj.generateCNameOnly()
+					    + ", (" + class_obj.generateCName() + ") "
+					    + ruleString.applyRule(main, "vargs[i]") + ");\n");
 					compileFile.write("\t}\n");
 				}
 
