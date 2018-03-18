@@ -79,7 +79,12 @@ public class FederInterface extends FederBody implements FederArguments, FederHe
 	public String generateCName()
 	{
 		if (canBeCalled()) {
-			return "federobj_" + getName();
+			String infrontofname = "";
+			if (getParent() != null && getParent() instanceof FederNamespace) {
+				String namespacestostr = ((FederNamespace) getParent()).getNamespacesToString();
+				infrontofname = (namespacestostr.isEmpty() ? "" : ("0" + namespacestostr)) + "0";
+			}
+			return "federobj_" + infrontofname + getName();
 		}
 
 		String result = "0" + getName();
