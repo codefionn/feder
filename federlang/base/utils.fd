@@ -1,0 +1,10 @@
+##
+# utils.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of Feder's standard library and provides
+# classes for configurations, maps, ...
+##
+
+include "utils/map.fd"
+include "utils/config.fd"
