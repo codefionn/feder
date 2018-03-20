@@ -342,10 +342,6 @@ public abstract class FederBody extends FederBinding
 			body = body.parent;
 		}
 
-		// We don't want the file to be a namespace here
-		if (namespaces.size() > 0)
-			namespaces.remove(0);
-
 		return namespaces;
 	}
 
@@ -357,7 +353,7 @@ public abstract class FederBody extends FederBinding
 		StringBuilder result = new StringBuilder();
 		List<FederNamespace> namespaces = getNamespaces();
 		for (FederNamespace namespace : namespaces) {
-			result.append(namespace.generateCName() + "_");
+			result.append(namespace.getName() + "_");
 		}
 
 		return result.toString();
