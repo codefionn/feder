@@ -54,11 +54,11 @@ namespace math
 		return result
 	;
 
-	class Vector2n32
+	class Vector2i32
 		int32 x0
 		int32 x1
 		
-		Vector2n32 func new (int32 ax0, int32 ax1)
+		Vector2i32 func new (int32 ax0, int32 ax1)
 			x0 = ax0
 			x1 = ax1
 			return this
@@ -70,6 +70,15 @@ namespace math
 
 		double func length
 			return math.sqrt (double from lengthSqrt ())
+		;
+
+		Vector2i32 func add (Vecto2i32 v0)
+			x0 += v0.x0
+			x1 += v1.x1
+		;
+		
+		int32 func scalar (Vecto2i32 v0)
+			return x0 * v0.x0 + x1 * v0.x1
 		;
 	;
 ;

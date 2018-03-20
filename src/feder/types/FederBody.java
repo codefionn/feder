@@ -333,7 +333,7 @@ public abstract class FederBody extends FederBinding
 	public List<FederNamespace> getNamespaces()
 	{
 		List<FederNamespace> namespaces = new LinkedList<>();
-		FederBody body = parent;
+		FederBody body = this;
 		while (body != null && !(body instanceof FederMainNamespace)) {
 			if (body instanceof FederNamespace) {
 				namespaces.add(0, (FederNamespace) body);

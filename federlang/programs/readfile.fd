@@ -14,7 +14,7 @@ if isEqual (args.length (), 2).isfalse ()
 	return false
 ;
 
-file toread = file
+toread = File
 if toread.open (String from args.at (1), "r").isfalse ()
 	io.println ("Failed to open file")
 	return false

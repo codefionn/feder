@@ -7,7 +7,7 @@
 
 include "stdio.fd"
 
-file towrite = file
+towrite = File
 if towrite.open ("hello_world.txt", "w").isfalse ()
 	io.println ("Failed to file \"hello_world\"!")
 	return false

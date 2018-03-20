@@ -1,7 +1,7 @@
 
 include "stdio.fd"
 
-f = file
+f = File
 f.open ("jfederc", "r")
 
 byte b = f.readByte ()

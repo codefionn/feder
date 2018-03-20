@@ -193,7 +193,7 @@ class dir
 
 # File operations
 # This is rather easy, because its a C Standard
-class file
+class File
 	:FILE * val0;
 	int32 file_length
 	

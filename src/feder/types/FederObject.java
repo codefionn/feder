@@ -218,7 +218,7 @@ public class FederObject extends FederBinding implements FederHeaderGen, FederCo
 	{
 		String infrontofname = "";
 		if (getParent() != null && getParent() instanceof FederNamespace) {
-			String namespacetostr = ((FederNamespace) getParent()).getNamespacesToNormalString();
+			String namespacetostr = ((FederNamespace) getParent()).getNamespacesToString();
 			infrontofname = (namespacetostr.isEmpty() ? "" : ("0" + namespacetostr)) + "0";
 		}
 
@@ -244,7 +244,7 @@ public class FederObject extends FederBinding implements FederHeaderGen, FederCo
 	{
 		String infrontofname = "";
 		if (getParent() != null && getParent() instanceof FederNamespace) {
-			String namespacetostr = ((FederNamespace) getParent()).getNamespacesToNormalString();
+			String namespacetostr = ((FederNamespace) getParent()).getNamespacesToString();
 			infrontofname = (namespacetostr.isEmpty() ? "" : ("0" + namespacetostr)) + "0";
 		}
 

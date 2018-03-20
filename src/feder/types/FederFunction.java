@@ -146,7 +146,7 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 		String argstostr = argumentsToString();
 		String namespacestostr = getNamespacesToString();
 		return "fdfunc_" + ((getParent() instanceof FederClass) ? /*"3" +*/ getParent().getName() + "_" : "")
-		       + (namespacestostr.isEmpty() ? "" : ("2" + getNamespacesToString()))
+		       + (namespacestostr.isEmpty() ? "" : ("2" + namespacestostr))
 		       + (argstostr.isEmpty() ? "" : ("1" + argumentsToString())) + "0" + getName();
 	}
 
