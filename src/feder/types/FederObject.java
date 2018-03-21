@@ -50,7 +50,6 @@ public class FederObject extends FederBinding implements FederHeaderGen, FederCo
 	public boolean raw_c_gen = false;
 
 	/**
-	 * 
 	 * @param name0 the name of binding
 	 * @param parent0 the parent of this object
 	 * (can be null, but sometimes not)
