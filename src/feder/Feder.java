@@ -109,7 +109,7 @@ public class Feder
 	public static final void main(String[] args)
 	{
 		if (args.length == 0) {
-			/**
+			/*
 			 * No arguments given to the program
 			 * => print help and exit (with error code)
 			 */
@@ -142,7 +142,7 @@ public class Feder
 		boolean nomultithread = false;
 		boolean printCommands = false;
 		
-		/**
+		/*
 		 * Set the default file separator used to the one of the operating system
 		 */
 		separator = File.separator;
