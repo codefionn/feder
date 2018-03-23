@@ -8,19 +8,16 @@ import java.util.List;
  * @author Fionn Langhans
  * @ingroup compiler
  */
-public class Syntax
-{
+public class Syntax {
 
-	private Syntax()
-	{
+	private Syntax() {
 	}
 
 	/**
 	 * debug output (with one line 'ln')
 	 * @param s The string, which should be printed
 	 */
-	public static void dboutln(String s)
-	{
+	public static void dboutln(String s) {
 		System.out.println("# " + s);
 	}
 
@@ -34,8 +31,7 @@ public class Syntax
 	 * @return Returns the error message
 	 */
 	public static String error(FederCompiler c, List<String> tokens, List<String> stringsOfTokens, int line, int index,
-	                           String msg)
-	{
+	                           String msg) {
 		StringBuilder result = new StringBuilder();
 
 		result.append("File=" + c.getName() + ", Line=" + (line)).append("\n");
@@ -84,8 +80,7 @@ public class Syntax
 	 * @param lexer the lexer to use
 	 * @param msg the error description
 	 */
-	public static void error(Lexer lexer, String msg)
-	{
+	public static void error(Lexer lexer, String msg) {
 		/*
 		 * int index = 0; int line = 0; while (index < lexer.tokens.size() && line !=
 		 * lexer.tpm.line) { String token = lexer.getToken(index); if
@@ -151,8 +146,7 @@ public class Syntax
 	 * by @link Lexer.lex lex @endlink
 	 * @return Returns true, if all operations were successfully executed.
 	 */
-	public static boolean validateSyntax(Lexer lexer)
-	{
+	public static boolean validateSyntax(Lexer lexer) {
 		try {
 			_validateSyntax(lexer);
 		} catch (Exception ex) {
@@ -168,8 +162,7 @@ public class Syntax
 	 * @param lexer The lexer to use, the elements of the lexer have
 	 * to be analyzed already by @link Lexer.lex lex @endlink
 	 */
-	private static void _validateSyntax(Lexer lexer)
-	{
+	private static void _validateSyntax(Lexer lexer) {
 		lexer.indexList = 0;
 		lexer.tpm.line = 0;
 
@@ -290,16 +283,16 @@ public class Syntax
 				lexer.indexList += 2;
 				lexer.getTokenWhitelist("string");
 				lexer.indexList++;
-				
+
 				int turn = 0;
 				for (; lexer.indexList < lexer.tokens.size(); lexer.indexList++) {
 					String token0 = lexer.getTokenWhitelist("name", "null");
-					
+
 					lexer.indexList++;
 					if (lexer.tokens.size() <= lexer.indexList) {
 						throw new RuntimeException("Awaited some more tokens!");
 					}
-					
+
 					token0 = lexer.getTokenWhitelist(".", "name", "newline", "null");
 					if (token0.equals("newline"))
 						break;
@@ -308,7 +301,7 @@ public class Syntax
 						if (turn > 2) {
 							throw new RuntimeException("You can't mention a fourth value!");
 						}
-						
+
 						lexer.indexList--;
 						turn++;
 					} else if (token0.equals("null")) {
@@ -321,11 +314,11 @@ public class Syntax
 						continue;
 					}
 				}
-				
+
 				if (turn != 2) {
 					throw new RuntimeException("You have to mention a second value (left value): " + turn);
 				}
-				
+
 				lexer.indexList--;
 			} else {
 				lexer.indexList++;

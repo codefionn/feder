@@ -22,39 +22,38 @@ import feder.types.FederNamespace;
  * @author Fionn Langhans
  * @ingroup compiler
  */
-public class Feder
-{
+public class Feder {
 	/**
 	 * @mainpage Describing jfederc
 	 * jfederc is a compiler (a parser), which parses Feder source code to
 	 * C code. The compiler is a bit messy because it is the first compiler
 	 * written by me (the programmer and creator of Feder).
-	 * 
+	 *
 	 * You probably should start reading in @link Feder Feder @endlink, if
 	 * you want to modify the compiler. The 'heart' of the project is
 	 * @link SyntaxTreeElement SyntaxTreeElement @endlink, there is much
 	 * processing done. A small part of its functionality is in
 	 * @link SyntaxTreeElementUtils SyntaxTreeElementUtils @endlink.
-	 * 
+	 *
 	 * If you want to modify the behavior of certain types or structures
 	 * analyze @link feder.types.FederClass FederClass @endlink,
 	 * @link feder.types.FederInterface FederInterface @endlink,
 	 * @link feder.types.FederFunction FederFunction @endlink,
 	 * @link feder.types.FederArray FederArray @endlink
 	 * and @link feder.types.FederObject FederObject @endlink.
-	 * 
+	 *
 	 * If your aim is to hack a bit and create new operators give the
 	 * @link Syntax syntax analysis @endlink,
 	 * @link Lexer lexical anaylsis @endlink,
 	 * @link SyntaxTreeElement.compile compile @endlink a try.
-	 * 
+	 *
 	 * Currently the compiler supports:
-	 * 
+	 *
 	 *   - POSIX (like BSD, Linux)
 	 *   - WINDOWS
-	 *  
+	 *
 	 * Current development aims:
-	 * 
+	 *
 	 *   - Bugfixes
 	 *   - Comment the code
 	 *   - Improve the syntax/lexical base
@@ -65,12 +64,12 @@ public class Feder
 	 * @defgroup compiler Compiler
 	 * Contains compiler utilities
 	 */
-	
+
 	/**
 	 * @defgroup utils Utilities
 	 * Random utilities
 	 */
-	
+
 	/**
 	 * @defgroup types Types
 	 * Describing types objects can have.
@@ -80,9 +79,8 @@ public class Feder
 	 * 	- datatypes
 	 * 	- interfaces
 	 */
-	
-	private Feder()
-	{
+
+	private Feder() {
 	}
 
 	/**
@@ -102,12 +100,11 @@ public class Feder
 	public static String VERSION = "1.0";
 
 	/**
-	 * This method processes the arguments given to the program 
+	 * This method processes the arguments given to the program
 	 * and calls other functions to compile files given with the
 	 * arguments
 	 */
-	public static final void main(String[] args)
-	{
+	public static final void main(String[] args) {
 		if (args.length == 0) {
 			/*
 			 * No arguments given to the program
@@ -141,7 +138,7 @@ public class Feder
 		boolean usewincl = false;
 		boolean nomultithread = false;
 		boolean printCommands = false;
-		
+
 		/*
 		 * Set the default file separator used to the one of the operating system
 		 */
@@ -194,7 +191,7 @@ public class Feder
 				option = arg.substring(2);
 			else if (isshortoption)
 				option = arg.substring(1);
-			
+
 			if (await != null) {
 				islongoption = false;
 				isshortoption = false;
@@ -344,7 +341,7 @@ public class Feder
 			FederCompiler compiler = compile(buildDir, filetocompile,
 			                                 includeDirs, debug, systemName,
 			                                 progCC, usewincl, nomultithread,
-											 printCommands,
+			                                 printCommands,
 			                                 progOptions);
 			if (compiler == null) {
 				error = true;
@@ -416,8 +413,8 @@ public class Feder
 
 			// Add the options, which where given as arguments to the program, to the linker
 			cmd.addAll(linkerOptions); // When putting this in the beginning of
-			                           // arguments, this could cause an
-									   // bug on gcc used by Ubuntu 16.04 LTS
+			// arguments, this could cause an
+			// bug on gcc used by Ubuntu 16.04 LTS
 
 			if (printCommands) {
 				// print the compile command, if the user wants to
@@ -448,8 +445,7 @@ public class Feder
 		// Successfully exit
 	}
 
-	private static void addObjectFiles(FederCompiler c, List<String> objFiles)
-	{
+	private static void addObjectFiles(FederCompiler c, List<String> objFiles) {
 		if (!objFiles.contains(c.getNameFileObjectOnly())) {
 			objFiles.add(c.getNameFileObjectOnly());
 		}
@@ -477,14 +473,13 @@ public class Feder
 	private static FederCompiler compile(String buildDir, String filetocompile,
 	                                     List<String> includeDirs,
 	                                     boolean debug, String system,
-										 String progCC, boolean usewincl,
-										 boolean nomultithread,
-										 boolean printCommands,
-										 List<String> options)
-	{
+	                                     String progCC, boolean usewincl,
+	                                     boolean nomultithread,
+	                                     boolean printCommands,
+	                                     List<String> options) {
 		FederCompiler compiler = new FederCompiler(filetocompile, debug, system,
-		                                           progCC, usewincl,
-												   nomultithread, printCommands);
+		        progCC, usewincl,
+		        nomultithread, printCommands);
 		compiler.includeDirs.addAll(includeDirs);
 		compiler.buildDir = buildDir;
 		compiler.progCCOptions.addAll (options);
@@ -513,8 +508,7 @@ public class Feder
 	 * This option simply prints help, if the user requested it
 	 * or if the user needs some help
 	 */
-	private static void printHelp()
-	{
+	private static void printHelp() {
 		System.out.println("# jfederc - The Java Feder compiler created by Fionn Langhans");
 		System.out.println("# Made for MS Windows & POSIX systems (e.g. Linux, BSD)");
 		System.out.println();
@@ -543,8 +537,7 @@ public class Feder
 	 * @return Returns the contents of file. Throws an error if an IOException
 	 * or anything like that occured
 	 */
-	public static String getStringFromFile(File file)
-	{
+	public static String getStringFromFile(File file) {
 		if (!file.exists())
 			throw new RuntimeException("\"" + file.getPath() + "\" doesn't exist!");
 		if (!file.isFile())
@@ -570,8 +563,7 @@ public class Feder
 	 * @param filen A path, which should point to a file
 	 * @return Returns the contents of the file described by filen
 	 */
-	public static String getStringFromFile(String filen)
-	{
+	public static String getStringFromFile(String filen) {
 		File file = new File(filen.replace ("/", Feder.separator));
 		return getStringFromFile(file);
 	}

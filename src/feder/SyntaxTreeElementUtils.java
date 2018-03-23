@@ -9,8 +9,7 @@ import java.io.File;
  * @author Fionn Langhans
  * @ingroup compiler
  */
-public class SyntaxTreeElementUtils
-{
+public class SyntaxTreeElementUtils {
 
 	/**
 	 * @param index
@@ -18,8 +17,7 @@ public class SyntaxTreeElementUtils
 	 *         aware function. If the current index equals ')', the branch will be
 	 *         reaching to the next ')'.
 	 */
-	public static SyntaxTreeElement newBranchAt(SyntaxTreeElement el, int index)
-	{
+	public static SyntaxTreeElement newBranchAt(SyntaxTreeElement el, int index) {
 		List<String> tokens0 = new LinkedList<>();
 		List<String> stringsOfTokens0 = new LinkedList<>();
 
@@ -29,14 +27,14 @@ public class SyntaxTreeElementUtils
 		}
 
 		if (el.tokens.get(index).equals("(")
-				|| el.tokens.get(index).equals("[")) {
+		        || el.tokens.get(index).equals("[")) {
 
 			String open_bracket = el.tokens.get(index);
 			String close_bracket = ")";
 			if (open_bracket.equals("[")) {
 				close_bracket = "]";
 			}
-			
+
 			// System.out.println(open_bracket + ", " + close_bracket);
 
 			// Read till the next ')' (which is not in yet another scope)
@@ -96,8 +94,7 @@ public class SyntaxTreeElementUtils
 	 * @param ignore
 	 */
 	private static void generateEnding(String pos, FederBody body, StringBuilder compileTo, FederObject ignore,
-	                                   boolean global)
-	{
+	                                   boolean global) {
 		if (body instanceof FederClass) {
 			return;
 		}
@@ -135,7 +132,7 @@ public class SyntaxTreeElementUtils
 
 				//compileTo.append(body.inFrontOfSyntax()).append("fdDecreaseUsage ((fdobject*) ")
 				//	.append(obj.generateCName()).append(");\n");
-				
+
 				compileTo.append(body.inFrontOfSyntax()).append(ruleDecrease.applyRule(body, obj.generateCName()));
 				continue;
 			}
@@ -145,7 +142,7 @@ public class SyntaxTreeElementUtils
 				compileTo.append(body.inFrontOfSyntax())
 				.append("printf (\"" + pos + ". Removing object " + obj.getName() + "\\n\");\n");
 			}
-			
+
 			FederRule ruleRemove = body.getCompiler().getApplyableRuleForStruct("remove");
 			if (ruleRemove == null) {
 				throw new RuntimeException("struct rule 'remove' doesn't exist!");
@@ -166,8 +163,7 @@ public class SyntaxTreeElementUtils
 	 * @param completely
 	 * @param ignore
 	 */
-	public static void generateEnding(String pos, FederBody body, boolean completely, FederObject ignore)
-	{
+	public static void generateEnding(String pos, FederBody body, boolean completely, FederObject ignore) {
 		generateEnding(pos, body, completely, ignore, body.getMainNamespace().getCompiler().allowMain);
 	}
 
@@ -178,13 +174,11 @@ public class SyntaxTreeElementUtils
 	 * @param fmn
 	 * @param mainMethod
 	 */
-	public static void generateGlobalEnding(FederBody fmn, StringBuilder mainMethod)
-	{
+	public static void generateGlobalEnding(FederBody fmn, StringBuilder mainMethod) {
 		_generateGlobalEnding(fmn.getMainNamespace(), mainMethod);
 	}
 
-	private static void _generateGlobalEnding(FederBody fmn, StringBuilder mainMethod)
-	{
+	private static void _generateGlobalEnding(FederBody fmn, StringBuilder mainMethod) {
 		for (FederBinding bind : fmn.getBindings()) {
 			if (bind instanceof FederObject) {
 				FederObject obj = (FederObject) bind;
@@ -210,8 +204,7 @@ public class SyntaxTreeElementUtils
 	 * @return Returns a string, which contains an initializing process for all
 	 * global values used
 	 */
-	public static String generateGlobalStart(FederBody fmn)
-	{
+	public static String generateGlobalStart(FederBody fmn) {
 		StringBuilder sb = new StringBuilder();
 		for (FederBinding bind : fmn.getBindings()) {
 			if (bind instanceof FederObject) {
@@ -238,8 +231,7 @@ public class SyntaxTreeElementUtils
 	 * @param ignore
 	 */
 	public static void generateEnding(String pos, FederBody body, boolean completely, FederObject ignore,
-	                                  boolean global)
-	{
+	                                  boolean global) {
 		if (body instanceof FederClass) {
 			return;
 		}
@@ -272,8 +264,7 @@ public class SyntaxTreeElementUtils
 	 * @return
 	 */
 	public static StringBuilder command(FederCompiler compiler, SyntaxTreeElement ste,
-			FederBody currentBody, String command)
-	{
+	                                    FederBody currentBody, String command) {
 		String[] args = command.split("[\t ]");
 
 		if (args.length == 0) {
@@ -406,19 +397,19 @@ public class SyntaxTreeElementUtils
 					continue;
 				}
 			}
-			
+
 			List<String> topasstofunc = new LinkedList<>();
 			for (StringBuilder sb : list) {
 				topasstofunc.add(sb.toString());
 				//System.out.print ("'" + sb.toString() + "'' ");
 			}
-			
+
 			//System.out.println();
-			
+
 			FederRule rule = FederRule.define(currentBody, topasstofunc, ste);
 			if (rule != null) {
 				compiler.feder_rules.add(0, rule);
-				
+
 				if ((rule.getRule() & FederRule.RULE_BUILDIN) != 0) {
 					compiler.feder_buildin_rules.add(0, rule);
 				}
@@ -438,21 +429,21 @@ public class SyntaxTreeElementUtils
 
 	private static void assume (FederBody currentBody, String[] args) {
 		int turn = 0;
-		
+
 		FederBinding b0 = null;
 		FederBinding b1 = null;
-		
+
 		for (int i = 1; i < args.length; i++) {
 			String stoken = args[i];
-			
+
 			String nextToken = (i+1 == args.length ? "" : args[i+1]);
-			
+
 			FederBinding current_type = null;
 			if (turn == 0)
 				current_type = b0;
 			else if (turn == 1)
 				current_type = b1;
-			
+
 			if (!stoken.equals("null") && !stoken.equals(".")) {
 				if (current_type == null) {
 					current_type = currentBody.getBinding(currentBody, stoken, true);
@@ -463,28 +454,28 @@ public class SyntaxTreeElementUtils
 					if (!(current_type instanceof FederBody)) {
 						throw new RuntimeException("The current element '" + current_type.getName() + "' is not a body!");
 					}
-					
+
 					current_type = ((FederBody) current_type).getBinding((FederBody) current_type, stoken, false);
 					if (current_type == null && !stoken.equals("null")) {
 						throw new RuntimeException("The current element '" + stoken + "' wasn't found by the compiler!");
 					}
 				}
 			}
-			
+
 			if (turn == 0)
 				b0 = current_type;
 			else if (turn == 1)
 				b1 = current_type;
-			
+
 			if ((!nextToken.equals(".") && !nextToken.isEmpty())
-					|| nextToken.equals("null")) {
+			        || nextToken.equals("null")) {
 				if (turn > 2) {
 					throw new RuntimeException("You can't mention a third type!");
 				}
 
 				turn++;
 			} else if ((!nextToken.equals("") && !nextToken.equals("."))
-					|| (nextToken.equals(".") && stoken.equals("null"))) {
+			           || (nextToken.equals(".") && stoken.equals("null"))) {
 
 				throw new RuntimeException("Invalid " + i + " element: " + args[i+1]);
 			}
@@ -499,8 +490,7 @@ public class SyntaxTreeElementUtils
 	 * The file should be in one of the include paths.
 	 * @return Returns a generated string, which might be necessary.
 	 */
-	public static String opInclude(FederCompiler compiler, String name)
-	{
+	public static String opInclude(FederCompiler compiler, String name) {
 		if (compiler.includeDirs.size() == 0) {
 			throw new RuntimeException("No include directories were added to compiler!");
 		}
@@ -590,44 +580,206 @@ public class SyntaxTreeElementUtils
 	 * @param body
 	 * @return
 	 */
-	public static String handleNonBoolToBool(FederCompiler compiler, String s, FederClass fc, FederBody body)
-	{
+	public static String handleNonBoolToBool(FederCompiler compiler, String s,
+	        FederClass fc, FederBody body) {
 		if (fc == null) {
 			return "0";
 		}
-		
+
 		String typename_written = fc.toWrittenString();
-		FederRule rule = compiler.getApplyableRuleForStruct( "conditional_statement_" + typename_written);
+		FederRule rule = compiler.getApplyableRuleForStruct(
+		                     "conditional_statement_" + typename_written);
 		if (rule == null) {
 			compiler.fatalError = true;
-			throw new RuntimeException("struct rule 'conditional_statement_" + typename_written + "' was not found!");
+			throw new RuntimeException("struct rule 'conditional_statement_"
+			                           + typename_written + "' was not found!");
 		}
-
-		/*FederBinding binding = body.getBinding(body, "bool", true);
-		if (binding == null) {
-			throw new RuntimeException("The class/type 'bool' has to be created!");
-		}
-
-		if (!(binding instanceof FederClass)) {
-			throw new RuntimeException("The binding 'bool' does exist, but is not a type/class!");
-		}
-
-		FederClass bindingc = (FederClass) binding;*/
 
 		return rule.applyRule(body, s);
-		
-		//throw new RuntimeException("Error: operation not support");
+	}
 
-/*		FederArguments func = fc.getFunction(body, "istrue", new LinkedList<>(), false);
-		if (func == null || (func.getReturnType() != binding)) {
-			throw new RuntimeException("The class " + fc.getName() + " doesn't have a function 'bool func istrue'");
+	public static boolean isOperator (String tokenOperator) {
+		return tokenOperator.equals ("roperator")
+		       || tokenOperator.equals ("!=")
+		       || tokenOperator.equals ("==")
+		       || tokenOperator.equals ("&&")
+		       || tokenOperator.equals ("||");
+	}
+
+	private static SyntaxTreeElement parseOperatorRule (String operator,
+	        SyntaxTreeElement ste_left, SyntaxTreeElement ste_right) {
+
+		SyntaxTreeElement result = new SyntaxTreeElement(
+		    ste_left.compiler, ste_left.body, ste_left.line);
+
+		if (((ste_left.returnedClasses.size() == 1
+		        && ste_right.returnedClasses.size() == 1)
+
+		        || (ste_left.returnedClasses.size() == 0
+		            && ste_right.returnedClasses.size() == 1)
+
+		        || (ste_left.returnedClasses.size() == 1
+		            && ste_right.returnedClasses.size() == 0))) {
+
+			FederBinding lvalue = null;
+			boolean lvalue_nothing = false;
+			if (ste_left.returnedClasses.size() == 1)
+				lvalue = ste_left.returnedClasses.get(0);
+			else
+				lvalue_nothing = true;
+
+			FederBinding rvalue = null;
+			boolean rvalue_nothing = true;
+			if (ste_right.returnedClasses.size() == 1)
+				rvalue = ste_right.returnedClasses.get(0);
+			else
+				rvalue_nothing = true;
+
+			for (FederRule rule : ste_left.compiler.feder_rules) {
+				if (rule.isApplyable(operator, lvalue, rvalue, lvalue_nothing, rvalue_nothing)) {
+					FederBinding return_value = rule.getResultValue(lvalue, rvalue);
+					result.getfrombinding = return_value;
+					result.getfromhistory.add(return_value);
+
+					if (return_value != null) {
+						result.returnedClasses.add(return_value);
+					}
+
+					result.result = new StringBuilder(
+					    rule.applyRule(ste_left.body,
+					                   ste_left.result.toString(),
+					                   ste_right.result.toString()));
+
+					return result;
+				}
+			}
 		}
 
-		if (bindingc.isType()) {
-			return func.generateCName() + " (" + s + ")";
+		FederBinding lvalue = null;
+		if (ste_left.returnedClasses.size() == 1)
+			lvalue = ste_left.returnedClasses.get(0);
+
+		FederBinding rvalue = null;
+		if (ste_right.returnedClasses.size() == 1)
+			rvalue = ste_right.returnedClasses.get(0);
+
+		String s0 = "null";
+		if (lvalue != null)
+			s0 = lvalue.getName();
+
+		String s1 = "null";
+		if (rvalue != null)
+			s1 = rvalue.getName();
+
+		throw new RuntimeException("Didn't find any rule for: " + s0 + " "
+		                           + operator + " " + s1
+		                           + ", " + ste_left.returnedClasses.size()
+		                           + " " + ste_right.returnedClasses.size());
+	}
+
+	/**
+	 * The operator-precendence parsing algorithm
+	 * (look at https://en.wikipedia.org/wiki/Operator-precedence_parser
+	 * for more information)
+	 * @param operator The operator found
+	 * @param tokens
+	 * @param stringsOfTokens
+	 * @param indexStart
+	 */
+	public static SyntaxTreeElement parseOperatorPrecedence (
+	    SyntaxTreeElement ste_left,
+	    String operator,
+	    List<String> tokens,
+	    List<String> stringsOfTokens,
+	    int indexStart) {
+
+		int precedenceCurrentOperator = -1;
+		if (ste_left.compiler.operator_precedence.get (operator) != null) {
+			precedenceCurrentOperator = ste_left.compiler.operator_precedence.get (operator).intValue ();
+			//System.out.println ("# " + operator + "; prec: " + precedenceCurrentOperator);
 		}
 
-//		return "fdRemoveObject_bool((" + binding.generateCName() + ") " + func.generateCName() + "(" + s + "))";
-		return rule.applyRule(body, "(" + binding.generateCName() + ") ptr_" + func.generateCName() + "(" + s + ")"); */
+		List<String> tokens0 = new LinkedList<>();
+		List<String> stringsOfTokens0 = new LinkedList<>();
+
+		String nextToken = indexStart < tokens.size() ? tokens.get (indexStart) : "";
+		String nextStringOfToken = indexStart < stringsOfTokens.size() ? stringsOfTokens.get (indexStart) : "";
+		int precedenceNextOperator = -1;
+		if (ste_left.compiler.operator_precedence.get (nextStringOfToken) != null) {
+			precedenceNextOperator = ste_left.compiler.operator_precedence.get (nextStringOfToken).intValue ();
+			//System.out.println ("# " + nextStringOfToken + "; prec: " + precedenceNextOperator);
+		}
+
+		int scope = 0;
+
+		while (indexStart <= tokens.size() && (scope > 0 || !isOperator(nextToken)
+		                                      || precedenceNextOperator <= precedenceCurrentOperator)) {
+
+			if (nextToken.equals ("(") || nextToken.equals("[")) {
+				scope++;
+			} else if (nextToken.equals (")") || nextToken.equals("]")) {
+				scope--;
+			}
+
+			if ((scope == 0 && isOperator(nextToken)) || nextToken.isEmpty()) {
+				SyntaxTreeElement ste = new SyntaxTreeElement(
+				    ste_left.compiler,
+				    ste_left.body,
+				    ste_left.line,
+				    tokens0, stringsOfTokens0);
+
+				StringBuilder compiled = ste.compile();
+				ste.result = compiled;
+				ste_left = parseOperatorRule(operator, ste_left, ste);
+				operator = nextStringOfToken;
+
+				tokens0 = new LinkedList<>();
+				stringsOfTokens0 = new LinkedList<>();
+			} else {
+				tokens0.add (nextToken);
+				stringsOfTokens0.add (nextStringOfToken);
+			}
+
+			if (nextToken.isEmpty())
+				break;
+
+			indexStart++;
+
+			nextToken = indexStart < tokens.size() ? tokens.get (indexStart) : "";
+			nextStringOfToken = indexStart < stringsOfTokens.size() ? stringsOfTokens.get (indexStart) : "";
+			precedenceNextOperator = -1;
+			if (ste_left.compiler.operator_precedence.get (nextStringOfToken) != null) {
+				precedenceNextOperator = ste_left.compiler.operator_precedence.get (nextStringOfToken).intValue ();
+				// System.out.println ("# " + nextStringOfToken + "; prec: " + precedenceNextOperator);
+			}
+		}
+
+		if (nextToken.isEmpty()) {
+			/*ste_right = new SyntaxTreeElement (
+			    ste_left.compiler,
+			    ste_left.body,
+			    ste_left.line,
+			    tokens0,
+			    stringsOfTokens0);*/
+			return ste_left;
+		}
+
+		SyntaxTreeElement ste = new SyntaxTreeElement(
+		    ste_left.compiler,
+		    ste_left.body,
+		    ste_left.line,
+		    tokens0, stringsOfTokens0);
+
+		StringBuilder sb = ste.compile();
+		ste.result = sb;
+
+		SyntaxTreeElement ste_right = parseOperatorPrecedence (ste,
+											nextStringOfToken,
+											tokens, stringsOfTokens,
+											indexStart + 1);
+
+		// System.out.println(tokens0.size() + ", " + ste_right.result.toString());
+
+		return parseOperatorRule (operator, ste_left, ste_right);
 	}
 }

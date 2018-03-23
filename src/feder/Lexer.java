@@ -11,8 +11,7 @@ import feder.utils.TextPositionManager;
  * @author Fionn Langhans
  * @ingroup compiler
  */
-public class Lexer
-{
+public class Lexer {
 	/**
 	 * This are the strings of the tokens, which only differ if the token is a name
 	 */
@@ -29,21 +28,20 @@ public class Lexer
 
 	private int linestoadd = 0;
 
-	public Lexer(FederCompiler compiler0)
-	{
+	public Lexer(FederCompiler compiler0) {
 		compiler = compiler0;
 	}
 
 	public static final List<String> OPERATORS = Arrays.asList("==", "!=", "(", ")", ",", ".", "=", ";", "||", "&&",
 	        "[]", "[", "]");
-	
+
 	/**
 	 * Operators for Feder's rules
 	 */
 	public static final List<String> RULE_OPERATORS = Arrays.asList(">=", "<=", "<", ">", "+=", "-=", "*=", "/=", "%=",
-			"&=", "|=", "!",
-			"++", "--", "+", "-", "*", "/", "%", "^", "&", "|");
-	
+	        "&=", "|=", "!",
+	        "++", "--", "+", "-", "*", "/", "%", "^", "&", "|");
+
 	/**
 	 * Operators which have names
 	 * (regular expr. (POSIX standard): [a-zA-Z_][a-zA-Z0-9_]*)
@@ -51,13 +49,12 @@ public class Lexer
 	public static final List<String> NAMED_OPERATOR = Arrays.asList("func", "class", "namespace", "if", "while", "for","else",
 	        "continue", "break", "return", "true", "false", "null", "include", "import", "interface", "from", "global",
 	        "type", "len", "append");
-	
+
 	/**
 	 * Returns the numbers of tokens in the current line
 	 * @return
 	 */
-	public int tokensinline()
-	{
+	public int tokensinline() {
 		int i;
 		int result = 0;
 		for (i = tokens.size() - 1; i >= 0 && !tokens.get(i).equals("newline"); i--) {
@@ -72,8 +69,7 @@ public class Lexer
 	 * @param index index in the input text
 	 * @param msg Error message
 	 */
-	public void error(int index, String msg)
-	{
+	public void error(int index, String msg) {
 		for (int i = tokens.size() - 1; i >= 0 && !tokens.get(i).equals("newline"); i--) {
 			tokens.remove(i);
 		}
@@ -85,11 +81,10 @@ public class Lexer
 
 	/**
 	 * Same as tpm.startsWith(s)
-	 * @param s 
+	 * @param s
 	 * @return true if text at the current index starts with 's'
 	 */
-	public boolean startsWith(String s)
-	{
+	public boolean startsWith(String s) {
 		return tpm.startsWith(s);
 	}
 
@@ -97,8 +92,7 @@ public class Lexer
 	 * This function increases tpm.indexChar, if an operator was found.
 	 * @return Returns true, if the current token is an operator
 	 */
-	private boolean isOperator()
-	{
+	private boolean isOperator() {
 		for (String operator : OPERATORS) {
 			if (startsWith(operator)) {
 				tokens.add(operator);
@@ -110,13 +104,12 @@ public class Lexer
 
 		return false;
 	}
-	
+
 	/**
 	 * This function increases tpm.indexChar, if an operator was found.
 	 * @return Returns true, if the current token is an operator
 	 */
-	private boolean isRuleOperator()
-	{
+	private boolean isRuleOperator() {
 		for (String operator : RULE_OPERATORS) {
 			if (startsWith(operator)) {
 				tokens.add("roperator");
@@ -133,22 +126,21 @@ public class Lexer
 	 * This method performs a lexical analysis. The results of the method are
 	 * saved in softokens and tokens. The method searches for strings, names,
 	 * operators, keywords and other stuff.
-	 * 
+	 *
 	 * If an error occurred (something is not defined by the lexical rules), one
 	 * will be added to @link Lexer.errors errors @endlink . The error will be
 	 * printed to the console (standard output).
 	 *
 	 * @param text0 (hopefully) Feder source code
 	 */
-	public void lex(String text0)
-	{
+	public void lex(String text0) {
 		tokens = new LinkedList<>();
 		softokens = new LinkedList<>();
 		postoken = new LinkedList<>();
 		tpm = new TextPositionManager(0, 0, text0);
 		tpm.filename = compiler.getName();
 		errors = 0;
-		
+
 		int scope = 0;
 
 		while (tpm.isPosValid()) {
@@ -181,7 +173,7 @@ public class Lexer
 
 				continue;
 			}
-			
+
 			if (isRuleOperator())
 				continue;
 
@@ -241,12 +233,12 @@ public class Lexer
 				softokens.add("\n");
 
 				tpm.toNextLine();
-				
+
 				for (; linestoadd > 0; linestoadd--) {
 					tokens.add("newline");
 					softokens.add("\n");
 				}
-				
+
 				continue;
 			}
 
@@ -349,11 +341,10 @@ public class Lexer
 	 * Returns the token at 'index'
 	 * @param index
 	 * @return
-	 * 
+	 *
 	 * @error Possible error, if index is out of the bounds of tokens
 	 */
-	public String getToken(int index)
-	{
+	public String getToken(int index) {
 		if (index >= tokens.size()) {
 			throw new RuntimeException("Expected a token, but none is available!");
 		}
@@ -364,8 +355,7 @@ public class Lexer
 	/**
 	 * @return Returns the token at the current index (indexList)
 	 */
-	public String getToken()
-	{
+	public String getToken() {
 		return getToken(indexList);
 	}
 
@@ -373,12 +363,11 @@ public class Lexer
 	 * @param index
 	 * @param allowed_tokens
 	 * @return Returns the token at index
-	 * 
+	 *
 	 * @error If the current token is not in allowed_tokens an error
 	 * is thrown
 	 */
-	public String getTokenWhitelist(int index, String... allowed_tokens)
-	{
+	public String getTokenWhitelist(int index, String... allowed_tokens) {
 		String token = getToken(index);
 		StringBuilder summary = new StringBuilder();
 		for (String allowed_token : allowed_tokens) {
@@ -399,12 +388,11 @@ public class Lexer
 	/**
 	 * @param allowed_tokens
 	 * @return Returns the token at the current index
-	 * 
+	 *
 	 * @error If the current token is not in allowed_tokens an error
 	 * is thrown
 	 */
-	public String getTokenWhitelist(String... allowed_tokens)
-	{
+	public String getTokenWhitelist(String... allowed_tokens) {
 		return getTokenWhitelist(indexList, allowed_tokens);
 	}
 
@@ -412,8 +400,7 @@ public class Lexer
 	 * @param index an index in the bounds of softokens
 	 * @return Returns softokens.get(index)
 	 */
-	public String getStringOfToken(int index)
-	{
+	public String getStringOfToken(int index) {
 		if (index >= softokens.size()) {
 			throw new RuntimeException("Expected a token, but none is available!");
 		}
@@ -424,16 +411,14 @@ public class Lexer
 	/**
 	 * @return Returns the current value of the current token
 	 */
-	public String getStringOfToken()
-	{
+	public String getStringOfToken() {
 		return getStringOfToken(indexList);
 	}
 
 	/**
 	 * Debug output
 	 */
-	public void dbgOutput()
-	{
+	public void dbgOutput() {
 		for (String token : tokens) {
 			if (token.equals("newline")) {
 				System.out.print(token + " ");

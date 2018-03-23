@@ -6,7 +6,8 @@ import feder.types.*;
 
 /**
  * The heart of the Java Feder compiler (jFC or jfederc). A syntax tree element
- * can split itself if needed.
+ * can split itself if needed
+ * (in the @link SyntaxTreeElement.compile compile @endlink ) method.
  *
  * @author Fionn Langhans
  * @ingroup compiler
@@ -79,18 +80,18 @@ public class SyntaxTreeElement {
 	/**
 	 * The result of the 'compile' method
 	 */
-	private StringBuilder result = new StringBuilder();
+	public StringBuilder result = new StringBuilder();
 
 	/**
 	 * The currently used binding (at default the current body)
 	 * Changes if source code calls classes, objects and so on
 	 */
-	private FederBinding getfrombinding = null;
+	public FederBinding getfrombinding = null;
 
 	/**
 	 * This value is true if the last list element of 'tokens' was a dot
 	 */
-	private boolean wasdotinfront = false;
+	public boolean wasdotinfront = false;
 
 	/**
 	 * The currently used token
@@ -116,7 +117,7 @@ public class SyntaxTreeElement {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param compiler0 The compiler instance to use
 	 * @param body0 The current body of the current compiler instance
 	 * @param line0 The current line number in the source code
@@ -137,7 +138,24 @@ public class SyntaxTreeElement {
 	 * Current read position in the list 'tokens'|'stringsOfTokens'
 	 */
 	public int indexToken;
-	private List<FederBinding> getfromhistory = new LinkedList<>();
+	public List<FederBinding> getfromhistory = new LinkedList<>();
+
+	/**
+	 * Sets many public available objects from this class to the
+	 * ones used in element.
+	 */
+	public void set (SyntaxTreeElement element) {
+		returnedClasses = element.returnedClasses;
+		body = element.body;
+		line = element.line;
+		//isMain = element.isMain;
+		//isGlobal = element.isGlobal;
+		returnedObject = element.returnedObject;
+		results_list = element.results_list;
+		result = element.result;
+		indexToken = element.indexToken;
+		compiler = element.compiler;
+	}
 
 	/**
 	 * @return Returns true if the current scope (tokens between '(' and ')' are
@@ -248,7 +266,7 @@ public class SyntaxTreeElement {
 	 * A type declaration:
 	 *     type '"' [native_type] '"' [feder_binding]
 	 * @return Returns compiled source code
-	 * 
+	 *
 	 * @ingroup types
 	 */
 	private StringBuilder workOnTypeDeclaration() {
@@ -283,7 +301,7 @@ public class SyntaxTreeElement {
 	 *     class [feder_binding] [existing_classes]*
 	 *
 	 * @return Returns compiled source code
-	 * 
+	 *
 	 * @ingroup types
 	 */
 	private StringBuilder workOnClassDeclaration() {
@@ -335,7 +353,7 @@ public class SyntaxTreeElement {
 			               + body.inFrontOfSyntax() + "PFDDELETE delfn;\n"
 			               + body.inFrontOfSyntax() + "PFDUSAGE usagefn;\n"
 			               + body.inFrontOfSyntax() + "PFDEXISTS existsPointer;\n"
-						   + body.inFrontOfSyntax() + "char flag;\n");
+			               + body.inFrontOfSyntax() + "char flag;\n");
 		}
 
 		return result0;
@@ -379,7 +397,7 @@ public class SyntaxTreeElement {
 	 *
 	 * @param token
 	 * @return Returns compiled source code
-	 * 
+	 *
 	 * @ingroup types
 	 */
 	private StringBuilder workOnFunctionDeclaration(String tokbeg) {
@@ -457,7 +475,7 @@ public class SyntaxTreeElement {
 
 			if (body.getParent() instanceof FederClass && !((FederClass) body.getParent()).isType()) {
 				result.append("\n").append(body.inFrontOfSyntax());
-				
+
 				FederRule ruleIncrase = compiler.getApplyableRuleForStruct("increase");
 				if (ruleIncrase == null) {
 					throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
@@ -538,7 +556,7 @@ public class SyntaxTreeElement {
 					if (!(getfrombinding instanceof FederClass) && !(getfrombinding instanceof FederInterface)) {
 						throw new RuntimeException("Object can only declared with a class/interface/datatype/array!");
 					}
-					
+
 					for (FederObject obj0 : func.arguments) {
 						if (obj0.getName().equals(stoken)) {
 							throw new RuntimeException("The function already contains an argument with the same name!");
@@ -669,9 +687,9 @@ public class SyntaxTreeElement {
 			if (!arg.isGarbagable())
 				continue;
 
-/*			result.append(body.inFrontOfSyntax()).append("fdIncreaseUsage ((fdobject*) ").append(arg.generateCName())
-			.append(");");*/
-			
+			/*			result.append(body.inFrontOfSyntax()).append("fdIncreaseUsage ((fdobject*) ").append(arg.generateCName())
+						.append(");");*/
+
 			FederRule ruleIncrease = compiler.getApplyableRuleForStruct("increase");
 			if (ruleIncrease == null) {
 				throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
@@ -689,7 +707,7 @@ public class SyntaxTreeElement {
 			FederRule ruleThisNull = compiler.getApplyableRuleForStruct("this_is_null");
 			if (ruleThisNull != null) {
 				result.append("\n" + body.inFrontOfSyntax())
-					.append(ruleThisNull.applyRule(body, "(*federobj_this)", compiler.getName(), String.valueOf(line)));
+				.append(ruleThisNull.applyRule(body, "(*federobj_this)", compiler.getName(), String.valueOf(line)));
 			}
 
 			//result.append("\n" + body.inFrontOfSyntax() + "fdIncreaseUsage ((fdobject*) (*federobj_this));");
@@ -802,7 +820,7 @@ public class SyntaxTreeElement {
 				if (obj.isForced) {
 					result.append("(").append(obj.getResultType().generateCName()).append(") ");
 				}
-				
+
 				FederRule ruleAssign = compiler.getApplyableRuleForStruct("assign_obj");
 				if (ruleAssign == null) {
 					throw new RuntimeException("The struct rule 'assign_obj' doesn't exist!");
@@ -814,7 +832,7 @@ public class SyntaxTreeElement {
 				if (ruleAssignOld == null) {
 					throw new RuntimeException("The struct rule 'assign_obj_old' doesn't exist");
 				}
-				
+
 				result = new StringBuilder(ruleAssignOld.applyRule(body, resultold0.toString(), compiled.toString()));
 			} else if (obj.isDataType()) {
 				if (isNew)
@@ -853,7 +871,7 @@ public class SyntaxTreeElement {
 
 	/**
 	 * Search for || and && and !, in current scope. If found it
-	 * creates several 
+	 * creates several
 	 */
 	private boolean fixBoolOperatorsInCurrentScope() {
 		List<String> tokens0 = new ArrayList<>();
@@ -866,7 +884,7 @@ public class SyntaxTreeElement {
 			if (token0.equals("=") && incurrentscope == 0) {
 				return false;
 			}
-			
+
 			if (token0.equals("(") || token0.equals("[")) {
 				// Scope 'out'
 				incurrentscope++;
@@ -918,12 +936,12 @@ public class SyntaxTreeElement {
 				compiler.fatalError = true;
 				throw new RuntimeException("The buildin rule 'bool' doesn't exist!");
 			}
-			
+
 			returnedClasses.clear();
 			returnedClasses.add(rule.getSpecifiedResultValue());
 			getfromhistory.add(rule.getSpecifiedResultValue());
 			getfrombinding = rule.getSpecifiedResultValue();
-			
+
 			result = new StringBuilder(rule.applyRule(body, result.toString()));
 		}
 
@@ -934,7 +952,7 @@ public class SyntaxTreeElement {
 	/**
 	 * This method tries to interpret a random name as something useful.
 	 * The result is stored in result, getfrombinding/getfromhistory or returnedClasses.
-	 * 
+	 *
 	 * This method handles function calls, object calls, object declaration, object initialization
 	 * or anything else related to bindings (objects, classes, namespaces, functions, interface, ...).
 	 */
@@ -945,35 +963,35 @@ public class SyntaxTreeElement {
 
 		String nextToken = (indexToken < tokens.size() ? tokens.get(indexToken) : "newline");
 		String nextsToken = (indexToken < tokens.size() ? stringsOfTokens.get(indexToken) : "");
-		
+
 		if (nextsToken.equals("!") && indexToken+1 < tokens.size() && tokens.get(indexToken+1).equals("(")) {
 			// Must be a buildin function call
-			
+
 			/*if (!isMain) {
 				throw new RuntimeException("Buildin function must be called in main context!");
 			}*/
-			
+
 			if (isGlobal) {
 				throw new RuntimeException("Invalid use of the 'global' keyword");
 			}
-			
+
 			SyntaxTreeElement ste = newBranchAt(indexToken+1);
 			int tokenslen = ste.tokens.size();
 			StringBuilder compiled = ste.compile();
-			
+
 			FederRule ruleBuildin = compiler.getApplyableRuleForBuildin("func_" + stoken);
 			if (ruleBuildin != null) {
 				getfrombinding = ruleBuildin.getSpecifiedResultValue();
 				getfromhistory.add(ruleBuildin.getSpecifiedResultValue());
 				returnedClasses.clear();
 				returnedClasses.add(ruleBuildin.getSpecifiedResultValue());
-				
+
 				result = new StringBuilder(ruleBuildin.applyRule(body, compiled.toString()));
 			} else {
 				getfrombinding = null;
 				result.append(stoken + "(" + compiled.toString() + ")");
 			}
-			
+
 			indexToken += 3 + tokenslen;
 			return;
 		}
@@ -1422,7 +1440,7 @@ public class SyntaxTreeElement {
 	}
 
 	/**
-	 * @return Returns true, if an assignment operator ('=') is in 
+	 * @return Returns true, if an assignment operator ('=') is in
 	 * the current scope (not between () or [])
 	 */
 	public boolean isAssignmentOperatorInCurrentScope () {
@@ -1451,33 +1469,33 @@ public class SyntaxTreeElement {
 	 * of SyntaxTreeElement are a new branch of the tree). The given elements should have
 	 * been analyzed by @link Syntax.validateSyntax validateSyntax @endlink , otherwise
 	 * something like a NullPointerException can occur.
-	 * 
+	 *
 	 * If @link SyntaxTreeElement.isMain isMain @endlink is true, the source code can declare
 	 * functions, classes, namespaces, types, interfaces or conditional statements. If true, it
 	 * is also possible to create new bound objects or assign bound object to another object.
-	 * 
+	 *
 	 * If @link SyntaxTreeElement.isGlobal isGlobal @endlink is true, the source code can
 	 * declare global objects. Anything else must not work (is prohibited).
-	 * 
+	 *
 	 * If @link SyntaxTreeElement.body body @endlink changes to the main parent and the last body
 	 * was an automate (conditional statement), the operation executing this method, should generate
 	 * and end to that body. If the body is not the parent body, an end should be generated, because
 	 * a new else (if) statement has started.
-	 * 
+	 *
 	 * If something is 'returned' (not the 'return' keyword) by the analysed code it will be
 	 * stored in getfrombinding and getfromhistory. If the 'returned' thing is an object, it
 	 * will also be added to @link SyntaxTreeElement.returnedClasses returnedClasses @endlink .
-	 * 
+	 *
 	 * Specific bodies must not be declared in certain bodies. E.g.: You can't declare a method
 	 * in another method or a class in class. This is managed by @link FederBody.blacklist_classes
 	 * blacklist_classes @endlink
-	 * 
+	 *
 	 * @return Returns code for the compile file "*.c", header file "*.h" or main method.
 	 * This depends on the body (SyntaxTreeElement.body) the current branch uses, so
 	 * another instance should decide, where to put this source code (you probably should append
 	 * it to @link feder.types.FederBody.compile_file_text FederBody.compile_file_text @endlink
 	 * and later decide where to put it).
-	 * 
+	 *
 	 * Normally throws a RuntimeException, if the input was wrong. If other errors
 	 * are thrown by this method, then there is a problem in the source code.
 	 */
@@ -1486,7 +1504,7 @@ public class SyntaxTreeElement {
 			getfrombinding = body;
 			wasdotinfront = false;
 		}
-		
+
 		indexToken = 0;
 
 		if (parent == null) {
@@ -1753,34 +1771,34 @@ public class SyntaxTreeElement {
 				if (FederBinding.isDataType (ar.getType())) {
 					/*result.insert(0, "((" + ar.getType().generateCName() + "*)");
 					result.append("->data)[" + compiled.toString() + "]");*/
-					
+
 					FederRule ruleArrayDataAt = compiler.getApplyableRuleForBuildin("at_dataarray");
 					if (ruleArrayDataAt == null) {
 						throw new RuntimeException("The buildin rule 'at_dataarray' doesn't exist");
 					}
-					
+
 					if (!FederBinding.areSameTypes(ste.returnedClasses.get(0), ruleArrayDataAt.getSpecifiedResultValue())) {
 						throw new RuntimeException("Result type of 'at_dataarray' is not the same as in the '[]' brackets!");
 					}
-					
+
 					result = new StringBuilder (ruleArrayDataAt.applyRule(body, result.toString(), compiled.toString(), ar.getType().generateCName()));
 				} else {
 					FederRule ruleClassArrayAt = compiler.getApplyableRuleForBuildin("at_classarray");
 					if (ruleClassArrayAt == null) {
 						throw new RuntimeException("The buildin rule 'at_classarray' doesn't exist!");
 					}
-					
+
 					if (!FederBinding.areSameTypes(ste.returnedClasses.get(0), ruleClassArrayAt.getSpecifiedResultValue())) {
 						throw new RuntimeException("Result type of 'at_dataarray' is not the same as in the '[]' brackets!");
 					}
-					
+
 					result = new StringBuilder(ruleClassArrayAt.applyRule(body, result.toString(), compiled.toString(), ar.getType().generateCName()));
 				}
 
 				returnedClasses.add(ar.getType());
 				getfromhistory.add(ar.getType());
 				getfrombinding = ar.getType();
-	
+
 				if (isMain && indexToken < tokens.size() && tokens.get(indexToken).equals("=")) {
 					FederObject tmpobj = new FederObject(result.toString(), body);
 					tmpobj.isForced = true;
@@ -1788,7 +1806,7 @@ public class SyntaxTreeElement {
 					tmpobj.setTypeManual(ar.getType());
 					workOnAssignment(tmpobj, false);
 				}
-				
+
 				continue;
 			}
 
@@ -1900,10 +1918,10 @@ public class SyntaxTreeElement {
 
 				for (int i = 1; i < ste.returnedClasses.size(); i++) {
 					FederBinding binding = ste.returnedClasses.get(i);
-/*					if (!(binding instanceof FederClass) || !((FederClass) binding).isType()) {
-						throw new RuntimeException("Only 'append (array ar, type obj, ..)' is acceptable: "
-						                           + "Argument " + i + " is not a data type!");
-					}*/
+					/*					if (!(binding instanceof FederClass) || !((FederClass) binding).isType()) {
+											throw new RuntimeException("Only 'append (array ar, type obj, ..)' is acceptable: "
+											                           + "Argument " + i + " is not a data type!");
+										}*/
 
 					FederClass fc = (FederClass) binding;
 					if (!FederBinding.areSameTypes(fc, ar.getType())) {
@@ -2081,7 +2099,7 @@ public class SyntaxTreeElement {
 				}
 
 				result = new StringBuilder (rule.applyRule (body, stoken));
-				
+
 				returnedClasses.clear();
 				returnedClasses.add(rule.getSpecifiedResultValue());
 				getfrombinding = rule.getSpecifiedResultValue();
@@ -2176,12 +2194,12 @@ public class SyntaxTreeElement {
 					generateEnding("File=" + compiler.getName() + ", Line=" + (line), true, null);
 					return new StringBuilder ("return return_result;\n");
 				}
-				
+
 				FederRule ruleIncrease = compiler.getApplyableRuleForStruct("increase");
 				if (ruleIncrease == null) {
 					throw new RuntimeException("struct rule 'increase' doesn't exist!");
 				}
-				
+
 				FederRule ruleDecrease = compiler.getApplyableRuleForStruct("decrease");
 				if (ruleDecrease == null) {
 					throw new RuntimeException("struct rule 'decrease' doesn't exist!");
@@ -2294,7 +2312,8 @@ public class SyntaxTreeElement {
 			}
 
 			if (token.equals("roperator") || token.equals("operator")
-					|| token.equals("==") || token.equals("!=")) {
+			        || token.equals("==") || token.equals("!=")) {
+				/*
 				// Look if a rule is applyable
 				List<String> tokens0 = new LinkedList<>();
 				List<String> stringsOfTokens0 = new LinkedList<>();
@@ -2310,7 +2329,7 @@ public class SyntaxTreeElement {
 					        || tokens.get(indexToken).equals("=="))
 					        && scope == 0) {
 						break;
-					} else if ((token.equals("&&") || token.equals("||")) 
+					} else if ((token.equals("&&") || token.equals("||"))
 							&& (tokens.get(indexToken).equals("&&")
 									|| tokens.get(indexToken).equals("||"))) {
 						break;
@@ -2373,19 +2392,6 @@ public class SyntaxTreeElement {
 								returnedClasses.add(return_value);
 							}
 
-							/*String s0 = "null";
-							if (lvalue != null) {
-								s0 = lvalue.getName() + "|" + rule.getLValue().getName();
-							}
-
-							String s1 = "null";
-							if (rvalue != null) {
-								s1 = rvalue.getName() + "|" + rule.getRValue().getName();
-							}
-							System.out.println("Found rule for: " + s0 + " " + stoken + " " + s1);
-							System.out.println("LValue: " + result);
-							System.out.println("RValue: " + compiled);*/
-
 							result = new StringBuilder(rule.applyRule(body, result.toString(), compiled.toString()));
 							found_rule = true; // To let the method know, that there was no error
 							break;
@@ -2420,7 +2426,7 @@ public class SyntaxTreeElement {
 
 							return result;
 						}
-						
+
 						continue;
 					}
 				}
@@ -2442,7 +2448,12 @@ public class SyntaxTreeElement {
 					s1 = rvalue.getName();
 
 				throw new RuntimeException("Didn't find any rule for: " + s0 + " " + stoken + " " + s1
-				                           + ", " + returnedClasses.size() + " " + ste.returnedClasses.size());
+				                           + ", " + returnedClasses.size() + " " + ste.returnedClasses.size());*/
+
+				SyntaxTreeElement ste = SyntaxTreeElementUtils.parseOperatorPrecedence (
+				                            this, stoken, tokens, stringsOfTokens, indexToken);
+				set(ste);
+				break;
 			}
 
 			throw new RuntimeException("Unrecognized token: " + token + ", " + stoken);

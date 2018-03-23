@@ -66,5 +66,5 @@ exit \$?
 EOF
 fi
 
-chmod a+x /usr/bin/jfedercnolib # Allow exeuction (all users)
+chmod a+x /usr/bin/jfedercnolib # Allow execution (all users)
 

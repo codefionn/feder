@@ -9,3 +9,14 @@ if result != 2
 	io.println (result)
 	return false
 ;
+
+# Also testing precedence
+result = 5 + 2 * 4
+
+# without precedence: 28
+# with: 13
+
+if result != 13
+	io.println ("Error: " + result)
+	return false
+;
