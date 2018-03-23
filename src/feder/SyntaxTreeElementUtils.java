@@ -677,6 +677,76 @@ public class SyntaxTreeElementUtils {
 		                           + " " + ste_right.returnedClasses.size());
 	}
 
+	private static int getOperatorPrecedence (SyntaxTreeElement ste,
+		String operator) {
+
+		Integer precedenceValue = ste.compiler.operator_precedence.get(operator);
+		if (precedenceValue == null)
+			return -1;
+
+		return precedenceValue.intValue();
+	}
+
+	private static int lookaheadOperator (SyntaxTreeElement ste,
+		int minPrecedence,
+		List<String> tokens, List<String> stringsOfTokens, int indexStart) {
+
+		int scope = 0;
+		int i;
+		for (i = indexStart; i < tokens.size()
+			&& (scope > 0
+				|| !isOperator(tokens.get(i))
+				|| getOperatorPrecedence(ste, stringsOfTokens.get(i)) >= minPrecedence); i++) {
+
+			if (tokens.get(i).equals("(") || tokens.get(i).equals("["))
+				scope++;
+			else if (tokens.get(i).equals("(") || tokens.get(i).equals("["))
+				scope--;
+		}
+
+		return i;
+	}
+
+	private static int lookaheadNextOperator (SyntaxTreeElement ste,
+		int precedence, int maxLen,
+		List<String> tokens, List<String> stringsOfTokens, int indexStart) {
+
+		int scope = 0;
+		int i;
+		for (i = indexStart; i < tokens.size()
+			&& i < maxLen
+			&& (scope > 0
+				|| !isOperator(tokens.get(i))
+				|| getOperatorPrecedence(ste, stringsOfTokens.get(i)) > precedence) ; i++) {
+
+			if (tokens.get(i).equals("(") || tokens.get(i).equals("["))
+				scope++;
+			else if (tokens.get(i).equals("(") || tokens.get(i).equals("["))
+				scope--;
+		}
+
+		if (i > maxLen)
+			i = maxLen;
+
+		return i;
+	}
+
+	private static SyntaxTreeElement createInRange (SyntaxTreeElement ste,
+		List<String> tokens, List<String> stringsOfTokens,
+		int indexStart, int indexEnd) {
+
+		List<String> tokens0 = new LinkedList<>();
+		List<String> stringsOfTokens0 = new LinkedList<>();
+
+		for (int i = indexStart; i <= indexEnd; i++) {
+			tokens0.add(tokens.get(i));
+			stringsOfTokens0.add(stringsOfTokens.get(i));
+		}
+
+		return new SyntaxTreeElement(ste.compiler, ste.body, ste.line,
+			tokens0, stringsOfTokens0);
+	}
+
 	/**
 	 * The operator-precendence parsing algorithm
 	 * (look at https://en.wikipedia.org/wiki/Operator-precedence_parser
@@ -693,93 +763,51 @@ public class SyntaxTreeElementUtils {
 	    List<String> stringsOfTokens,
 	    int indexStart) {
 
-		int precedenceCurrentOperator = -1;
-		if (ste_left.compiler.operator_precedence.get (operator) != null) {
-			precedenceCurrentOperator = ste_left.compiler.operator_precedence.get (operator).intValue ();
-			//System.out.println ("# " + operator + "; prec: " + precedenceCurrentOperator);
-		}
+		int minPrecedence = getOperatorPrecedence(ste_left, operator);
+		int indexNextLessOperator = lookaheadOperator (ste_left, minPrecedence,
+			tokens, stringsOfTokens, indexStart);
 
-		List<String> tokens0 = new LinkedList<>();
-		List<String> stringsOfTokens0 = new LinkedList<>();
+		int indexNextOperator;
+		while ((indexNextOperator = lookaheadNextOperator (ste_left, minPrecedence,
+				indexNextLessOperator,
+				tokens, stringsOfTokens, indexStart)) <= indexNextLessOperator) {
 
-		String nextToken = indexStart < tokens.size() ? tokens.get (indexStart) : "";
-		String nextStringOfToken = indexStart < stringsOfTokens.size() ? stringsOfTokens.get (indexStart) : "";
-		int precedenceNextOperator = -1;
-		if (ste_left.compiler.operator_precedence.get (nextStringOfToken) != null) {
-			precedenceNextOperator = ste_left.compiler.operator_precedence.get (nextStringOfToken).intValue ();
-			//System.out.println ("# " + nextStringOfToken + "; prec: " + precedenceNextOperator);
-		}
+			SyntaxTreeElement ste_right = createInRange(ste_left,
+				tokens, stringsOfTokens, indexStart, indexNextOperator - 1);
+			ste_right.result = ste_right.compile();
 
-		int scope = 0;
+			SyntaxTreeElement old_ste_left = ste_left;
 
-		while (indexStart <= tokens.size() && (scope > 0 || !isOperator(nextToken)
-		                                      || precedenceNextOperator <= precedenceCurrentOperator)) {
-
-			if (nextToken.equals ("(") || nextToken.equals("[")) {
-				scope++;
-			} else if (nextToken.equals (")") || nextToken.equals("]")) {
-				scope--;
+			try {
+				ste_left = parseOperatorRule(operator, ste_left, ste_right);
+			} catch (Exception ex) {
+				throw ex;
 			}
 
-			if ((scope == 0 && isOperator(nextToken)) || nextToken.isEmpty()) {
-				SyntaxTreeElement ste = new SyntaxTreeElement(
-				    ste_left.compiler,
-				    ste_left.body,
-				    ste_left.line,
-				    tokens0, stringsOfTokens0);
-
-				StringBuilder compiled = ste.compile();
-				ste.result = compiled;
-				ste_left = parseOperatorRule(operator, ste_left, ste);
-				operator = nextStringOfToken;
-
-				tokens0 = new LinkedList<>();
-				stringsOfTokens0 = new LinkedList<>();
+			if (indexNextOperator < tokens.size()) {
+				operator = stringsOfTokens.get(indexNextOperator);
+				indexStart = indexNextOperator + 1;
+				if (indexNextOperator == indexNextLessOperator)
+					break;
 			} else {
-				tokens0.add (nextToken);
-				stringsOfTokens0.add (nextStringOfToken);
-			}
-
-			if (nextToken.isEmpty())
-				break;
-
-			indexStart++;
-
-			nextToken = indexStart < tokens.size() ? tokens.get (indexStart) : "";
-			nextStringOfToken = indexStart < stringsOfTokens.size() ? stringsOfTokens.get (indexStart) : "";
-			precedenceNextOperator = -1;
-			if (ste_left.compiler.operator_precedence.get (nextStringOfToken) != null) {
-				precedenceNextOperator = ste_left.compiler.operator_precedence.get (nextStringOfToken).intValue ();
-				// System.out.println ("# " + nextStringOfToken + "; prec: " + precedenceNextOperator);
+				ste_left.parent = old_ste_left;
+				return ste_left;
 			}
 		}
 
-		if (nextToken.isEmpty()) {
-			/*ste_right = new SyntaxTreeElement (
-			    ste_left.compiler,
-			    ste_left.body,
-			    ste_left.line,
-			    tokens0,
-			    stringsOfTokens0);*/
-			return ste_left;
+		SyntaxTreeElement ste_right = parseOperatorPrecedence (ste_left,
+			operator,
+			tokens, stringsOfTokens, indexNextLessOperator+1);
+
+		if (ste_right.parent == ste_left)
+			return ste_right;
+		
+		try {
+			ste_left = parseOperatorRule(operator, ste_left, ste_right);
+		} catch (Exception ex) {
+			throw ex;
 		}
 
-		SyntaxTreeElement ste = new SyntaxTreeElement(
-		    ste_left.compiler,
-		    ste_left.body,
-		    ste_left.line,
-		    tokens0, stringsOfTokens0);
-
-		StringBuilder sb = ste.compile();
-		ste.result = sb;
-
-		SyntaxTreeElement ste_right = parseOperatorPrecedence (ste,
-											nextStringOfToken,
-											tokens, stringsOfTokens,
-											indexStart + 1);
-
-		// System.out.println(tokens0.size() + ", " + ste_right.result.toString());
-
-		return parseOperatorRule (operator, ste_left, ste_right);
+		return ste_left;
 	}
 }

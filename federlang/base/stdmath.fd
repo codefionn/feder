@@ -72,12 +72,12 @@ namespace math
 			return math.sqrt (double from lengthSqrt ())
 		;
 
-		Vector2i32 func add (Vecto2i32 v0)
+		Vector2i32 func add (Vector2i32 v0)
 			x0 += v0.x0
-			x1 += v1.x1
+			x1 += v0.x1
 		;
 		
-		int32 func scalar (Vecto2i32 v0)
+		int32 func scalar (Vector2i32 v0)
 			return x0 * v0.x0 + x1 * v0.x1
 		;
 	;

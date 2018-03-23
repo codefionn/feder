@@ -20,3 +20,9 @@ if result != 13
 	io.println ("Error: " + result)
 	return false
 ;
+
+result = 2 * 4 + 5 * 2
+if result != 18
+	io.println ("Error 3: " + result)
+	return false
+;
