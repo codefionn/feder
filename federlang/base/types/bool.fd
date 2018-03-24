@@ -46,8 +46,8 @@ type "bool" bool
 ::rule pattern == "{0} == {1}" bool bool bool
 ::rule pattern != "{0} != {1}" bool bool bool
 
-#::rule pattern && "{0} && {1}" bool bool bool
-#::rule pattern || "{0} || {1}" bool bool bool
+::rule pattern && "{0} && {1}" bool bool bool
+::rule pattern || "{0} || {1}" bool bool bool
 
 bool interface int_isEqual (object obj0, object obj1)
 

@@ -576,18 +576,22 @@ class object
 
 # Now the precedences of the standard operators are set
 # Arithmetic
-::rule precedence + 30
-::rule precedence - 30
-::rule precedence * 40
-::rule precedence / 40
+::rule precedence + 50
+::rule precedence - 50
+::rule precedence * 60
+::rule precedence / 60
 # binary
-::rule precedence % 20
-::rule precedence | 20
+::rule precedence % 30
+::rule precedence | 30
 # boolean
 ::rule precedence ! 20
 # boolean comparison
-::rule precedence != 10
-::rule precedence == 10
+::rule precedence != 20
+::rule precedence == 20
+::rule precedence >= 20
+::rule precedence <= 20
+::rule precedence >  20
+::rule precedence <  20
 # boolean combinations
-::rule precedence && 00
-::rule precedence || 00
+::rule precedence && 10
+::rule precedence || 10

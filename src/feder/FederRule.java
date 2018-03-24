@@ -696,7 +696,7 @@ public class FederRule {
 		}
 
 		if (ste.compiler.operator_precedence.containsKey (args.get (2))) {
-		ste.compiler.operator_precedence.remove (args.get (2));
+			ste.compiler.operator_precedence.remove (args.get (2));
 		}
 
 		ste.compiler.operator_precedence.put (args.get (2), Integer.parseInt (args.get (3)));

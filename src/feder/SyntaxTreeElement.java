@@ -1694,8 +1694,8 @@ public class SyntaxTreeElement {
 		/*
 		 * Bool_ean operators: ||, &&
 		 */
-		if (fixBoolOperatorsInCurrentScope())
-			return result;
+		//if (fixBoolOperatorsInCurrentScope())
+		//	return result;
 
 		/*
 		 * Operators used in loops (continue, break)
@@ -2312,143 +2312,8 @@ public class SyntaxTreeElement {
 			}
 
 			if (token.equals("roperator") || token.equals("operator")
-			        || token.equals("==") || token.equals("!=")) {
-				/*
-				// Look if a rule is applyable
-				List<String> tokens0 = new LinkedList<>();
-				List<String> stringsOfTokens0 = new LinkedList<>();
-
-				int startingFrom = indexToken;
-				int scope = 0;
-				for (; indexToken < tokens.size(); indexToken++) {
-					//System.out.print (stringsOfTokens.get(indexToken) + " ");
-					if (!(token.equals("&&") || token.equals("||"))
-							&& (tokens.get(indexToken).equals("roperator")
-					        || tokens.get(indexToken).equals("operator")
-					        || tokens.get(indexToken).equals("!=")
-					        || tokens.get(indexToken).equals("=="))
-					        && scope == 0) {
-						break;
-					} else if ((token.equals("&&") || token.equals("||"))
-							&& (tokens.get(indexToken).equals("&&")
-									|| tokens.get(indexToken).equals("||"))) {
-						break;
-					}
-
-					if (tokens.get(indexToken).equals("(")
-					        || tokens.get(indexToken).equals("[")) {
-						scope++;
-					} else if (tokens.get(indexToken).equals(")")
-					           || tokens.get(indexToken).equals("]")) {
-						scope--;
-					}
-
-					tokens0.add(tokens.get(indexToken));
-					stringsOfTokens0.add(stringsOfTokens.get(indexToken));
-				}
-
-				//System.out.println ();
-
-				SyntaxTreeElement ste = new SyntaxTreeElement(compiler, body, line, tokens0, stringsOfTokens0);
-
-				StringBuilder compiled = null;
-				boolean success = true;
-				try {
-					compiled = ste.compile();
-					if (compiled == null)
-						compiled = new StringBuilder();
-				} catch (Exception ex) {
-					indexToken = startingFrom + ste.indexToken;
-					currentInUse = this;
-					throw new RuntimeException(ex.getMessage());
-				}
-
-				if (success && ((returnedClasses.size() == 1 && ste.returnedClasses.size() == 1)
-				                || (returnedClasses.size() == 0 && ste.returnedClasses.size() == 1)
-				                || (returnedClasses.size() == 1 && ste.returnedClasses.size() == 0))) {
-
-					FederBinding lvalue = null;
-					boolean lvalue_nothing = false;
-					if (returnedClasses.size() == 1)
-						lvalue = returnedClasses.get(0);
-					else
-						lvalue_nothing = true;
-
-					FederBinding rvalue = null;
-					boolean rvalue_nothing = true;
-					if (ste.returnedClasses.size() == 1)
-						rvalue = ste.returnedClasses.get(0);
-					else
-						rvalue_nothing = true;
-
-					boolean found_rule = false;
-					for (FederRule rule : compiler.feder_rules) {
-						if (rule.isApplyable(stoken, lvalue, rvalue, lvalue_nothing, rvalue_nothing)) {
-							FederBinding return_value = rule.getResultValue(lvalue, rvalue);
-							getfrombinding = return_value;
-							getfromhistory.add(return_value);
-							returnedClasses.clear();
-							if (return_value != null) {
-								returnedClasses.add(return_value);
-							}
-
-							result = new StringBuilder(rule.applyRule(body, result.toString(), compiled.toString()));
-							found_rule = true; // To let the method know, that there was no error
-							break;
-						}
-					}
-
-					if (found_rule) {
-						if (indexToken < tokens.size()) {
-							tokens0 = new LinkedList<>();
-							stringsOfTokens0 = new LinkedList<>();
-
-							//System.out.print ("found_rule: ");
-
-							for (int i = indexToken; i < tokens.size(); i++) {
-							//	System.out.print (stringsOfTokens.get(i) + " ");
-								tokens0.add(tokens.get(i));
-								stringsOfTokens0.add(stringsOfTokens.get(i));
-							}
-
-							//System.out.println();
-
-							ste = new SyntaxTreeElement(compiler, body, line, tokens0, stringsOfTokens0);
-
-							ste.result = result;
-							ste.getfrombinding = getfrombinding;
-							ste.returnedClasses = returnedClasses;
-							ste.getfromhistory = getfromhistory;
-
-							result = ste.compile();
-
-							getfrombinding = ste.getfrombinding;
-
-							return result;
-						}
-
-						continue;
-					}
-				}
-
-				FederBinding lvalue = null;
-				if (returnedClasses.size() == 1)
-					lvalue = returnedClasses.get(0);
-
-				FederBinding rvalue = null;
-				if (ste.returnedClasses.size() == 1)
-					rvalue = ste.returnedClasses.get(0);
-
-				String s0 = "null";
-				if (lvalue != null)
-					s0 = lvalue.getName();
-
-				String s1 = "null";
-				if (rvalue != null)
-					s1 = rvalue.getName();
-
-				throw new RuntimeException("Didn't find any rule for: " + s0 + " " + stoken + " " + s1
-				                           + ", " + returnedClasses.size() + " " + ste.returnedClasses.size());*/
+			        || token.equals("==") || token.equals("!=")
+			        || token.equals("&&") || token.equals("||")) {
 
 				SyntaxTreeElement ste = SyntaxTreeElementUtils.parseOperatorPrecedence (
 				                            this, stoken, tokens, stringsOfTokens, indexToken);
