@@ -56,8 +56,24 @@ public class Feder {
 	 *
 	 *   - Bugfixes
 	 *   - Comment the code
-	 *   - Improve the syntax/lexical base
 	 *   - Give more and more competences to the library files written in Feder
+	 *
+	 * How the compiler works:
+	 *   
+	 *   - The given files (as arguments) are read and processed by
+	 *     FederCompiler and there with Lexer and Syntax (lexical 
+	 *     and syntax analysis)
+	 *   - FederCompiler creates
+	 *     @link SyntaxTreeElement SyntaxTreeElements @endlink, which then
+	 *     parse the Feder source to C with the help of the library files
+	 *     in feder.types
+	 *
+	 * Several points describing how the compiler reads the source code:
+	 *   - This compiler is a top-down compiler (meaning method and
+	 *     again methods are called to process the source code)
+	 *   - For operator (e.g. arithmetic operators) a operator-precedence
+	 *     parse operation is used (in SyntaxTreeElementUtils)
+	 *   - The compiler reads all lines from the left to the right
 	 */
 
 	/**

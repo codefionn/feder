@@ -126,3 +126,14 @@ feder
     src             Source files for the Java Feder compiler
     uninstall.sh 	Uninstall files & directories installed by install.sh
 ```
+
+## Documentation
+
+Documentation can be found in /doc and if you want a documentation run
+
+```
+$ doxygen doxyconf
+```
+
+in the main directory of the project. This generated a HTML documentation
+in /doc/java_api.
