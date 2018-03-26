@@ -183,12 +183,6 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 	public String generateInHeader ()
 	{
 		String result = new String();
-		/*result += "struct _array" + generateCNameOnly() + ";\n"
-						+ "typedef struct _array" + generateCNameOnly() + " " + generateCNameOnly() + ";\n"
-						+ "void fdDeleteClass_array" + generateCNameOnly() + "(void * data);\n"
-						+ generateCName() + " fdCreateClass_array" + generateCNameOnly() + " (int size);\n"
-						+ "void fdIncreaseUsage_array" + generateCNameOnly() + "(fdobject * object, int usage);\n";*/
-
 		if (isType()) {
 			return result + "\n" + compile_file_text.toString();
 		}
@@ -197,10 +191,8 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 		                + "typedef struct _" + generateCNameOnly() + " " + generateCNameOnly() + ";\n"
 		                + "void fdDeleteClass_" + generateCNameOnly() + " (void * data);\n"
 		                + generateCName() + " fdCreateClass_" + generateCNameOnly() + " ();\n"
-						+ "void fdIncreaseUsage_"
-		                + generateCNameOnly() + " (fdobject * object, int usage);" + "\n"
-						+ "bool fdExistsObject_" + generateCNameOnly()
-						+ " (fdobject * obj0, fdobject * objToCheck);\n";
+						+ "bool fdGetElement_" + generateCNameOnly()
+						+ " (fdobject * obj0, int index);\n";
 
 		return result;
 	}
@@ -232,7 +224,7 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 			result.append(generateCName()).append("*) &result);\n");
 		}
 
-		for (FederBinding binding : getBindings()) {
+		/*for (FederBinding binding : getBindings()) {
 			if (!(binding instanceof FederObject))
 				continue;
 			if (!((FederObject) binding).isGarbagable())
@@ -243,7 +235,7 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 			}
 
 			result.append("  fdRemoveObject ((fdobject*) ((" + generateCName() + ") result)->" + binding.generateCName() + ");\n");
-		}
+		}*/
 
 		result.append("  free ((" + generateCName() + ") result);\n");
 
@@ -256,13 +248,7 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 		result.append(" result = (" + generateCName());
 		result.append( ") malloc (sizeof (" + generateCNameOnly() + "));\n");
 
-		result.append("  ").append("result->usage = 1;\n");
-		result.append("  ").append("result->existsPointer = ");
-		result.append("fdExistsObject_").append(generateCNameOnly());
-		result.append(";\n");
-
-		result.append("  ").append("result->usagefn = ");
-		result.append("fdIncreaseUsage_");
+		result.append("  result->getelement = fdGetElement_");
 		result.append(generateCNameOnly()).append(";\n");
 
 		result.append("  ").append("result->delfn = ");
@@ -285,68 +271,34 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 			result.append("*) &result);\n");
 		}
 
-		result.append("result->usage -= 1;\n");
-
 		// result.append(" result->usage = 0;\n");
 		result.append("  return result;\n");
 
 		result.append("}\n\n");
 
-		result.append("void fdIncreaseUsage_").append(generateCNameOnly());
-		result.append("(fdobject * object, int usage) {\n");
-		result.append("  if (usage) {\n");
-		result.append("    object->usage++;\n");
-
-		/*
-		 * for (FederBinding binding : getBindings()) { if (binding instanceof
-		 * FederObject) { FederObject obj = (FederObject) binding; if
-		 * (obj.isInterface()) continue;
-		 *
-		 * result.append("    fdIncreaseUsage (((").append(generateCName());
-		 * result.append("*) object)->").append(obj.generateCName());
-		 * result.append(");\n"); } }
-		 */
-
-		result.append("  } else {\n");
-		result.append("    object->usage--;\n");
-
-		/*
-		 * for (FederBinding binding : getBindings()) { if (binding instanceof
-		 * FederObject) { FederObject obj = (FederObject) binding; if
-		 * (obj.isInterface()) continue;
-		 *
-		 * result.append("    fdDecreaseUsage (((").append(generateCName());
-		 * result.append("*) object)->").append(obj.generateCName());
-		 * result.append(");\n"); } }
-		 */
-
-		result.append("  }\n}\n\n");
-
-		// fdExistsObject_class - function
-
-		result.append("bool fdExistsObject_");
-		result.append(generateCNameOnly());
-		result.append("(fdobject * obj0, fdobject * objToCheck) {\n");
-
-		result.append("  " + generateCName() + " cobj = (" + generateCName());
-		result.append(") obj0;\n");
-
+		result.append("fdobject*\n");
+		result.append("fdGetElement_" + generateCNameOnly());
+		result.append(" (fdobject* obj, int index) {\n");
+		result.append("  " + generateCNameOnly() + "* c = (");
+		result.append(generateCNameOnly() + "*) obj;\n);\n");
+		int index = 0;
 		for (FederBinding binding : getBindings()) {
-			if (!(binding instanceof FederObject))
+			if (!(binding instanceof FederObject)
 				continue;
-			
-			FederObject obj = (FederObject) binding;
-			if (!obj.isClassObject()) {
-				continue;
-			}
 
-			result.append("  if ((void*) cobj->" + obj.generateCName());
-			result.append(" == (void*) objToCheck) {\n");
+			FederObject obj = (FederObject) binding;
+			if (fc.isDataType())
+				continue;
 			
-			result.append("    return true;\n  }\n");
+			result.append("  if (index == " + index + ")\n");
+			result.append("    return c->" + obj.generateCNameOnly() + "\n");
+			index++;
 		}
 
+		result.append("  return NULL;\n");
 		result.append("}\n\n");
+
+		result.append("\n");
 
 		return result.toString();
 	}

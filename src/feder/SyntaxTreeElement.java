@@ -349,11 +349,16 @@ public class SyntaxTreeElement {
 			                .substring(fc.getInheritParent().compile_file_text.indexOf("\n") + 1);
 			result0.append(substr);
 		} else {
-			result0.append(body.inFrontOfSyntax() + "int usage;\n"
-			               + body.inFrontOfSyntax() + "PFDDELETE delfn;\n"
-			               + body.inFrontOfSyntax() + "PFDUSAGE usagefn;\n"
-			               + body.inFrontOfSyntax() + "PFDEXISTS existsPointer;\n"
-			               + body.inFrontOfSyntax() + "char flag;\n");
+			FederRule ruleHeader = compiler.getApplyableRuleForStruct("basic_object_header");
+			if (ruleHeader == null) {
+				throw new RuntimeException("Basic structure header");
+			}
+
+			/*result0.append(body.inFrontOfSyntax() + "int usage;\n"
+			               + body.inFrontOfSyntax() + "PFDGETELEMENT getelement;\n"
+						   + body.inFrontOfSyntax() + "int length;\n"
+			               + body.inFrontOfSyntax() + "char flag;\n");*/
+			result0.append (ruleHeader.getToApply());
 		}
 
 		return result0;
