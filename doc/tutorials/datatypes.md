@@ -19,7 +19,7 @@ In the example one can see, that the generel describtion of a declaration
 of a datatype is:
 
 ```
-'type' space '"' [C type] '"' space [Binding name]
+'type' [space] '"' [C type] '"' [space] [Binding name]
 [datatype body]
 ';'
 ```

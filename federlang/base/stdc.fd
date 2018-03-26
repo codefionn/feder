@@ -7,11 +7,11 @@
 ##
 
 namespace h_intern
-	::if POSIX
+::if POSIX
 	# Sometimes POSIX headers (or POSIX operations included
 	# in C standard headers) are necessary (if available)
 	:#define _POSIX_C_SOURCE 200809L
-	::fi
+::fi
 
 	# Include some C files
 	:#include <stdlib.h>

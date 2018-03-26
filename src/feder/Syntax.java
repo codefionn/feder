@@ -202,7 +202,7 @@ public class Syntax {
 				}
 			} else if (token.equals("=")) {
 				lexer.indexList++;
-				lexer.getTokenWhitelist("name", "(", "int", "double", "string", "true", "false", "null", "len", "append");
+				lexer.getTokenWhitelist("name", "(", "int", "double", "string", "char", "true", "false", "null", "len", "append");
 			} else if (token.equals("name")) {
 				lexer.indexList++;
 				String token0 = lexer.getTokenWhitelist(".", "name", "=", "func", "(", ")", "newline", "!", "interface",
@@ -225,10 +225,14 @@ public class Syntax {
 				lexer.getTokenWhitelist("newline");
 			} else if (token.equals("(")) {
 				lexer.indexList++;
-				lexer.getTokenWhitelist("roperator", "name", "(", ")", "true", "false", "null", "string", "int", "double", "append", "len");
+				lexer.getTokenWhitelist("roperator", "name", "(", ")", "true",
+				                        "false", "null", "string", "char",
+										"int", "double", "append", "len");
 			} else if (token.equals(")")) {
 				lexer.indexList++;
-				lexer.getTokenWhitelist(".", "newline", ")", ",", "(", "||", "&&", "!=", "==", "[", "]", "roperator");
+				lexer.getTokenWhitelist(".", "newline", ")", ",", "(", "||",
+				                        "&&", "!=", "==", "[", "]",
+										"roperator");
 			} else if (token.equals(";")) {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("newline");
@@ -237,7 +241,9 @@ public class Syntax {
 				lexer.getTokenWhitelist("name");
 			} else if (token.equals("return")) {
 				lexer.indexList++;
-				lexer.getTokenWhitelist("(", "int", "double", "string", "name", "null", "true", "false", "newline", "roperator");
+				lexer.getTokenWhitelist("(", "int", "double", "string", "char",
+				                        "name", "null", "true", "false",
+										"newline", "roperator");
 			} else if (token.equals("null")) {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("newline", ")", ",", "&&", "||", "roperator");
@@ -256,15 +262,16 @@ public class Syntax {
 				lexer.getTokenWhitelist("newline", "if");
 			} else if (token.equals("from")) {
 				lexer.indexList++;
-				lexer.getTokenWhitelist("name", "int", "float", "double", "string", "char", "true", "false",
+				lexer.getTokenWhitelist("name", "int", "float", "double",
+				                        "string", "char", "true", "false",
 				                        "(", "null");
-			} else if (token.equals("==") || token.equals("!=")) {
+			}/* else if (token.equals("==") || token.equals("!=")) {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("name", "!", "(", "null", "int", "double", "roperator");
-			} else if (token.equals("global")) {
+			}*/ else if (token.equals("global")) {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("name");
-			} else if (token.equals("typen")) {
+			} else if (token.equals("type")) {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("string");
 				lexer.indexList++;

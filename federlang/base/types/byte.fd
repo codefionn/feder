@@ -14,16 +14,64 @@ namespace h_intern_bool_include
 ;
 
 type "signed char" byte
+	bool func isAlpha
+		bool result
+		:federobj_result = (fdc_bool) isalpha (*federobj_this);
+		return result
+	;
+
 	bool func isDigit
-		:return (fdc_bool) isdigit (*federobj_this);
+		bool result
+		:federobj_result = (fdc_bool) isdigit (*federobj_this);
+		return result
+	;
+
+	bool func isGraph
+		bool result
+		:federobj_result = (fdc_bool) isgraph (*federobj_this);
+		return result
+	;
+
+	bool func isLower
+		bool result
+		:federobj_result = (fdc_bool) islower (*federobj_this);
+		return result
+	;
+
+	bool func isUpper
+		bool result
+		:federobj_result = (fdc_bool) isupper (*federobj_this);
+		return result
+	;
+
+	bool func isPrint
+		bool result
+		:federobj_result = (fdc_bool) isprint (*federobj_this);
+		return result
+	;
+
+	bool func isPunct
+		bool result
+		:federobj_result = (fdc_bool) ispunct (*federobj_this);
+		return result
+	;
+
+	bool func isHexdecimal
+		bool result
+		:federobj_result = (fdc_bool) isxdigit (*federobj_this);
+		return result
 	;
 
 	byte func upper
-		:return toupper (*federobj_this);
+		byte result
+		:federobj_result = (fdc_byte) toupper (*federobj_this);
+		return result
 	;
 
 	byte func lower
-		:return tolower (*federobj_this);
+		byte result
+		:federobj_result = (fdc_byte) tolower (*federobj_this);
+		return result
 	;
 ;
 
@@ -43,6 +91,14 @@ namespace c_intern_byte
 	:fdAppendToTypeArray_fdc_byte (fdtypearray* ar, signed char n) {
 		:return fdAppendToTypeArray (ar, (char*) &n);
 	:}
+;
+
+::rule buildin char "(fdc_byte) '{0}'" byte
+
+type "signed char" byte
+	bool func isNewLine
+		return this == '\n' || this == '\r'
+	;
 ;
 
 class Byte

@@ -247,6 +247,7 @@ public class Lexer {
 			// Strings!
 			if (c == '\"' || c == '\'') {
 				tpm.indexChar++;
+				char stringOpeningChar = c;
 
 				int indexBeginning = tpm.indexChar;
 				char cBeginning = c;
@@ -282,7 +283,12 @@ public class Lexer {
 				tpm.indexChar++;
 
 				// Add string to tokens
-				tokens.add("string");
+				if (stringOpeningChar == '\'') {
+					tokens.add("char");
+				} else {
+					tokens.add("string");
+				}
+
 				softokens.add(s.toString());
 
 				continue;

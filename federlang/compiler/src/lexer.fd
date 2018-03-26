@@ -1,0 +1,157 @@
+##
+# @file This file offers an lexer, which
+# analysis a file with a given buffer. A tokenizer.
+##
+
+include "stdio.fd"
+
+namespace compiler
+	namespace lexer
+		##
+		# This interface should provide a function, which reads through
+		# a whole buffer (e.g.: A file or string). When the buffer reaches
+		# its end, eof ('\0') should be returned.
+		# @param The reader (could be file ...)
+		# @return Returns a byte in the next buffer position
+		##
+		byte interface int_readbyte (object reader)
+
+		##
+		# This interface should provide a function, which closes a give
+		# buffer
+		# @param reader The buffer, which should be closed
+		##
+		interface int_close (object reader)
+
+		##
+		# A function, which can be used by the interface 'int_readByte'.
+		# This function reads through a file (that is the buffer).
+		##
+		byte interface readbyteFile (object reader)
+			File file = File from reader
+			return file.readByte ()
+		;
+
+		##
+		# A function, which can be used by the interface 'int_close'
+		# This function closes a file (that is the buffer).
+		##
+		func closeFile (object reader)
+			File file = File from reader
+			file.close ()
+		;
+
+		class LexerHelper
+			String[] operators
+			String[] keywords
+
+			func init
+				operators = append (String[0],
+				                    "(", ")", ",", ".",
+									"[]", "[", "]",
+									"&&", "||",
+									"==", "!=", "<=", ">=",
+									"+=", "-=", "*=", "/=",
+									"%=", "&=", "|=",
+									"++", "--",
+									"=",
+									"!", "+", "-", "*", "/",
+									"&", "|", "^")
+				keywords = append (String[0],
+				                   "class", "type", "func", "interface",
+								   "while", "for", "if", "else",
+								   "break", "continue", "return",
+								   "len", "append",
+								   "true", "false", "null",
+								   "include", "import",
+								   "global")
+			;
+		;
+
+		##
+		# This function reads through the given 'buffer' with the
+		# interface fn_buffer_readbyte. If the buffer's end has been
+		# reached, the buffer will be closed by 'fn_buffer_close'.
+		# @param buffer The buffer, which should be read
+		# @param fn_buffer_readbyte The read interface for 'buffer', Mustn't
+		# be null.
+		# @param fn_buffer_close The close interface for 'buffer'. Can be
+		# null
+		#
+		# @param error Potential errors are added to this string.
+		# Mustn't be null.
+		# @param tokenKeys The result of lexer (tokenizer), These are tokens,
+		# which described the elements in 'tokenValues'.
+		# @param tokenValues The result of the lexer (tokennizer). The elements
+		# of this list are the real values, described by 'tokenKeys'.
+		# @param tokenPos These represent the position in the source code of the
+		# token
+		#
+		# @return Returns true, if the Lexer processed the buffer successfully.
+		# If an error occures, while processing the buffer, the error
+		# description is added to 'error'.
+		##
+		bool func lex (LexerHelper helper, object buffer,
+		               int_readbyte fn_buffer_readbyte,
+					   int_close fn_buffer_close,
+					   
+					   String error,
+					   String[] tokenKeys,
+					   String[] tokenValues,
+					   int[] tokenPos)
+			
+			String buffer_tokenValue = String
+
+			# This integer counts the lines, which are used
+			# in one syntax unit (can be several when using '(' or '['
+			# or strings)
+			int32 lines_in_syntax_unit = 0
+			int32 current_scope = 0
+
+			String sLine = String
+			int32 iLine = 0
+			int32 column = 0
+
+			c = fn_buffer_readbyte (buffer)
+			for c != '\0'
+				if c.isNewLine ()
+					# Curious about what newline operators are avaiable
+					# in the vast world of operating systems ?
+					# https://en.wikipedia.org/wiki/Newline
+					char_newline = c
+					c = fn_buffer_readbyte (buffer)
+
+					if c.isNewLine () && c != char_newline
+						# The newline is a combination is
+						# "\r\n" or "\n\r"
+						c = fn_buffer_readbyte (buffer)
+					else if c.isNewline ()
+						iLine++
+						append (tokenKeys, "newline")
+						append (tokenValues, "\n")
+					;
+
+					iLine++
+					append (tokenKeys, "newline")
+					append (tokenValues, "\n")
+
+					# Add all lines, which were in syntax units
+					for lines_in_syntax_unit > 0
+						lines_in_syntax_unit--
+						append (tokenKeys, "newline")
+						append (tokenValues, "\n")
+					;
+
+					column = 0
+					continue
+				;
+
+				for c.isDigit () || c.isAlpha () || c == '_'
+					buffer_tokenValue.add (Byte.set(c))
+					c = fn_buffer_readbyte (buffer)
+				;
+
+			;
+		;
+	;
+;

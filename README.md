@@ -1,12 +1,11 @@
-# Feder
-
 ![Feder Logo](/logo.png)
 
 ## Introduction
 
-Feder is a programming language, which aims to be simple and yet fast. Currently
-Feder source code can be compiled with jfederc (The Java Feder compiler, a Feder
-compiler written in Java).
+Feder is a programming language, which aims to be simple and yet fast.
+Currently, Feder source code can be compiled with jfederc (The Java Feder
+compiler, a Feder compiler written in Java). The Feder compiler and Feder
+stdlib (Feder Standard Library) are written for POSIX and Windows systems.
 
 Attention: Currently, because of the "Jugend forscht" contest, issues can't be
 created and you can't submit any changes to the project.
@@ -114,6 +113,7 @@ feder
         base        Feder Standard Library (/usr/lib/feder/base)
         clean.sh    Removes build files
         comparison  Compare runtime speed (C, Feder, Go, Python, Java)
+		compiler    A sub-project: A Feder compiler written in Feder
         failtests   Tests which should fail to compile (./failtests/test.sh)
         jfederc     Compiles Feder source code (use /usr/bin/jfederc)
         programs    Programs written in Feder (examples)
@@ -129,11 +129,11 @@ feder
 
 ## Documentation
 
-Documentation can be found in /doc and if you want a documentation run
+Documentation can be found in [/doc](/doc) and if you want a documentation run
 
 ```
 $ doxygen doxyconf
 ```
 
 in the main directory of the project. This generated a HTML documentation
-in /doc/java_api.
+in [/doc/java_api/html](/doc/java_api/html).

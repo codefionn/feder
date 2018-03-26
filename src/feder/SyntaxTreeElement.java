@@ -2029,6 +2029,23 @@ public class SyntaxTreeElement {
 				throw new RuntimeException("A string must be in a seperate branch!");
 			}
 
+			if (token.equals("char") && result.length() == 0) {
+				FederRule rule = compiler.getApplyableRuleForBuildin("char");
+				if (rule == null) {
+					throw new RuntimeException("No rule found for \"buildin\" type \"char\"");
+				}
+
+				result = new StringBuilder(rule.applyRule(body, stoken));
+				
+				returnedClasses.clear();
+				returnedClasses.add(rule.getSpecifiedResultValue());
+				getfrombinding = rule.getSpecifiedResultValue();
+
+				continue;
+			} else if (token.equals("char")) {
+				throw new RuntimeException("A char must be in a seperated branch!");
+			}
+
 			if (token.equals("return")) {
 				// Start new branch at 'return' (newBranch it made for that)
 				SyntaxTreeElement ste = newBranchAt(indexToken - 1);
