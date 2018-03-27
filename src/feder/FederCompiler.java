@@ -695,9 +695,17 @@ public class FederCompiler {
 			String returnExitSuccess = "\t#ifdef EXIT_SUCCESS\n\treturn EXIT_SUCCESS;\n"
 			                           + "\t#else\n\treturn 0;\n\t#endif\n";
 
+			FederRule ruleCreateRoot = getApplyableRuleForStruct("create_root");
+			if (ruleCreateRoot == null) {
+				System.err.println("Struct rule 'create_root' doesn't exist!");
+				return null;
+			}
+
 			if (allowMain) {
 				// Generate main method
 				compileFile.write("int main (int lenargs, char ** vargs) {\n");
+
+				compileFile.write("  " + ruleCreateRoot.applyRule(main, main.getIdentifier()) + "\n");
 
 				/**
 				 * The following inserts code, which changes the args given the
@@ -714,13 +722,14 @@ public class FederCompiler {
 
 					compileFile.write("\tfdc_List * " + args_obj.generateCNameOnly() + " = fdCreateClass_fdc_List ();\n");
 
-					FederRule ruleIncrease = getApplyableRuleForStruct("increase");
+					/*FederRule ruleIncrease = getApplyableRuleForStruct("increase");
 					if (ruleIncrease == null) {
-						throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
-					}
+						System.err.println("Feder struct rule 'increase' doesn't exist!");
+						return null;
+					}*/
 
 					//compileFile.write("\tfdIncreaseUsage ((fdobject*) federobj_args);\n");
-					compileFile.write(ruleIncrease.applyRule(main, args_obj.generateCName()) + ";\n");
+					//compileFile.write(ruleIncrease.applyRule(main, args_obj.generateCName()) + ";\n");
 
 					FederRule ruleString = getApplyableRuleForBuildin ("string_raw");
 					if (ruleString == null) {
@@ -759,6 +768,7 @@ public class FederCompiler {
 				// contents
 				headerFile.write("int " + generateLibraryCallerFunctionName() + " ();\n");
 				compileFile.write("int " + generateLibraryCallerFunctionName() + " () {\n");
+				compileFile.write("  " + ruleCreateRoot.applyRule(main, main.getIdentifier()) + "\n");
 				compileFile.write(mainmethod.toString());
 				compileFile.write(returnExitSuccess);
 				compileFile.write("}\n");

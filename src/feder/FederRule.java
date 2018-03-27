@@ -293,7 +293,10 @@ public class FederRule {
 	 */
 	public String applyRule (FederBody currentBody,
 	                         String lstring, String rstring) {
-		if ((rule & RULE_PATTERN) != 0) {
+
+		if ((rule & RULE_STRUCT) != 0) {
+			return toApply.replace("{0}", lstring).replace("{1}", rstring);
+		} else if ((rule & RULE_PATTERN) != 0) {
 			String rstring0 = "(" + rstring + ")";
 			String lstring0 = "(" + lstring + ")";
 			String stage0 = toApply.replace("{0}", lstring0);

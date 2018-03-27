@@ -116,8 +116,7 @@ class dir
 ::if POSIX
 		:struct dirent *entry;
 		:while ((entry = readdir ((*federobj_this)->val0)) != NULL) {
-			:if (federobj_dir_res) fdRemoveObject ((fdobject*) federobj_dir_res);
-			:federobj_dir_res = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (entry->d_name));
+			:federobj_dir_res = (fdc_String*) fdAssignObject (root2, (fdobject*) fdCreateString (entry->d_name));
 			result.add (object from dir_res)
 		:}
 		:rewinddir ((*federobj_this)->val0);
@@ -134,8 +133,7 @@ class dir
 		:}
 
 		:do {
-			:if (federobj_dir_res) fdRemoveObject ((fdobject*) federobj_dir_res);
-			:federobj_dir_res = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (ffd.cFileName));
+			:federobj_dir_res = (fdc_String*) fdAssignObject (root2, (fdobject*) fdCreateString (ffd.cFileName));
 			result.add (object from dir_res)
 		:} while (FindNextFile (hFind, &ffd) != 0);
 		

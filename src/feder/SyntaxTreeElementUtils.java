@@ -93,13 +93,14 @@ public class SyntaxTreeElementUtils {
 	 * @param compileTo
 	 * @param ignore
 	 */
-	private static void generateEnding(String pos, FederBody body, StringBuilder compileTo, FederObject ignore,
+	private static void generateEnding(String pos, FederBody body,
+	                                   StringBuilder compileTo, FederObject ignore,
 	                                   boolean global) {
 		if (body instanceof FederClass) {
 			return;
 		}
 
-		for (FederBinding binding : body.getBindings()) {
+		/*for (FederBinding binding : body.getBindings()) {
 			if (binding == null)
 				continue;
 			if (!(binding instanceof FederObject))
@@ -119,24 +120,6 @@ public class SyntaxTreeElementUtils {
 			if (obj.isGlobal)
 				continue;
 
-			/*
-			 * The following code in the 'if' statement is currently unused, but could be
-			 * used to improve the performance a program written in Feder is running
-			 */
-			if (obj == ignore) {
-				// Ignore
-				FederRule ruleDecrease = body.getCompiler().getApplyableRuleForStruct("decrease");
-				if (ruleDecrease == null) {
-					throw new RuntimeException("struct rule 'decrease' doesn't exist!");
-				}
-
-				//compileTo.append(body.inFrontOfSyntax()).append("fdDecreaseUsage ((fdobject*) ")
-				//	.append(obj.generateCName()).append(");\n");
-
-				compileTo.append(body.inFrontOfSyntax()).append(ruleDecrease.applyRule(body, obj.generateCName()));
-				continue;
-			}
-
 			// Write a little notice when in Debug Mode
 			if (body.getCompiler().isDebug()) {
 				compileTo.append(body.inFrontOfSyntax())
@@ -152,7 +135,15 @@ public class SyntaxTreeElementUtils {
 			//compileTo.append(body.inFrontOfSyntax()).append("fdRemoveObject ((fdobject*)").append(obj.generateCName())
 			//.append(");\n");
 			compileTo.append(body.inFrontOfSyntax()).append(ruleRemove.applyRule(body, obj.generateCName()) + ";\n");
+		}*/
+
+		FederRule deleteRoot = body.getCompiler().getApplyableRuleForStruct("delete_root");
+		if (deleteRoot == null) {
+			throw new RuntimeException("Using the garbage collection requires the struct rule 'delete_root'");
 		}
+
+		compileTo.append(body.inFrontOfSyntax()).append(deleteRoot.applyRule(body, body.getIdentifier()));
+		compileTo.append("\n");
 	}
 
 	/**
@@ -179,7 +170,7 @@ public class SyntaxTreeElementUtils {
 	}
 
 	private static void _generateGlobalEnding(FederBody fmn, StringBuilder mainMethod) {
-		for (FederBinding bind : fmn.getBindings()) {
+		/*for (FederBinding bind : fmn.getBindings()) {
 			if (bind instanceof FederObject) {
 				FederObject obj = (FederObject) bind;
 				if (obj.isGlobal && obj.isGarbagable()) {
@@ -195,7 +186,7 @@ public class SyntaxTreeElementUtils {
 			} else if (bind instanceof FederBody) {
 				_generateGlobalEnding((FederBody) bind, mainMethod);
 			}
-		}
+		}*/
 	}
 
 
@@ -206,6 +197,7 @@ public class SyntaxTreeElementUtils {
 	 */
 	public static String generateGlobalStart(FederBody fmn) {
 		StringBuilder sb = new StringBuilder();
+
 		for (FederBinding bind : fmn.getBindings()) {
 			if (bind instanceof FederObject) {
 				FederObject obj = (FederObject) bind;
@@ -236,11 +228,35 @@ public class SyntaxTreeElementUtils {
 			return;
 		}
 
-		body.compile_file_text.append("\n// Generated ending\n");
+		if (body instanceof FederInterface) {
+			return;
+		}
+
+		if (body instanceof FederNamespace
+			&& (((FederNamespace) body).getName().startsWith("h_intern")
+				|| ((FederNamespace) body).getName().startsWith("c_intern"))) {
+			
+			return;
+		}
+
+		FederRule ruleDeleteRoot = body.getCompiler().getApplyableRuleForStruct("delete_root");
+		if (ruleDeleteRoot == null) {
+			throw new RuntimeException("Struct rule 'delete_root' doesn't exist!");
+		}
+
+		FederRule ruleCollectGarbage = body.getCompiler().getApplyableRuleForStruct("collect_garbage");
+		if (ruleCollectGarbage == null) {
+			throw new RuntimeException("Struct rule 'collect_garbage' doesn't exist!");
+		}
+
+		body.compile_file_text.append("\n// Generated ending: " + body.getName() + "\n");
 		generateEnding(pos, body, body.compile_file_text, ignore, global);
 
-		if (!completely)
+		if (!completely) {
+			body.compile_file_text.append(ruleCollectGarbage.getToApply());
+			body.compile_file_text.append("\n");
 			return;
+		}
 
 		if (!body.isInFunction() && global) {
 			generateGlobalEnding(body, body.compile_file_text);
@@ -250,9 +266,13 @@ public class SyntaxTreeElementUtils {
 		FederBody last = body;
 		while (b != null && last instanceof FederAutomat) {
 			generateEnding(pos, b, body.compile_file_text, ignore, global);
+
 			last = b;
 			b = b.getParent();
 		}
+
+		body.compile_file_text.append(ruleCollectGarbage.getToApply());
+		body.compile_file_text.append("\n");
 	}
 
 

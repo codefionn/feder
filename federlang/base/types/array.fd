@@ -56,7 +56,7 @@ class Array
 		;
 
 		object result
-		:federobj_result = (fdc_object*) fdAssignObject ((fdobject*) (*federobj_this)->arr_objects [federobj_index]);
+		:federobj_result = (fdc_object*) fdAssignObject (root2, (fdobject*) (*federobj_this)->arr_objects [federobj_index]);
 		return result
 	;
 
@@ -70,7 +70,6 @@ class Array
 		if _len0 < _reservedLength
 			# There's nothing that has to be done to the size of the Array
 			# +1 use
-			:if (federobj_obj0) fdIncreaseUsage ((fdobject*) federobj_obj0);
 			:(*federobj_this)->arr_objects [(*federobj_this)->federobj__len0] = (fdobject*) federobj_obj0;
 			_len0.addto (1)
 			return this
@@ -106,12 +105,6 @@ class Array
 		if isEqual (index, length ())
 			return add (obj0)
 		;
-
-		:if (federobj_obj0) fdIncreaseUsage ((fdobject*) federobj_obj0);
-
-		:if ((*federobj_this)->arr_objects [federobj_index]) {
-			:fdRemoveObject ((fdobject*) (*federobj_this)->arr_objects [federobj_index]);
-		:}
 
 		:(*federobj_this)->arr_objects [federobj_index] = (fdobject*) federobj_obj0;
 
@@ -192,7 +185,6 @@ class Array
 		_len0.subto (1)
 
 		:if ((*federobj_this)->arr_objects [(*federobj_this)->federobj__len0]) {
-			:fdRemoveObject ((fdobject*) (*federobj_this)->arr_objects [(*federobj_this)->federobj__len0]);
 			:(*federobj_this)->arr_objects [(*federobj_this)->federobj__len0] = NULL;
 		:}
 

@@ -393,7 +393,19 @@ public class SyntaxTreeElement {
 		body.addBinding(fn);
 		body = fn;
 
-		return new StringBuilder("// namespace " + name + " {");
+		String infront = "";
+
+		if (!fn.getName().startsWith("h_intern") && !fn.getName().startsWith("c_intern")) {
+			FederRule ruleCreateRoot = compiler.getApplyableRuleForStruct("create_root");
+			if (ruleCreateRoot == null) {
+				throw new RuntimeException("Struct rule 'create_root' doesn't exist!");
+			}
+
+			infront = ruleCreateRoot.applyRule (fn, fn.getIdentifier());
+		}
+
+		return new StringBuilder(infront
+			+ "// namespace " + name + " {");
 	}
 
 	/**
@@ -478,21 +490,21 @@ public class SyntaxTreeElement {
 				result.insert(0, func.getReturnType().generateCName() + " ");
 			}
 
-			if (body.getParent() instanceof FederClass && !((FederClass) body.getParent()).isType()) {
-				result.append("\n").append(body.inFrontOfSyntax());
-
-				FederRule ruleIncrase = compiler.getApplyableRuleForStruct("increase");
-				if (ruleIncrase == null) {
-					throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
-				}
-				//result.append("fdIncreaseUsage (" + "(fdobject*) (*federobj_this));\n");
-				result.append(ruleIncrase.applyRule(body, "(*federobj_this)") + ";\n");
+			FederRule ruleCreateRoot = compiler.getApplyableRuleForStruct("create_root");
+			if (ruleCreateRoot == null) {
+				throw new RuntimeException("The struct rule 'create_root' has "
+					+ " to be available, if a tracing garbage collector should "
+					+ "should be used");
 			}
+
+			result.append(ruleCreateRoot.applyRule(func, func.getIdentifier()) + "\n");
 
 			if (compiler.isDebug()) {
 				result.append("\n" + body.inFrontOfSyntax());
-				result.append("printf (\"\\nFile=" + compiler.getName() + ", Line=" + (line) + ". Called function "
-				              + func.getNamespacesToString() + "." + func.getName() + "\\n\");\n");
+				result.append("printf (\"\\nFile=" + compiler.getName()
+				              + ", Line=" + (line) + ". Called function "
+				              + func.getNamespacesToString() + "."
+							  + func.getName() + "\\n\");\n");
 			}
 
 			result.append("\n");
@@ -681,7 +693,7 @@ public class SyntaxTreeElement {
 			result.insert(0, func.getReturnType().generateCName() + " ");
 		}
 
-		for (FederObject arg : func.arguments) {
+		/*for (FederObject arg : func.arguments) {
 			if (arg.isInterface())
 				continue;
 
@@ -692,22 +704,19 @@ public class SyntaxTreeElement {
 			if (!arg.isGarbagable())
 				continue;
 
-			/*			result.append(body.inFrontOfSyntax()).append("fdIncreaseUsage ((fdobject*) ").append(arg.generateCName())
-						.append(");");*/
-
 			FederRule ruleIncrease = compiler.getApplyableRuleForStruct("increase");
 			if (ruleIncrease == null) {
 				throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
 			}
 
 			result.append(body.inFrontOfSyntax()).append(ruleIncrease.applyRule(body, arg.generateCName())).append(";");
-		}
+		}*/
 
 		if (func.getParent() instanceof FederClass && !((FederClass) body.getParent()).isType()) {
-			FederRule ruleIncrease = compiler.getApplyableRuleForStruct("increase");
+			/*FederRule ruleIncrease = compiler.getApplyableRuleForStruct("increase");
 			if (ruleIncrease == null) {
 				throw new RuntimeException("Feder struct rule 'increase' doesn't exist!");
-			}
+			}*/
 
 			FederRule ruleThisNull = compiler.getApplyableRuleForStruct("this_is_null");
 			if (ruleThisNull != null) {
@@ -716,8 +725,17 @@ public class SyntaxTreeElement {
 			}
 
 			//result.append("\n" + body.inFrontOfSyntax() + "fdIncreaseUsage ((fdobject*) (*federobj_this));");
-			result.append("\n" + body.inFrontOfSyntax()).append(ruleIncrease.applyRule(body, "(*federobj_this)") + ";");
+			//result.append("\n" + body.inFrontOfSyntax()).append(ruleIncrease.applyRule(body, "(*federobj_this)") + ";");
 		}
+
+		FederRule ruleCreateRoot = compiler.getApplyableRuleForStruct("create_root");
+		if (ruleCreateRoot == null) {
+			throw new RuntimeException("The struct rule 'create_root' has "
+				+ " to be available, if a tracing garbage collector should "
+				+ "should be used");
+		}
+
+		result.append(ruleCreateRoot.applyRule(func, func.getIdentifier()) + "\n");
 
 		if (compiler.isDebug()) {
 			result.append("\n" + body.inFrontOfSyntax());
@@ -831,14 +849,15 @@ public class SyntaxTreeElement {
 					throw new RuntimeException("The struct rule 'assign_obj' doesn't exist!");
 				}
 
-				result.append(ruleAssign.applyRule(body, compiled.toString()));
+				result.append(ruleAssign.applyRule(body, compiled.toString(), body.getIdentifier()));
 			} else if (obj.isGarbagable()) {
 				FederRule ruleAssignOld = compiler.getApplyableRuleForStruct("assign_obj_old");
 				if (ruleAssignOld == null) {
 					throw new RuntimeException("The struct rule 'assign_obj_old' doesn't exist");
 				}
 
-				result = new StringBuilder(ruleAssignOld.applyRule(body, resultold0.toString(), compiled.toString()));
+				result = new StringBuilder(ruleAssignOld.applyRule(body,
+					resultold0.toString(), compiled.toString(), body.getIdentifier()));
 			} else if (obj.isDataType()) {
 				if (isNew)
 					result = new StringBuilder(
@@ -1456,9 +1475,15 @@ public class SyntaxTreeElement {
 		 * For loop operator
 		 */
 		if (tokens.size() >= 1 && (tokens.get(0).equals("for")) && isMain) {
+			FederRule ruleCreateRoot = compiler.getApplyableRuleForStruct("create_root");
+			if (ruleCreateRoot == null) {
+				throw new RuntimeException("Struct rule 'create_root' doesn't exist!");
+			}
+
 			if (tokens.size() == 1) {
 				body = new FederAutomat(compiler, body, "for");
-				return new StringBuilder("while (true) {");
+				return new StringBuilder("while (true) {\n"
+					+ ruleCreateRoot.applyRule(body, body.getIdentifier()) + "\n");
 			}
 
 			FederBody oldbody = body;
@@ -1491,7 +1516,8 @@ public class SyntaxTreeElement {
 			}
 
 			if (stes.size() == 0) {
-				return new StringBuilder("while (true) {");
+				return new StringBuilder("while (true) {\n"
+					+ ruleCreateRoot.applyRule(body, body.getIdentifier()) + "\n");
 			}
 
 			if (stes.size() == 3) {
@@ -1528,7 +1554,8 @@ public class SyntaxTreeElement {
 					}
 				}
 
-				return new StringBuilder ("for (" + parts.get(0) + "; " + s + "; " + last + ") {");
+				return new StringBuilder ("for (" + parts.get(0) + "; " + s + "; " + last + ") {\n"
+					+ ruleCreateRoot.applyRule(body, body.getIdentifier()) + "\n");
 			} else if (stes.size() == 2) {
 				FederBinding binding = stes.get(0).returnedClasses.get(0);
 				if (!(binding instanceof FederClass)) {
@@ -1549,7 +1576,8 @@ public class SyntaxTreeElement {
 					}
 				}
 
-				return new StringBuilder ("for (; " + s + "; " + last + ") {");
+				return new StringBuilder ("for (; " + s + "; " + last + ") {\n"
+					+ ruleCreateRoot.applyRule(body, body.getIdentifier()) + "\n");
 			} else if (stes.size() == 1) {
 				FederBinding binding = stes.get(0).returnedClasses.get(0);
 				if (!(binding instanceof FederClass)) {
@@ -1557,7 +1585,8 @@ public class SyntaxTreeElement {
 				}
 
 				String s = SyntaxTreeElementUtils.handleNonBoolToBool(compiler, parts.get(0), (FederClass) binding, oldbody);
-				return new StringBuilder ("while (" + s + ") {");
+				return new StringBuilder ("while (" + s + ") {\n"
+					+ ruleCreateRoot.applyRule(body, body.getIdentifier()) + "\n");
 			}
 		}
 
@@ -1575,6 +1604,8 @@ public class SyntaxTreeElement {
 			return SyntaxTreeElementUtils.command(compiler, this, body, stringsOfTokens.get(0));
 		}
 
+
+
 		if (tokens.get(0).equals("else")) {
 			if (!(body instanceof FederAutomat) || !((FederAutomat) body).getType().endsWith("if")) {
 				throw new RuntimeException("Invalid call of 'else'");
@@ -1583,8 +1614,14 @@ public class SyntaxTreeElement {
 			workOnJumpback();
 
 			if (tokens.size() == 1) {
+				FederRule ruleCreateRoot = compiler.getApplyableRuleForStruct("create_root");
+				if (ruleCreateRoot == null) {
+					throw new RuntimeException("Struct rule 'create_root' doesn't exist");
+				}
+
 				body = new FederAutomat(compiler, body, "else");
-				return new StringBuilder("else {");
+				return new StringBuilder("else {\n"
+					+ ruleCreateRoot.applyRule(body, body.getIdentifier()) + "\n");
 			}
 
 			indexToken++;
@@ -1611,9 +1648,16 @@ public class SyntaxTreeElement {
 				throw new RuntimeException("Should only return one object!");
 			}
 
+
+			FederRule ruleCreateRoot = compiler.getApplyableRuleForStruct("create_root");
+			if (ruleCreateRoot == null) {
+				throw new RuntimeException("Struct rule 'create_root' doesn't exist");
+			}
+
 			FederClass fc = (FederClass) ste.returnedClasses.get(0);
 			String s = SyntaxTreeElementUtils.handleNonBoolToBool(compiler, compiled.toString(), fc, body);
-			return new StringBuilder(result.toString() + tokens.get(indexToken) + " (" + s + ") {");
+			return new StringBuilder(result.toString() + tokens.get(indexToken) + " (" + s + ") {\n"
+				+ ruleCreateRoot.applyRule(body, body.getIdentifier()) + "\n");
 		}
 
 		/*
@@ -2137,29 +2181,15 @@ public class SyntaxTreeElement {
 					return new StringBuilder ("return return_result;\n");
 				}
 
-				FederRule ruleIncrease = compiler.getApplyableRuleForStruct("increase");
-				if (ruleIncrease == null) {
-					throw new RuntimeException("struct rule 'increase' doesn't exist!");
-				}
-
-				FederRule ruleDecrease = compiler.getApplyableRuleForStruct("decrease");
-				if (ruleDecrease == null) {
-					throw new RuntimeException("struct rule 'decrease' doesn't exist!");
-				}
-
 				body.compile_file_text.append(body.inFrontOfSyntax());
 				body.compile_file_text.append(body.getUpperFunction().getReturnType().generateCName() + " ");
 				body.compile_file_text.append(" return_result = ");
 				body.compile_file_text.append(compiled.toString() + ";\n");
 				// body.compile_file_text.append("int old_rr_usage = return_result->usage;\n");
 
-				body.compile_file_text.append(body.inFrontOfSyntax());
-				body.compile_file_text.append(ruleIncrease.applyRule(body, "return_result") + ";\n");
 				generateEnding("File=" + compiler.getName() + ", Line=" + (line), true, null);
 				// body.compile_file_text.append("/*if (old_rr_usage == return_result->usage)
 				// */\n");
-				body.compile_file_text.append(body.inFrontOfSyntax());
-				body.compile_file_text.append(ruleDecrease.applyRule(body, "return_result") + ";\n");
 
 				return new StringBuilder("return return_result;");
 			}

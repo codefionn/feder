@@ -660,4 +660,15 @@ public abstract class FederBody extends FederBinding
 
 		return (FederMainNamespace) current;
 	}
+
+	public String getIdentifier() {
+		int parentCount = 0;
+		FederBody parent = getParent();
+		while (parent != null) {
+			parentCount++;
+			parent = parent.getParent();
+		}
+
+		return String.valueOf(parentCount);
+	}
 }

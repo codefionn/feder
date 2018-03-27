@@ -454,7 +454,7 @@ type "int16_t" int16
 		String result
 		:char cstring[20];
 		:sprintf (cstring, "%hi", *federobj_this);
-		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		:federobj_result = (fdc_String*) fdAssignObject (root2, (fdobject*) fdCreateString (cstring));
 		return result
 	;
 ;
@@ -468,7 +468,7 @@ type "uint16_t" uint16
 		String result
 		:char cstring[20];
 		:sprintf (cstring, "%hu", *federobj_this);
-		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		:federobj_result = (fdc_String*) fdAssignObject (root2, (fdobject*) fdCreateString (cstring));
 		return result
 	;
 ;
@@ -482,7 +482,7 @@ type "int32_t" int32
 		String result
 		:char cstring[50];
 		:sprintf (cstring, "%i", *federobj_this);
-		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		:federobj_result = (fdc_String*) fdAssignObject (root2, (fdobject*) fdCreateString (cstring));
 		return result
 	;
 ;
@@ -496,7 +496,7 @@ type "uint32_t" uint32
 		String result
 		:char cstring[50];
 		:sprintf (cstring, "%u", *federobj_this);
-		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		:federobj_result = (fdc_String*) fdAssignObject (root2, (fdobject*) fdCreateString (cstring));
 		return result
 	;
 ;
@@ -510,7 +510,7 @@ type "int64_t" int64
 		String result
 		:char cstring[60];
 		:sprintf (cstring, "%li", *federobj_this);
-		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		:federobj_result = (fdc_String*) fdAssignObject (root2, (fdobject*) fdCreateString (cstring));
 		return result
 	;
 ;
@@ -524,7 +524,7 @@ type "uint64_t" uint64
 		String result
 		:char cstring[60];
 		:sprintf (cstring, "%lu", *federobj_this);
-		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		:federobj_result = (fdc_String*) fdAssignObject (root2, (fdobject*) fdCreateString (cstring));
 		return result
 	;
 ;
@@ -538,7 +538,7 @@ type "double" double
 		String result
 		:char cstring[80];
 		:sprintf (cstring, "%lf", *federobj_this);
-		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
+		:federobj_result = (fdc_String*) fdAssignObject (root2, (fdobject*) fdCreateString (cstring));
 		return result
 	;
 ;
@@ -891,9 +891,10 @@ namespace h_intern_String
 namespace c_intern_String
 	:fdc_String *
 	:fdCreateString (const char * cString) {
+		:fdroot* root_create_string = fdCreateRoot ();
+
 		:fdc_String * result = fdCreateClass_fdc_String ();
-		:result->usage += 1;
-	
+		:fdAddObjectToRoot (root_create_string, (fdobject*) result);
 		:fdc_int32 len0 = strlen (cString);
 		:fdc_int32 i = -1;
 		:while (++i < len0) {
@@ -906,12 +907,14 @@ namespace c_intern_String
 		::fi
 		:}
 
-		:result->usage -= 1;
+		:fdDeleteRoot (root_create_string);
+		:fdCollectGarbage();
 		:return result;
 	:}
 
 	:char * fdStringToCString (fdc_String * arg0) {
-	:	fdIncreaseUsage ((fdobject*) arg0);
+		:fdroot* root_here = fdCreateRoot ();
+		:fdAddObjectToRoot (root_here, (fdobject*) arg0);
 	:
 	:	fdc_int32 len0 = fdfunc_String_0length (&arg0);
 	:	
@@ -922,7 +925,7 @@ namespace c_intern_String
 	:		cString [i] = (char) fdByte->federobj_val;
 	:	}
 	:
-	:	fdRemoveObject ((fdobject*) arg0);
+		:fdDeleteRoot (root_here);
 	:
 	:	return cString;
 	:}

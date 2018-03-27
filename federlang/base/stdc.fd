@@ -102,7 +102,10 @@ namespace h_intern
 	:fdAddObject (fdobject* obj);
 
 	:void
-	:fdAddObjectToRoot (fdroot* root, fdobject * obj);
+	:fdAddObjectToRoot (fdroot* root, fdobject* obj);
+
+	:void
+	:fdRemoveObjectFromRoot (fdroot* root, fdobject* obj);
 
 	##
 	# Every class, which was previously created in Feder
@@ -221,9 +224,6 @@ namespace h_intern
 
 	:fdobject*
 	:fdGetClassArrayObjectAt (fdclassarray* ar, int index);
-
-	:bool
-	:fdExistsObjectInClassArray (fdobject * obj0, fdobject * existsObj);
 ;
 
 # Define all declared functions
@@ -240,8 +240,8 @@ namespace c_intern
 	:fdInitGarbageCollection ()  {
 		:fd_gc_roots_length = 50;
 		:fd_gc_objects_length = 200;
-		:fd_gc_roots = (fdroot*) calloc (fd_gc_roots_length, sizeof (fdroot*));
-		:fd_gc_objects = (fdobject*) calloc (fd_gc_objects_length,
+		:fd_gc_roots = (fdroot**) calloc (fd_gc_roots_length, sizeof (fdroot*));
+		:fd_gc_objects = (fdobject**) calloc (fd_gc_objects_length,
 		                                    :sizeof (fdobject*));
 	:}
 
@@ -265,7 +265,7 @@ namespace c_intern
 
 		:obj->flag |= FD_GC_FLAG_MARKED;
 		:for (int i = 0; i < obj->length; i++) {
-			:fdMarkObject (obj->getelement (i));
+			:fdMarkObject (obj->getelement (obj, i));
 		:}
 	:}
 
@@ -277,7 +277,7 @@ namespace c_intern
 	:void
 	:fdForceCollectGarbage () {
 		:for (size_t i = 0; i < fd_gc_roots_length; i++) {
-			:fdroot* root = fd_gc_roots_length[i];
+			:fdroot* root = fd_gc_roots[i];
 			:for (size_t n = 0; n < root->length; n++) {
 				:fdMarkObject (root->objects[n]);
 			:}
@@ -309,6 +309,10 @@ namespace c_intern
 		:fd_gc_roots = (fdroot**) realloc (fd_gc_roots,
 		                                  :(fd_gc_roots_length+5)
 										    :* sizeof (fdroot*));
+		:fd_gc_roots[fd_gc_roots_length] = result;
+		:for (size_t i = 1; i < 5; i++) {
+			:fd_gc_roots[fd_gc_roots_length+i] = NULL;
+		:}
 		:fd_gc_roots_length += 5;
 
 		:return result;
@@ -330,15 +334,68 @@ namespace c_intern
 	:}
 
 	:void
-	:fdAddObject (fdobject* obj);
+	:fdAddObject (fdobject* obj) {
+		:for (size_t i = 0; i < fd_gc_objects_length; i++) {
+			:if (!fd_gc_objects[i]) {
+				:fd_gc_objects[i] = obj;
+				:return;
+			:}
+		:}
+
+		:fd_gc_objects = (fdobject**) realloc (fd_gc_objects,
+		                                      :(fd_gc_objects_length+5)
+											  :* sizeof (fdobject*));
+		:fd_gc_objects[fd_gc_roots_length] = obj;
+		:for (size_t i = 1; i < 5; i++) {
+			:fd_gc_roots[fd_gc_roots_length+i] = NULL;
+		:}
+
+		:fd_gc_objects_length += 5;
+	:}
 
 	:void
-	:fdAddObjectToRoot (fdroot* root, fdobject * obj);
+	:fdAddObjectToRoot (fdroot* root, fdobject * obj) {
+		:for (size_t i = 0; i < root->length; i++) {
+			:if (!root->objects[i]) {
+				:root->objects[i] = obj;
+				:return;
+			:}
+		:}
+
+		:root->objects = (fdobject**) realloc (root->objects,
+		                                    :(root->length+5)
+											:* sizeof (fdobject*));
+		:root->objects[root->length] = obj;
+		:for (size_t i = 1; i < 5; i++) {
+			:root->objects[root->length+i] = NULL;
+		:}
+
+		:root->length += 5;
+	:}
+
+	:void
+	:fdRemoveObjectFromRoot (fdroot* root, fdobject* obj) {
+		:if (!obj) return;
+
+		:for (size_t i = 0; i < root->length; i++) {
+			:if (root->objects[i] == obj) {
+				:root->objects[i] = NULL;
+				:return;
+			:}
+		:}	
+	:}
 
 
 	:void
 	:fdDeleteObject (fdobject * object) {
 		:if (!object) return;
+
+		:for (size_t i = 0; i < fd_gc_objects_length; i++) {
+			:if (fd_gc_objects[i] == object) {
+				:fd_gc_objects[i] = NULL;
+				:break;
+			:}
+		:}
 
 		:object->delfn (object);
 :#ifdef DEBUG
@@ -350,15 +407,13 @@ namespace c_intern
 	:fdRemoveObject_func (fdobject * object) {
 		:if (!object)
 		:return;
-
-		:if (object->usage <= 0)
-		:fdDeleteObject (object);
 	:}
 
 	:fdobject *
 	:fdAssignObject (fdroot* root, fdobject * object) {
 		:if (!object) return NULL;
 
+		:fdAddObjectToRoot (root, object);
 		
 		:return object;
 	:}
@@ -367,26 +422,11 @@ namespace c_intern
 	:fdAssignObjectOld (fdroot* root, fdobject ** objold,
 	                   :fdobject * objnew) {
 
-		:fdRemoveObject (*objold);
+		:fdAddObjectToRoot (root, objnew);
+		:fdRemoveObjectFromRoot (root, *objold);
+
 		:*objold = objnew;
 		:return *objold;
-	:}
-
-	:void
-	:fdDecreaseUsage (fdobject * object) {
-		:if (!object) return;
-		:object->usagefn (object, 0);
-	:}
-
-	:bool
-	:fdExistsObjectIn (fdobject * obj0, fdobject * objToSearch) {
-		:if (!obj0) return false;
-		:if (obj0 == objToSearch) return true;
-
-		:if (!obj0->existsPointer)
-			:return false;
-
-		:return obj0->existsPointer (obj0, objToSearch);
 	:}
 
 	# Type array
@@ -394,16 +434,6 @@ namespace c_intern
 	:fdobject*
 	:fdtypearray_getelement (fdobject* obj, int index) {
 		:return NULL; // NOTHING  to return
-	:}
-
-	:void
-	:fdIncreaseUsageTypeArray (fdobject* obj, int usage) {
-		:if (!obj) return;
-		:if (usage) {
-			:obj->usage++;
-		:} else {
-			:obj->usage--;
-		:}
 	:}
 
 	:void
@@ -424,6 +454,8 @@ namespace c_intern
 		:result->length = size;
 		:result->typesize = typesize;
 
+		:fdAddObject ((fdobject*) result);
+
 		:return result;
 	:}
 
@@ -441,7 +473,6 @@ namespace c_intern
 		:ar->length += 1;
 		:ar->data = (char*) realloc ((void*) ar->data, ar->length * ar->typesize);
 		:memcpy (ar->data + ((ar->length-1) * ar->typesize), data, ar->typesize);
-		:ar->existsPointer = NULL;
 		:return ar;
 	:}
 
@@ -456,7 +487,6 @@ namespace c_intern
 	:fdclassarray*
 	:fdCreateClassArray (int size) {
 		:fdclassarray* result = (fdclassarray*) malloc (sizeof (fdclassarray));
-		:result->usage = 0;
 		:result->delfn = fdDeleteClassArray;
 		:result->length = size;
 		:result->getelement = fdclassarray_getelement;
@@ -468,6 +498,8 @@ namespace c_intern
 			:result->data[i] = NULL;
 		:}
 
+		:fdAddObject ((fdobject*) result);
+
 		:return result;
 	:}
 
@@ -477,22 +509,12 @@ namespace c_intern
 			:return;
 
 		:fdclassarray* todel = (fdclassarray*) data;
-		:for (int i = 0; i < todel->length; i++) {
-			:fdRemoveObject (todel->data[i]);
-		:}
+		#:for (int i = 0; i < todel->length; i++) {
+			#:fdRemoveObject (todel->data[i]);
+		#:}
 
 		:free (todel->data);
 		:free (todel);
-	:}
-
-	:void
-	:fdIncreaseUsageClassArray (fdobject * obj, int increase) {
-		:if (!obj) return;
-		:if (increase) {
-			:obj->usage++;
-		:} else {
-			:obj->usage--;
-		:}
 	:}
 
 	:int
@@ -515,7 +537,7 @@ namespace c_intern
 		:if (!obj)
 		  :ar->data[ar->length - 1] = NULL;
 		:else
-		  :ar->data[ar->length - 1] = fdAssignObject (obj);
+		  :ar->data[ar->length - 1] = obj;
 		
 		:return ar;
 	:}
@@ -531,23 +553,8 @@ namespace c_intern
 		
 		:fdobject* result = ar->data[index];
 		# Necessary, if ar gets deleted from heap
-		:fdIncreaseUsage (result);
-		:fdRemoveObject_func ((fdobject*) ar);
-		:fdDecreaseUsage (result);
 
 		:return result;
-	:}
-
-	:bool
-	:fdExistsObjectInClassArray (fdobject * obj0, fdobject* existsObj) {
-		:fdclassarray * ar = (fdclassarray*) obj0;
-		:for (int i = 0; i < ar->length; i++) {
-			:if (ar->data[i] == existsObj) {
-				:return true;
-			:}
-		:}
-
-		:return false;
 	:}
 ;
 
@@ -561,12 +568,12 @@ namespace c_intern
 ::rule struct term_gc "fdTerminateGarbageCollection ();"
 
 ::rule struct remove_func "fdRemoveObject_func ((fdobject*) {0})"
-::rule struct assign_obj "fdAssignObject ((fdobject*) {0})"
-::rule struct assign_obj_old "fdAssignObjectOld ((fdobject**) &{0}, (fdobject*) {1})"
+::rule struct assign_obj "fdAssignObject (root{1}, (fdobject*) {0})"
+::rule struct assign_obj_old "fdAssignObjectOld (root{2}, (fdobject**) &{0}, (fdobject*) {1})"
 
 ::rule struct this_is_null "if (!{0}) puts (\"This is null in file {1} in line {2}\") ;"
 
-::rule struct basic_object_header "PFDGETELEMENT getelement; int length; char flag;"
+::rule struct basic_object_header "PFDDELETE delfn; PFDGETELEMENT getelement; int length; char flag;"
 
 class object
 ;

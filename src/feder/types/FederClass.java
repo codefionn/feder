@@ -191,7 +191,7 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 		                + "typedef struct _" + generateCNameOnly() + " " + generateCNameOnly() + ";\n"
 		                + "void fdDeleteClass_" + generateCNameOnly() + " (void * data);\n"
 		                + generateCName() + " fdCreateClass_" + generateCNameOnly() + " ();\n"
-						+ "bool fdGetElement_" + generateCNameOnly()
+						+ "fdobject* fdGetElement_" + generateCNameOnly()
 						+ " (fdobject * obj0, int index);\n";
 
 		return result;
@@ -241,6 +241,18 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 
 		result.append("}\n\n");
 
+		int index = 0;
+		for (FederBinding binding : getBindings()) {
+			if (!(binding instanceof FederObject))
+				continue;
+
+			FederObject obj = (FederObject) binding;
+			if (obj.isDataType() || obj.isInterface())
+				continue;
+			
+			index++;
+		}
+
 		result.append(generateCName() + " fdCreateClass_");
 		result.append(generateCNameOnly()).append(" () {\n");
 
@@ -248,6 +260,7 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 		result.append(" result = (" + generateCName());
 		result.append( ") malloc (sizeof (" + generateCNameOnly() + "));\n");
 
+		result.append("  result->length = " + index + ";\n");
 		result.append("  result->getelement = fdGetElement_");
 		result.append(generateCNameOnly()).append(";\n");
 
@@ -271,6 +284,8 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 			result.append("*) &result);\n");
 		}
 
+		result.append("  fdAddObject ((fdobject*) result);\n");
+
 		// result.append(" result->usage = 0;\n");
 		result.append("  return result;\n");
 
@@ -280,18 +295,18 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 		result.append("fdGetElement_" + generateCNameOnly());
 		result.append(" (fdobject* obj, int index) {\n");
 		result.append("  " + generateCNameOnly() + "* c = (");
-		result.append(generateCNameOnly() + "*) obj;\n);\n");
-		int index = 0;
+		result.append(generateCNameOnly() + "*) obj;\n\n");
+		index = 0;
 		for (FederBinding binding : getBindings()) {
-			if (!(binding instanceof FederObject)
+			if (!(binding instanceof FederObject))
 				continue;
 
 			FederObject obj = (FederObject) binding;
-			if (fc.isDataType())
+			if (obj.isDataType() || obj.isInterface())
 				continue;
 			
 			result.append("  if (index == " + index + ")\n");
-			result.append("    return c->" + obj.generateCNameOnly() + "\n");
+			result.append("    return (fdobject*) c->" + obj.generateCNameOnly() + ";\n");
 			index++;
 		}
 
