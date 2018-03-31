@@ -1381,6 +1381,130 @@ public class SyntaxTreeElement {
 		return false;
 	}
 
+	private boolean hasExchangeOperator() {
+		if (!isMain) {
+			return false;
+		}
+
+		int scope = 0;
+		for (int i = 0; i < tokens.size(); i++) {
+			String token = tokens.get(i);
+			String stoken = stringsOfTokens.get(i);
+			if (scope == 0 && token.equals("roperator")
+				&& stoken.equals("<=>")) {
+				
+				return true;
+			}
+
+			if (token.equals("(") || token.equals("["))
+				scope++;
+			else if (token.equals(")") || token.equals("]"))
+				scope--;
+		}
+
+		return false;
+	}
+
+	private StringBuilder workOnExchangeOperator() {
+		List<SyntaxTreeElement> elementsLeft = new LinkedList<>();
+		List<SyntaxTreeElement> elementsRight = new LinkedList<>();
+
+		List<String> tokens0 = new LinkedList<>();
+		List<String> stringsOfTokens0 = new LinkedList<>();
+
+		boolean isLeft = true;
+		int scope = 0;
+		for (int i = 0; i <= tokens.size(); i++) {
+			String token = i < tokens.size() ? tokens.get(i) : "";
+			String stoken = i < tokens.size() ? stringsOfTokens.get(i) : "";
+
+			if (scope == 0 && (token.equals(",")
+				|| (token.equals("roperator") && stoken.equals("<=>"))
+				|| token.isEmpty())) {
+
+				SyntaxTreeElement ste = new SyntaxTreeElement(
+					compiler, body, line, tokens0, stringsOfTokens0);
+				ste.isMain = true;
+
+				if (isLeft) {
+					elementsLeft.add(ste);
+					if (stoken.equals("<=>"))
+						isLeft = false;
+				} else {
+					elementsRight.add(ste);
+				}
+
+				tokens0 = new LinkedList<>();
+				stringsOfTokens0 = new LinkedList<>();
+
+				continue;
+			}
+
+			if (token.equals("(") || token.equals("["))
+				scope++;
+			else if (token.equals(")") || token.equals("]"))
+				scope--;
+
+			tokens0.add(token);
+			stringsOfTokens0.add(stoken);
+		}
+
+		if (elementsLeft.size() == 0 || elementsLeft.size() > 2) {
+			throw new RuntimeException("The size of arguments of the "
+				+ "exchange operator at the left side should be 1 or 2: "
+				+ elementsLeft.size());
+		}
+
+		if (elementsRight.size() == 0 || elementsRight.size() > 2) {
+			throw new RuntimeException("The size of arguments of the "
+				+ "exchange operator at the right side should be 1 or 2: "
+				+ elementsRight.size());
+		}
+
+		if (elementsLeft.size() == 1) {
+			elementsLeft.add(new SyntaxTreeElement(compiler, body, line,
+				new LinkedList<>(elementsLeft.get(0).tokens),
+				new LinkedList<>(elementsLeft.get(0).stringsOfTokens)));
+		}
+
+		if (elementsRight.size() == 1) {
+			elementsRight.add(new SyntaxTreeElement(compiler, body, line,
+				new LinkedList<>(elementsRight.get(0).tokens),
+				new LinkedList<>(elementsRight.get(0).stringsOfTokens)));
+		}
+
+		String tmp_name = "0tmp_" + line;
+
+		SyntaxTreeElement saveLeft = new SyntaxTreeElement(compiler, body,
+			line, new LinkedList<>(elementsLeft.get(1).tokens),
+			new LinkedList<>(elementsLeft.get(1).stringsOfTokens));
+
+		saveLeft.isMain = true;
+		saveLeft.tokens.add(0, "=");
+		saveLeft.tokens.add(0, "name");
+		saveLeft.stringsOfTokens.add(0, "=");
+		saveLeft.stringsOfTokens.add(0, tmp_name);
+
+		// Assign left
+		elementsLeft.get(0).tokens.add("=");
+		elementsLeft.get(0).tokens.addAll(elementsRight.get(1).tokens);
+		elementsLeft.get(0).stringsOfTokens.add("=");
+		elementsLeft.get(0).stringsOfTokens.addAll(elementsRight.get(1).stringsOfTokens);
+
+		// Assign right
+		elementsRight.get(0).tokens.add("=");
+		elementsRight.get(0).tokens.add("name");
+		elementsRight.get(0).stringsOfTokens.add("=");
+		elementsRight.get(0).stringsOfTokens.add(tmp_name);
+
+		// Parse
+		StringBuilder res_save_left = saveLeft.compile();
+		StringBuilder res_left = elementsLeft.get(0).compile();
+		StringBuilder res_right = elementsRight.get(0).compile();
+
+		return new StringBuilder().append(res_save_left).append(res_left).append(res_right);
+	}
+
 	/**
 	 * This method walks through the given elements (
 	 * @link SyntaxTreeElement.tokens tokens @endlink ,
@@ -1440,6 +1564,9 @@ public class SyntaxTreeElement {
 		if (tokens.size() == 0) {
 			return new StringBuilder();
 		}
+
+		if (hasExchangeOperator())
+			return workOnExchangeOperator();
 
 		if (tokens.get(0).equals("include")) {
 			// include = primitive import

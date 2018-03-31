@@ -38,7 +38,9 @@ public class Lexer {
 	/**
 	 * Operators for Feder's rules
 	 */
-	public static final List<String> RULE_OPERATORS = Arrays.asList(">=", "<=", "<", ">", "+=", "-=", "*=", "/=", "%=",
+	public static final List<String> RULE_OPERATORS = Arrays.asList(
+			"<=>",
+	        ">=", "<=", "<", ">", "+=", "-=", "*=", "/=", "%=",
 	        "&=", "|=", "!",
 	        "++", "--", "+", "-", "*", "/", "%", "^", "&", "|");
 

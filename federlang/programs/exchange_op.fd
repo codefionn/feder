@@ -1,0 +1,21 @@
+# The exchange operator
+include "stdio.fd"
+
+i = 0
+n = 1
+
+io.println ("i: " + i)
+io.println ("n: " + n)
+
+i <=> n
+
+io.println ("i: " + i)
+io.println ("n: " + n)
+
+# Second stage change and exchange
+
+i, i * 2 <=> n, n + 3
+
+io.println ("i: " + i)
+io.println ("n: " + n)
+
