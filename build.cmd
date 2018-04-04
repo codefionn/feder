@@ -1,4 +1,8 @@
+@echo off
+
 if not exist "bin" mkdir "bin"
+
+echo "%JAVA_HOME%"
 
 javac -cp src -d bin -encoding UTF-8 -source 8 src\feder\*.java src\feder\utils\*.java src\feder\types\*.java
 
