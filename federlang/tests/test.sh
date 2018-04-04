@@ -7,7 +7,7 @@ if ! [ -d "tests" ] ; then
 	exit 1
 fi
 
-$(which rm) tests/build/*
+[ -d tests/build ] && $(which rm) tests/build/*
 
 export FEDER_OUTPUT_ENDING=""
 export FEDER_ADDITIONAL=""
