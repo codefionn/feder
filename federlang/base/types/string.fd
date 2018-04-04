@@ -509,7 +509,11 @@ type "int64_t" int64
 	String func toString
 		String result
 		:char cstring[60];
+::ifn WINDOWS
 		:sprintf (cstring, "%li", *federobj_this);
+::else
+		:sprintf (cstring, "%I64u", *federobj_this);
+::fi
 		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
 		return result
 	;
@@ -523,7 +527,11 @@ type "uint64_t" uint64
 	String func toString
 		String result
 		:char cstring[60];
+::ifn WINDOWS
 		:sprintf (cstring, "%lu", *federobj_this);
+::else
+		:sprintf (cstring, "I64u", *federobj_this);
+::fi
 		:federobj_result = (fdc_String*) fdAssignObject ((fdobject*) fdCreateString (cstring));
 		return result
 	;
