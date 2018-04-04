@@ -18,7 +18,7 @@ and the programs of the JDK have to be available in the console environment
 Requires: javac, java, jar. The compiler does also require a C compiler available
 in the PATH environment variable. The default one is 'cc'. You can change the
 used compiler program with the option '--toolchain [compiler]'. If you want to
-use the compiler of MS Visual Studio also pass the '--usewincl' option to the
+use the compiler of MS Visual Studio also pass the '--usewinop option to the
 program (If you want to use clang: Install clang and put the bin directory in
 path variable, then use the --toolchain option to change the used compiler).
 

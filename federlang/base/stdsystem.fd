@@ -100,8 +100,8 @@ namespace sys
 			:federobj_delta.QuadPart = (*federobj_this)->federobj__time.QuadPart - federobj_t0->federobj__time.QuadPart;
 			:federobj_delta.QuadPart *= 1000000; // Microseconds !!!
 			:federobj_delta.QuadPart /= federobj_frequency.QuadPart;
-			long microseconds
-			:federobj_microseconds = (fdc_long) federobj_delta.QuadPart;
+			int64 microseconds
+			:federobj_microseconds = (fdc_int64) federobj_delta.QuadPart;
 			return (double from microseconds).div (double from 1000)
 		;
 	;
