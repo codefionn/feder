@@ -198,9 +198,7 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 		                + "void fdDeleteClass_" + generateCNameOnly() + " (void * data);\n"
 		                + generateCName() + " fdCreateClass_" + generateCNameOnly() + " ();\n"
 						+ "void fdIncreaseUsage_"
-		                + generateCNameOnly() + " (fdobject * object, int usage);" + "\n"
-						+ "bool fdExistsObject_" + generateCNameOnly()
-						+ " (fdobject * obj0, fdobject * objToCheck);\n";
+		                + generateCNameOnly() + " (fdobject * object, int usage);" + "\n";
 
 		return result;
 	}
@@ -257,9 +255,6 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 		result.append( ") malloc (sizeof (" + generateCNameOnly() + "));\n");
 
 		result.append("  ").append("result->usage = 1;\n");
-		result.append("  ").append("result->existsPointer = ");
-		result.append("fdExistsObject_").append(generateCNameOnly());
-		result.append(";\n");
 
 		result.append("  ").append("result->usagefn = ");
 		result.append("fdIncreaseUsage_");
@@ -321,32 +316,6 @@ public class FederClass extends FederBody implements FederHeaderGen, FederCompil
 		 */
 
 		result.append("  }\n}\n\n");
-
-		// fdExistsObject_class - function
-
-		result.append("bool fdExistsObject_");
-		result.append(generateCNameOnly());
-		result.append("(fdobject * obj0, fdobject * objToCheck) {\n");
-
-		result.append("  " + generateCName() + " cobj = (" + generateCName());
-		result.append(") obj0;\n");
-
-		for (FederBinding binding : getBindings()) {
-			if (!(binding instanceof FederObject))
-				continue;
-			
-			FederObject obj = (FederObject) binding;
-			if (!obj.isClassObject()) {
-				continue;
-			}
-
-			result.append("  if ((void*) cobj->" + obj.generateCName());
-			result.append(" == (void*) objToCheck) {\n");
-			
-			result.append("    return true;\n  }\n");
-		}
-
-		result.append("}\n\n");
 
 		return result.toString();
 	}

@@ -19,12 +19,6 @@ namespace h_intern
 	:#include <stdint.h>
 	:#include <stdbool.h>
 
-	# Flags for garbage collectable objects
-	:#define FD_GC_OBJECT_FLAG_NONE 0x01
-	:#define FD_GC_OBJECT_FLAG_BLACK 0x02
-	:#define FD_GC_OBJECT_FLAG_GREY 0x04
-	:#define FD_GC_OBJECT_FLAG_WHITE 0x08
-
 	# Mainly used for NullPointer (Exceptions) in this case
 	:#include <stdio.h>
 
@@ -38,13 +32,6 @@ namespace h_intern
 	# objects of that class.
 	##
 	:typedef void (* PFDDELETE) (void * data);
-
-	##
-	# Feder's classes need this typedef (interface) to be
-	# able to declare and define interface, which checks if
-	# a certain pointer is in the object.
-	##
-	:typedef bool (* PFDEXISTS) (fdobject * obj, fdobject * pointerToCheck);
 
 	##
 	# Because every class in Feder needs a function,
@@ -70,66 +57,7 @@ namespace h_intern
 		# The function to increase/decrease the object's
 		# reference counter
 		:PFDUSAGE usagefn;
-
-		# The function detects objects (pointers) in this object
-		:PFDEXISTS existsPointer;
-
-		:char flag;
 	:};
-
-	# Three sets for the tri-color marking garbage collection
-	:extern fdobject ** gc_stack_black;
-	:extern fdobject ** gc_stack_grey;
-	:extern fdobject ** gc_stack_white;
-
-	# The length of the stacks
-	:extern size_t gc_stack_black_len;
-	:extern size_t gc_stack_grey_len;
-	:extern size_t gc_stack_white_len;
-
-	##
-	# This function initializes garbage collection.
-	# All lengths get assign to best practice values and
-	# the corresponding stack will be created.
-	##
-	:void
-	:fdInitGarbageCollection();
-
-	##
-	# This function collects all garbage produced by the
-	# system. It searches through all grey objects, and 
-	# and checks references to white objects. If a reference
-	# was found that object will be put into the grey stack.
-	##
-	:void
-	:fdCollectGarbage();
-
-	##
-	# Adds the object 'obj' to the black stack of the
-	# garbage collector. These objects are definitly used
-	# and don't have any references to 'white' objects.
-	##
-	:fdobject*
-	:fdAddObjectAsBlack (fdobject * obj);
-	
-	##
-	# Adds the object 'obj' to the grey stack of the
-	# garbage collector. These objects are used by black
-	# objects, so they won't be garbage collected. After
-	# calling the fdCollectGarbage function, this object
-	# will be put into the black stack.
-	##
-	:fdobject*
-	:fdAddObjectAsGrey (fdobject * obj);
-
-	##
-	# Adds the object 'obj' to the white stack of the
-	# garbage collector. These objects might be used
-	# be referenced by 'grey' objects. If they are, they
-	# are put into the 'black' object stack.
-	##
-	:fdobject*
-	:fdAddObjectAsWhite (fdobject * obj);
 
 	# This function calls the delete function
 	# of the given object
@@ -186,12 +114,6 @@ namespace h_intern
 	:void
 	:fdDecreaseUsage (fdobject * object);
 
-	##
-	# Checks if 'objToSearch' exists in 'obj0'.
-	##
-	:bool
-	:fdExistsObjectIn (fdobject * obj0, fdobject * objToSearch);
-
 	# Type arrays
 
 	:struct _fdtypearray;
@@ -206,9 +128,6 @@ namespace h_intern
 		# The function to increase/decrease the object's
 		# reference counter
 		:PFDUSAGE usagefn;
-		:PFDEXISTS existsPointer;
-		# Flag for the garbage collection algo
-		:char flag;
 
 		:char * data;
 		:int length;
@@ -231,7 +150,6 @@ namespace h_intern
 	:fdtypearray*
 	:fdAppendToTypeArray (fdtypearray* ar, char * data);
 
-
 	# Class arrays
 
 	:struct _fdclassarray;
@@ -241,9 +159,6 @@ namespace h_intern
 		:int usage;
 		:PFDDELETE delfn;
 		:PFDUSAGE usagefn;
-		:PFDEXISTS existsPointer;
-		# Flag for the garbage collection algo
-		:char flag;
 
 		:fdobject ** data;
 		:int length;
@@ -266,75 +181,11 @@ namespace h_intern
 
 	:fdobject*
 	:fdGetClassArrayObjectAt (fdclassarray* ar, int index);
-
-	:bool
-	:fdExistsObjectInClassArray (fdobject * obj0, fdobject * existsObj);
 ;
 
 # Define all declared functions
 namespace c_intern
 	:#include <stdio.h>
-
-	# Three sets for the tri-color marking garbage collection
-	:fdobject ** gc_stack_black = NULL;
-	:fdobject ** gc_stack_grey = NULL;
-	:fdobject ** gc_stack_white = NULL;
-
-	:size_t gc_stack_black_len;
-	:size_t gc_stack_grey_len;
-	:size_t gc_stack_white_len;
-
-	:void
-	:fdInitGarbageCollection () {
-		:gc_stack_black_len = 50;
-		:gc_stack_grey_len = 1000;
-		:gc_stack_white_len = 30;
-
-		:gc_stack_black = (fdobject**) calloc (sizeof (fdobject*), gc_stack_black_len);
-		:gc_stack_grey = (fdobject**) calloc (sizeof (fdobject*), gc_stack_grey_len);
-		:gc_stack_white = (fdobject**) calloc (sizeof (fdobject*), gc_stack_white_len);
-	:}
-
-	:static fdobject*
-	:fdObjectAddTo (fdobject *** gc_stack, size_t * gc_stack_len, fdobject * obj) {
-		:for (int i = 0; i < *gc_stack_len; i++) {
-			:(*gc_stack)[i] = obj;
-			:return obj;
-		:}
-
-		# The object could be assigned to a missing place in
-		# the garbage collector. We have to reallocate some space
-		# assign the newly created fields to 'null' and assign
-		# 'obj' to the first available value 'gc_stack_len'.
-
-		:int old_gc_stack_len = *gc_stack_len;
-		:*gc_stack_len += 50; // Reserve 50 new objects
-		:*gc_stack = (fdobject**) realloc ((void*) (*gc_stack), *gc_stack_len * sizeof (fdobject*));
-
-		:for (int i = 0; i < 50; i++) {
-			:(*gc_stack)[old_gc_stack_len + i] = NULL;
-		:}
-
-		:(*gc_stack)[old_gc_stack_len] = obj;
-		
-		:return obj;
-	:}
-
-	:fdobject*
-	:fdAddObjectAsBlack (fdobject * obj) {
-		:return fdObjectAddTo (&gc_stack_black, &gc_stack_black_len, obj);
-	:}
-	
-	:fdobject*
-	:fdAddObjectAsGrey (fdobject * obj) {
-		:return fdObjectAddTo (&gc_stack_grey, &gc_stack_grey_len, obj);
-	:}
-
-	:fdobject*
-	:fdAddObjectAsWhite (fdobject * obj) {
-		:return fdObjectAddTo (&gc_stack_white, &gc_stack_white_len, obj);
-	:}
-
 	:void
 	:fdDeleteObject (fdobject * object) {
 	:  if (!object) return;
@@ -398,17 +249,6 @@ namespace c_intern
 	:  object->usagefn (object, 0);
 	:}
 
-	:bool
-	:fdExistsObjectIn (fdobject * obj0, fdobject * objToSearch) {
-		:if (!obj0) return false;
-		:if (obj0 == objToSearch) return true;
-
-		:if (!obj0->existsPointer)
-			:return false;
-
-		:return obj0->existsPointer (obj0, objToSearch);
-	:}
-
 	# Type array
 
 	:void
@@ -457,7 +297,6 @@ namespace c_intern
 		:ar->length += 1;
 		:ar->data = (char*) realloc ((void*) ar->data, ar->length * ar->typesize);
 		:memcpy (ar->data + ((ar->length-1) * ar->typesize), data, ar->typesize);
-		:ar->existsPointer = NULL;
 		:return ar;
 	:}
 
@@ -470,7 +309,6 @@ namespace c_intern
 		:result->delfn = fdDeleteClassArray;
 		:result->usagefn = fdIncreaseUsageClassArray;
 		:result->length = size;
-		:result->existsPointer = fdExistsObjectInClassArray;
 		
 		# Create the data
 		:result->data = (fdobject**) malloc (size * sizeof (fdobject*));
@@ -548,18 +386,6 @@ namespace c_intern
 
 		:return result;
 	:}
-
-	:bool
-	:fdExistsObjectInClassArray (fdobject * obj0, fdobject* existsObj) {
-		:fdclassarray * ar = (fdclassarray*) obj0;
-		:for (int i = 0; i < ar->length; i++) {
-			:if (ar->data[i] == existsObj) {
-				:return true;
-			:}
-		:}
-
-		:return false;
-	:}
 ;
 
 ::rule struct increase "fdIncreaseUsage ((fdobject*) {0})"
@@ -568,6 +394,7 @@ namespace c_intern
 ::rule struct remove_func "fdRemoveObject_func ((fdobject*) {0})"
 ::rule struct assign_obj "fdAssignObject ((fdobject*) {0})"
 ::rule struct assign_obj_old "fdAssignObjectOld ((fdobject**) &{0}, (fdobject*) {1})"
+::rule struct obj_header "int usage; PFDDELETE delfn; PFDUSAGE usagefn;"
 
 ::rule struct this_is_null "if (!{0}) puts (\"This is null in file {1} in line {2}\") ;"
 
