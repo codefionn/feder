@@ -111,6 +111,9 @@ The names operator can have:
 	- assign_obj: Increase the usage of the object and
 	  return the object
 
-	- assign_obj\_old: Assign an old object to a new one => remove
+	- assign_obj_old: Assign an old object to a new one => remove
 	  the old object and increase the object of the new one and return
 	  the new one
+	
+	- obj_header: This is the written in the top of a structure (C: struct).
+	  Should probably contain information for the garbage collection.

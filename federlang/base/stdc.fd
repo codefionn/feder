@@ -264,6 +264,9 @@ namespace c_intern
 	:void
 	:fdDeleteTypeArray (void* data) {
 		:if (!data) return;
+		:#ifdef DEBUG
+		:puts("Deleting type array");
+		:#endif
 		:fdtypearray* ar = (fdtypearray*) data;
 		:free (ar->data);
 		:free (ar);
@@ -325,6 +328,10 @@ namespace c_intern
 		:if (!data)
 			:return;
 
+		:#ifdef DEBUG
+		:puts ("Deleting class array");
+		:#endif
+
 		:fdclassarray* todel = (fdclassarray*) data;
 		:for (int i = 0; i < todel->length; i++) {
 			:fdRemoveObject (todel->data[i]);
@@ -342,6 +349,10 @@ namespace c_intern
 		:} else {
 			:obj->usage--;
 		:}
+
+		:#ifdef DEBUG
+		:printf ("Class array usage: %i\n", obj->usage);
+		:#endif
 	:}
 
 	:int

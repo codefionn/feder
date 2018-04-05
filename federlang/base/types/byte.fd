@@ -131,12 +131,12 @@ class Byte
 	;
 ;
 
-namespace h_intern_Bool
+namespace h_intern_Byte
 	:fdc_Byte *
 	:fdCreateByte (signed char c);
 ;
 
-namespace c_intern_Bool
+namespace c_intern_Byte
 	:fdc_Byte *
 	:fdCreateByte (signed char c) {
 		:fdc_Byte* result = fdCreateClass_fdc_Byte ();
@@ -146,3 +146,8 @@ namespace c_intern_Bool
 ;
 
 ::rule pattern ! "!{1}" bool null bool
+
+::rule pattern > "{0} > {1}" bool byte byte
+::rule pattern < "{0} < {1}" bool byte byte
+::rule pattern >= "{0} >= {1}" bool byte byte
+::rule pattern <= "{0} <= {1}" bool byte byte

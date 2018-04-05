@@ -27,7 +27,7 @@ namespace compiler
 		# A function, which can be used by the interface 'int_readByte'.
 		# This function reads through a file (that is the buffer).
 		##
-		byte interface readbyteFile (object reader)
+		byte func readbyteFile (object reader)
 			File file = File from reader
 			return file.readByte ()
 		;
@@ -41,12 +41,7 @@ namespace compiler
 			file.close ()
 		;
 
-		class LexerHelper
-			String[] operators
-			String[] keywords
-
-			func init
-				operators = append (String[0],
+		global String[] operators = append (String[0],
 				                    "(", ")", ",", ".",
 									"[]", "[", "]",
 									"&&", "||",
@@ -57,7 +52,8 @@ namespace compiler
 									"=",
 									"!", "+", "-", "*", "/",
 									"&", "|", "^")
-				keywords = append (String[0],
+
+		global String[] keywords = append (String[0],
 				                   "class", "type", "func", "interface",
 								   "while", "for", "if", "else",
 								   "break", "continue", "return",
@@ -65,93 +61,223 @@ namespace compiler
 								   "true", "false", "null",
 								   "include", "import",
 								   "global")
+
+		class LexerHelper
+			String error
+			int32 error_count
+
+			String sLine
+			int32 iLine
+			int32 column
+
+			int32 linesInUnit
+			int32 currentScope
+
+			object buffer
+		    int_readbyte fn_buffer_readbyte
+			int_close fn_buffer_close
+
+			byte c
+
+			func init
+				error = String
+				error_count = 0
+
+				sLine = String
+				iLine = 0
+				column = 0
+
+				linesInUnit = 0
+				currentScope = 0
+			;
+
+			bool func isKeyword(String s)
+				for i = 0, i < len(keywords), i++
+					if isEqual(keywords[i], s)
+						return true
+					;
+				;
+
+				return false
+			;
+
+			bool func isOperator(String s)
+				for i = 0, i < len(operators), i++
+					if isEqual(operators[i], s)
+						return true
+					;
+				;
+
+				return false
+			;
+
+			byte func readNextChar
+				c = fn_buffer_readbyte(buffer)
+				if c != '\n' && c != '\r'
+					column++
+					sLine.addto(Byte.set(c))
+				;
+
+				return c
+			;
+
+			func newLine (String[] tokenKeys, String[] tokenValues)
+				for linesInUnit > (-1)
+					linesInUnit--
+					append(tokenKeys, "newline")
+					append(tokenKeys, "\n")
+				;
+
+				linesInUnit = 0
+
+				iLine++
+				sLine = ""
+				column = 0
+			;
+
+			func newError (String[] tokenKeys, String[] tokenValues, String msg)
+				error_count++
+				oldColumn = column
+
+				# Read whole line
+				readNextChar()
+				for c != '\n' && c != '\r' && c != '\0'
+					readNextChar()
+				;
+
+				lastc = c
+				readNextChar()
+				if (c == '\n' || c == '\r') && c != lastc
+					readNextChar()
+				;
+
+				newLine(tokenKeys, tokenValues)
+
+				error += "Line=" + iLine + "\n"
+				error += sLine
+				error += "\n"
+				for (oldColumn--) > 0
+					error += " "
+				;
+
+				error += "^\n"
+				error += "Description="
+				error += msg
+				error += "\n"
 			;
 		;
 
 		##
-		# This function reads through the given 'buffer' with the
-		# interface fn_buffer_readbyte. If the buffer's end has been
-		# reached, the buffer will be closed by 'fn_buffer_close'.
-		# @param buffer The buffer, which should be read
-		# @param fn_buffer_readbyte The read interface for 'buffer', Mustn't
-		# be null.
-		# @param fn_buffer_close The close interface for 'buffer'. Can be
-		# null
+		# This function reads through the given 'buffer' (in 'helper') with the
+		# interface fn_buffer_readbyte (in 'helper'). If the buffer's end has
+		# been reached, the buffer will be closed by 'fn_buffer_close' (in
+		# 'helper').
 		#
-		# @param error Potential errors are added to this string.
-		# Mustn't be null.
 		# @param tokenKeys The result of lexer (tokenizer), These are tokens,
 		# which described the elements in 'tokenValues'.
 		# @param tokenValues The result of the lexer (tokennizer). The elements
 		# of this list are the real values, described by 'tokenKeys'.
-		# @param tokenPos These represent the position in the source code of the
-		# token
 		#
 		# @return Returns true, if the Lexer processed the buffer successfully.
 		# If an error occures, while processing the buffer, the error
 		# description is added to 'error'.
 		##
-		bool func lex (LexerHelper helper, object buffer,
-		               int_readbyte fn_buffer_readbyte,
-					   int_close fn_buffer_close,
-					   
-					   String error,
+		bool func lex (LexerHelper helper,
 					   String[] tokenKeys,
-					   String[] tokenValues,
-					   int[] tokenPos)
+					   String[] tokenValues)
 			
 			String buffer_tokenValue = String
 
-			# This integer counts the lines, which are used
-			# in one syntax unit (can be several when using '(' or '['
-			# or strings)
-			int32 lines_in_syntax_unit = 0
-			int32 current_scope = 0
-
-			String sLine = String
-			int32 iLine = 0
-			int32 column = 0
-
-			c = fn_buffer_readbyte (buffer)
-			for c != '\0'
-				if c.isNewLine ()
-					# Curious about what newline operators are avaiable
-					# in the vast world of operating systems ?
-					# https://en.wikipedia.org/wiki/Newline
-					char_newline = c
-					c = fn_buffer_readbyte (buffer)
-
-					if c.isNewLine () && c != char_newline
-						# The newline is a combination is
-						# "\r\n" or "\n\r"
-						c = fn_buffer_readbyte (buffer)
-					else if c.isNewline ()
-						iLine++
-						append (tokenKeys, "newline")
-						append (tokenValues, "\n")
+			helper.readNextChar()
+			for helper.c != '\0'
+				if helper.c == '\n' || helper.c == '\r'
+					# Detected a new line
+					lastc = helper.c
+					helper.readNextChar()
+					if (helper.c == '\n' || helper.c == '\r')  && helper.c != lastc
+						# The detected line is a CRLF or LFCR
+						helper.readNextChar()
 					;
 
-					iLine++
-					append (tokenKeys, "newline")
-					append (tokenValues, "\n")
-
-					# Add all lines, which were in syntax units
-					for lines_in_syntax_unit > 0
-						lines_in_syntax_unit--
-						append (tokenKeys, "newline")
-						append (tokenValues, "\n")
-					;
-
-					column = 0
+					helper.newLine(tokenKeys, tokenValues)
 					continue
 				;
 
-				for c.isDigit () || c.isAlpha () || c == '_'
-					buffer_tokenValue.add (Byte.set(c))
-					c = fn_buffer_readbyte (buffer)
+				if helper.c == '\t' || helper.c == ' '
+					helper.readNextChar()
+					continue
 				;
 
+				buffer_tokenValue.addto(Byte.set(helper.c))
+				bool isBufferOperator = false
+				for (helper.c != '\t' && helper.c != ' '
+					&& helper.c != '\n' && helper.c != '\r'
+					&& helper.c != '\0'
+					&& helper.isOperator(buffer_tokenValue))
+
+					if !isBufferOperator
+						isBufferOperator = true
+					;
+
+					# Still an operator
+					buffer_tokenValue.addto(Byte.set(helper.readNextChar()))
+				;
+
+				if isBufferOperator
+					if !helper.isOperator(buffer_tokenValue)
+						buffer_tokenValue.removeAt(buffer_tokenValue.length()-1)
+					;
+
+					append(tokenKeys, "operator")
+					append(tokenValues, buffer_tokenValue)
+					buffer_tokenValue = String
+					continue
+				;
+
+				if !helper.c.isDigit() && !helper.c.isAlpha() && helper.c != '_'
+
+					# Well, buffer_tokenValue contains something that is not
+					# an operator, but is also not applyable as a symbol
+					helper.newError(tokenKeys, tokenValues, "Unknown operator")
+					continue
+				;
+
+				helper.readNextChar()
+
+				# Read the symbol (only digits, alphabetic characters and '_'
+				# are allowed)
+				for helper.c.isDigit() && helper.c.isAlpha() && helper.c != '_'
+					buffer_tokenValue.addto(Byte.set(helper.c))
+					helper.readNextChar()
+				;
+
+				if (buffer_tokenValue.isNumber(false)
+					|| buffer_tokenValue.isHexadecimal())
+
+					# buffer_tokenValue is an integer
+					append(tokenKeys, "integer")
+					append(tokenValues, buffer_tokenValue)
+					buffer_tokenValue = String
+				else if buffer_tokenValue.isNumber(true)
+					# buffer_tokenValue is a floating point number
+					append(tokenKeys, "float")
+					append(tokenValues, buffer_tokenValue)
+					buffer_tokenValue = String
+				else if buffer_tokenValue.at(0).val.isDigit()
+					helper.newError(tokenKeys, tokenValues, "Invalid Symbol, because a symbol can't start with a digit!")
+					buffer_tokenValue = String
+					continue
+				else
+					append(tokenKeys, "symbol")
+					append(tokenValues, buffer_tokenValue)
+					buffer_tokenValue = String
+					continue
+				;
+
+				helper.newError(tokenKeys, tokenValues, "Invalid character")
 			;
+
+			return helper.error_count > 0
 		;
 	;
 ;

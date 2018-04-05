@@ -182,7 +182,7 @@ class String
 	;
 
 	bool func isNumber (bool allowFloatingPoint32)
-		if this == null
+		if this == null || isEmpty()
 			return false
 		;
 
@@ -597,6 +597,26 @@ bool func isEqualIgnoreCase_String_String (object s0, object s1)
 ;
 
 class String
+	bool func isHexadecimal
+		if this == null || isEmpty()
+			return false
+		;
+
+		if !startsWith("0x") && isEqual(this, "0x")
+			return false
+		;
+
+		for i = 2, i < length(), i++
+		 	# Character pool: A-F, a-f, 0-9
+			byte c = at(i).val
+			if !c.isDigit() && !(c >= 'A' && c <= 'F') && !(c >= 'a' && c <= 'f')
+				return false
+			;
+		;
+
+		return true
+	;
+
 	##
 	# Adds n to the end of the string
 	# @param n A number
@@ -885,6 +905,7 @@ class String
 ::rule func + String.add int64
 ::rule func + String.add uint64
 ::rule func + String.add double
+::rule func += String.addto String
 
 # An intern namespace for the String class
 namespace h_intern_String

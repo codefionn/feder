@@ -135,5 +135,5 @@ Documentation can be found in [/doc](/doc) and if you want a documentation run
 $ doxygen doxyconf
 ```
 
-in the main directory of the project. This generated a HTML documentation
+in the main directory of the project. This generates a HTML documentation
 in [/doc/java_api/html](/doc/java_api/html).

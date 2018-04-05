@@ -99,6 +99,9 @@ public class SyntaxTreeElementUtils {
 			return;
 		}
 
+
+		FederRule ruleRemove = body.getCompiler().getApplyableRuleForStruct("remove");
+			
 		for (FederBinding binding : body.getBindings()) {
 			if (binding == null)
 				continue;
@@ -123,7 +126,7 @@ public class SyntaxTreeElementUtils {
 			 * The following code in the 'if' statement is currently unused, but could be
 			 * used to improve the performance a program written in Feder is running
 			 */
-			if (obj == ignore) {
+			/*if (obj == ignore) {
 				// Ignore
 				FederRule ruleDecrease = body.getCompiler().getApplyableRuleForStruct("decrease");
 				if (ruleDecrease == null) {
@@ -135,7 +138,7 @@ public class SyntaxTreeElementUtils {
 
 				compileTo.append(body.inFrontOfSyntax()).append(ruleDecrease.applyRule(body, obj.generateCName()));
 				continue;
-			}
+			}*/
 
 			// Write a little notice when in Debug Mode
 			if (body.getCompiler().isDebug()) {
@@ -143,7 +146,6 @@ public class SyntaxTreeElementUtils {
 				.append("printf (\"" + pos + ". Removing object " + obj.getName() + "\\n\");\n");
 			}
 
-			FederRule ruleRemove = body.getCompiler().getApplyableRuleForStruct("remove");
 			if (ruleRemove == null) {
 				throw new RuntimeException("struct rule 'remove' doesn't exist!");
 			}
@@ -186,6 +188,10 @@ public class SyntaxTreeElementUtils {
 					FederRule ruleRemove = fmn.getCompiler().getApplyableRuleForStruct("remove");
 					if (ruleRemove == null) {
 						throw new RuntimeException("struct rule 'remove' doesn't exist!");
+					}
+
+					if(fmn.getCompiler().isDebug()) {
+						mainMethod.append("puts (\" Removing global object " + obj.getName() + "\");\n");
 					}
 
 					mainMethod.append(ruleRemove.applyRule(fmn, obj.generateCName()) + ";\n");

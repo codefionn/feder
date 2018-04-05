@@ -569,9 +569,9 @@ public class SyntaxTreeElement {
 					if (depth > 0) {
 						if (depth > 1) {
 							throw new RuntimeException("Currently only arrays with one depth are allowed!");
-						} else if (getfrombinding instanceof FederClass && !((FederClass) getfrombinding).isType()) {
+						}/* else if (getfrombinding instanceof FederClass && !((FederClass) getfrombinding).isType()) {
 							throw new RuntimeException("Currently arrays can only be created with data types/interfaces!");
-						}
+						}*/
 
 						obj.setTypeManual(new FederArray(getfrombinding));
 						depth = 0;
@@ -740,6 +740,8 @@ public class SyntaxTreeElement {
 			SyntaxTreeElement ste = newBranchAt(indexToken);
 			int tokenscount = ste.tokens.size();
 			StringBuilder compiled = ste.compile();
+
+			if (isGlobal) isNew = false;
 
 			/*
 			 * if (ste.tokens.size() == 1 && ste.tokens.get(0).equals ("null")) {
@@ -977,7 +979,9 @@ public class SyntaxTreeElement {
 				if (getfrombinding instanceof FederObject && ((FederObject) getfrombinding).isForced)
 					result = new StringBuilder(func.generateCName() + "(("
 					                           + ((FederFunction) func).getParent().generateCName() + "*)&" + result.toString() + "");
-				else if (getfrombinding instanceof FederObject && !((FederObject) getfrombinding).isGlobal) {
+				else if (getfrombinding instanceof FederObject
+					&& !((FederObject) getfrombinding).isGlobal) {
+
 					String sresult = result.toString();
 					int braces = 0;
 					boolean starcame = false;
@@ -1011,8 +1015,10 @@ public class SyntaxTreeElement {
 					                           + "*) " + sresult.substring(0, insertat0) + "*"
 					                           + sresult.substring(insertat0, insertat1) + "&" + sresult.substring(insertat1));
 					// System.err.println (result);
-				} else
+				} else if (func instanceof FederFunction)
 					result = new StringBuilder("ptr_" + func.generateCName() + "(" + result.toString());
+				else
+					result = new StringBuilder(func.generateCName() + "(" + result.toString());
 
 				if (func.getArguments().size() > 0) {
 					result.append(", ");
@@ -1040,11 +1046,18 @@ public class SyntaxTreeElement {
 				    "The function \"" + func.getName() + "\" needs a class, but there wasn't found any object, "
 				    + "which would satisfy that requirement!");
 			} else {
-				// Functions doesn't need a class
+				// Function doesn't need a class
 				if (!(func instanceof FederInterface))
 					result = new StringBuilder();
-				else if (result.length() > 0)
+				else if (result.length() > 0) {
 					result.append("->");
+				} else if (((FederInterface) func).getParent() instanceof FederClass) {
+					if (body.getClassInBody() == null) {
+						throw new RuntimeException("The interface needs a class, but the class wasn't found ('this')");
+					}
+
+					result.append("(*federobj_this)->");
+				}
 
 				result.append(func.generateCName() + "(" + compiled + ")");
 			}
@@ -1163,7 +1176,7 @@ public class SyntaxTreeElement {
 				} else if (obj.isInterface() && !isGlobal) {
 					result.append(obj.getResultType().generateCName() + " ");
 					body.addBinding(((FederInterface) obj.getResultType()).interfaceFrom(compiler, obj.getName(), body));
-				} else if (obj.isArray()) {
+				} else if (obj.isArray() && !isGlobal) {
 					result.append(obj.getResultType().generateCName());
 				}
 			} else {
@@ -1908,7 +1921,7 @@ public class SyntaxTreeElement {
 
 				FederBinding binding = body.getBinding(body, "int32", true);
 				if (binding == null) {
-					throw new RuntimeException("The class/data type 'int' was not declared!");
+					throw new RuntimeException("The class/data type 'int32' was not declared!");
 				}
 
 				if (!(binding instanceof FederClass)) {
