@@ -33,7 +33,7 @@ EXIT /B 0
 :test
 Set arg1=%1
 echo # Testing %arg1%
-call jfederc.cmd -I base -D tests\build --toolchain CL --usewinop --coption "/nologo" --loption "/nologo" .\tests\%1.fd 
+call jfederc.cmd -I base -I tests -D tests\build --toolchain CL --usewinop --coption "/nologo" --loption "/nologo" .\tests\%1.fd 
 if not %errorlevel%==0 (
 	echo Failed to compile
 ) else (

@@ -800,7 +800,7 @@ public class SyntaxTreeElement {
 					if (isNew && obj.getResultType() == null && fc.isType()) {
 						obj.isForced = true;
 						result = new StringBuilder(fc.generateCName() + " " + obj.generateCName() + " = ");
-					} else if (fc.isType()) {
+					} else if (fc.isType() && !isGlobal) {
 						throw new RuntimeException(
 						    "Can't assign object (class not a type declaration) to a object with class with one.");
 					}
