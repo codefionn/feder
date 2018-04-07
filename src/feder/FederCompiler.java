@@ -194,6 +194,10 @@ public class FederCompiler {
 		printCommands = printCommands0;
 
 		preprocessorMacros.add(systemName);
+
+		if (!globalIncluded.contains(this)) {
+			globalIncluded.add(this);
+		}
 	}
 
 	/**
@@ -748,16 +752,10 @@ public class FederCompiler {
 
 				// Generate an ending for all global values
 				for (FederCompiler compiler : globalIncluded) {
-					if (compiler == this)
-					continue;
-
 					SyntaxTreeElementUtils.generateGlobalEnding(compiler.main, mainmethod);
 				}
 
 				for (FederCompiler compiler : globalIncluded) {
-					if (compiler == this)
-					continue;
-
 					compileFile.write(SyntaxTreeElementUtils.generateGlobalStart(compiler.main));
 				}
 

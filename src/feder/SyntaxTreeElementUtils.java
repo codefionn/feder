@@ -177,12 +177,15 @@ public class SyntaxTreeElementUtils {
 	 * @param mainMethod
 	 */
 	public static void generateGlobalEnding(FederBody fmn, StringBuilder mainMethod) {
-		_generateGlobalEnding(fmn.getMainNamespace(), mainMethod);
+		_generateGlobalEnding(fmn.getMainNamespace(), mainMethod, new LinkedList<>());
 	}
 
-	private static void _generateGlobalEnding(FederBody fmn, StringBuilder mainMethod) {
+	private static void _generateGlobalEnding(FederBody fmn, StringBuilder mainMethod, List<FederBinding> objs) {
 		for (FederBinding bind : fmn.getBindings()) {
 			if (bind instanceof FederObject) {
+				if (objs.contains(bind)) continue;
+
+				objs.add(bind);
 				FederObject obj = (FederObject) bind;
 				if (obj.isGlobal && obj.isGarbagable()) {
 					FederRule ruleRemove = fmn.getCompiler().getApplyableRuleForStruct("remove");
@@ -196,10 +199,10 @@ public class SyntaxTreeElementUtils {
 
 					mainMethod.append(ruleRemove.applyRule(fmn, obj.generateCName()) + ";\n");
 				} else if(obj.isGlobal && obj.isDataType()) {
-					mainMethod.append("free (" + obj.generateCNameOnly() + ");\n");
+					mainMethod.append("free ((void*) " + obj.generateCNameOnly() + ");\n");
 				}
 			} else if (bind instanceof FederBody) {
-				_generateGlobalEnding((FederBody) bind, mainMethod);
+				_generateGlobalEnding((FederBody) bind, mainMethod, objs);
 			}
 		}
 	}
@@ -211,15 +214,22 @@ public class SyntaxTreeElementUtils {
 	 * global values used
 	 */
 	public static String generateGlobalStart(FederBody fmn) {
+		return _generateGlobalStart(fmn, new LinkedList<>());
+	}
+
+	private static String _generateGlobalStart(FederBody fmn, List<FederBinding> objs) {
 		StringBuilder sb = new StringBuilder();
 		for (FederBinding bind : fmn.getBindings()) {
 			if (bind instanceof FederObject) {
+				if (objs.contains(bind)) continue;
+
+				objs.add(bind);
 				FederObject obj = (FederObject) bind;
 				if(obj.isGlobal && obj.isDataType()) {
 					sb.append(obj.generateCNameOnly() + " = (" + obj.getResultType().generateCName() + " *) malloc (sizeof (" + obj.getResultType().generateCName() + "));\n");
 				}
 			} else if (bind instanceof FederBody) {
-				sb.append(generateGlobalStart((FederBody) bind));
+				sb.append(_generateGlobalStart((FederBody) bind, objs));
 			}
 		}
 

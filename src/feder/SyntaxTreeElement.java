@@ -764,7 +764,8 @@ public class SyntaxTreeElement {
 					throw new RuntimeException("There should be returned something like a function!");
 				}
 
-				if (ste.returnedClasses.get(0) != null && !((FederInterface) obj.getResultType()).isEqual(null, FederFunction
+				if (ste.returnedClasses.get(0) != null
+						&& !((FederInterface) obj.getResultType()).isEqual(null, FederFunction
 				        .objectListToClassList(((FederArguments) ste.returnedClasses.get(0)).getArguments()))) {
 					throw new RuntimeException("The arguments of the interface and the function must be equal!");
 				}
@@ -782,7 +783,8 @@ public class SyntaxTreeElement {
 				throw new RuntimeException("Waited only for one object after '=', but too many came!");
 			}
 
-			if (ste.returnedClasses.get(0) != null && !(ste.returnedClasses.get(0) instanceof FederClass
+			if (ste.returnedClasses.get(0) != null
+					&& !(ste.returnedClasses.get(0) instanceof FederClass
 			        || ste.returnedClasses.get(0) instanceof FederArray)) {
 				throw new RuntimeException("Did not return a regular object (array/class/data type)");
 			}
@@ -790,19 +792,28 @@ public class SyntaxTreeElement {
 			// Check class matching or assign it if class is not enforced by object
 			FederBinding binding = ste.returnedClasses.get(0);
 
-			if (binding instanceof FederClass) {
+			if (binding != null
+					&& binding instanceof FederClass
+					&& (!FederBinding.areSameTypes(obj.getResultType(), binding)
+						|| obj.getResultType() == null)) {
 				FederClass fc = (FederClass) binding;
 
-				if (fc != null && obj.isForced && fc != obj.getResultType()) {
+				if (fc != null && obj.isForced && !FederBinding.areSameTypes(fc, obj.getResultType())) {
 					throw new RuntimeException(
 					    "Couldn't change class of object, because the class of the object is forced!");
-				} else if (fc != null && !obj.isForced) {
+				} else if (fc != null && !obj.isForced && !FederBinding.areSameTypes(fc, obj.getResultType())) {
 					if (isNew && obj.getResultType() == null && fc.isType()) {
+						obj.setTypeManual(fc);
 						obj.isForced = true;
-						result = new StringBuilder(fc.generateCName() + " " + obj.generateCName() + " = ");
-					} else if (fc.isType() && !isGlobal) {
+						result = new StringBuilder(fc.generateCName()
+								+ " " + obj.generateCName() + " = ");
+					} else if (fc.isType() && !(obj.isGlobal && isGlobal)) {
 						throw new RuntimeException(
 						    "Can't assign object (class not a type declaration) to a object with class with one.");
+					} else if (fc.isType() && isGlobal) {
+						obj.setTypeManual(fc);
+						obj.isForced = true;
+						result = new StringBuilder(obj.generateCName() +" = ");
 					}
 
 					obj.setTypeManual(fc);
@@ -838,7 +849,7 @@ public class SyntaxTreeElement {
 
 				result = new StringBuilder(ruleAssignOld.applyRule(body, resultold0.toString(), compiled.toString()));
 			} else if (obj.isDataType()) {
-				if (isNew)
+				if (isNew && !obj.isGlobal)
 					result = new StringBuilder(
 					    (obj.isGlobal ? "" : (obj.getResultType().generateCName() + " ")) + obj.generateCName() + " = ");
 				result.append(compiled);
