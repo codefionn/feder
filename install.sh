@@ -11,13 +11,17 @@
 #
 # This script detects Cygwin, if you use it to execute this shell script.
 
-if (! [ -w /usr/lib ] ) ; then
+DEST_DIR=$1
+
+! [ -d "$DEST_DIR/usr/lib" ] && mkdir --parents $DEST_DIR/usr/lib
+
+if (! [ -w "$DEST_DIR/usr/lib" ] ) ; then
   echo "Insufficient permissions, run this program as a privileged user"
   exit 1
 fi
 
-( ! [ -d /usr/lib/feder ] ) && mkdir --parents /usr/lib/feder
-if ! [ -d /usr/lib/feder ] ; then
+( ! [ -d "$DEST_DIR/usr/lib/feder" ] ) && mkdir --parents "$DEST_DIR/usr/lib/feder"
+if ! [ -d "$DEST_DIR/usr/lib/feder" ] ; then
   echo "Insufficient permissions, run this program as a privileged user"
   exit 1
 fi
@@ -27,22 +31,28 @@ if ! [ -f jfederc.jar ] ; then
   exit 1
 fi
 
-if ! cp jfederc.jar /usr/lib/feder/ ; then
+if ! cp jfederc.jar "$DEST_DIR/usr/lib/feder/" ; then
   echo "Insufficient permissions, run this program as a privileged"
   exit 1
 fi
 
-cp -R federlang/base /usr/lib/feder/
+cp -R federlang/base "$DEST_DIR/usr/lib/feder/"
+
+! [ -d "$DEST_DIR/usr/bin" ] && mkdir --parents $DEST_DIR/usr/bin
+if ! [ -w "$DEST_DIR/usr/bin" ] ; then
+  echo "Insufficient permissions, run this program as a privileged user"
+  exit 1
+fi
 
 if ! uname -o | grep Cygwin > /dev/null ; then
 
-	cat > /usr/bin/jfederc << EOF
+	cat > "$DEST_DIR/usr/bin/jfederc" << EOF
 #!/usr/bin/env bash
 java -jar /usr/lib/feder/jfederc.jar -I /usr/lib/feder/base \$@
 exit \$?
 EOF
 else
-	cat > /usr/bin/jfederc << EOF
+	cat > "$DEST_DIR/usr/bin/jfederc" << EOF
 #!/usr/bin/env bash
 java -jar \$(cygpath -w /usr/lib/feder/jfederc.jar) -I \$(cygpath -w /usr/lib/feder/base) \$@
 exit \$?
@@ -50,21 +60,21 @@ fi
 EOF
 fi
 
-chmod a+x /usr/bin/jfederc # Allow exeuction (all users)
+chmod a+x "$DEST_DIR/usr/bin/jfederc" # Allow exeuction (all users)
 
 if ! uname -o | grep Cygwin > /dev/null ; then
-	cat > /usr/bin/jfedercnolib << EOF
+	cat > "$DEST_DIR/usr/bin/jfedercnolib" << EOF
 #!/usr/bin/env bash
 java -jar /usr/lib/feder/jfederc.jar \$@
 exit \$?
 EOF
 else
-	cat > /usr/bin/jfedercnolob << EOF
+	cat > "$DEST_DIR/usr/bin/jfedercnolob" << EOF
 #!/usr/bin/env bash
 java -jar \$(cygpath -w /usr/lib/feder/jfeder.jar \$@
 exit \$?
 EOF
 fi
 
-chmod a+x /usr/bin/jfedercnolib # Allow execution (all users)
+chmod a+x "$DEST_DIR/usr/bin/jfedercnolib" # Allow execution (all users)
 

@@ -30,6 +30,8 @@ function feder_test_program_compile {
 	fi
 }
 
+HAS_ERROR=0
+
 feder_test_program_compile "tests/test_return_false.fd" "ret_false"
 if ./tests/build/ret_false$FEDER_OUTPUT_ENDING ; then
 	echo "The program test_return_false must fail, when it terminates! BUT: It succeded"
@@ -43,7 +45,10 @@ if ! ./tests/build/ret_true$FEDER_OUTPUT_ENDING ; then
 fi
 
 function feder_test_program_test {
-	if ! timeout 5 $@ > /dev/null ; then echo "Test \"$1\" failed" 1>&2; fi
+	if ! timeout 5 $@ > /dev/null ; then
+		echo "Test \"$1\" failed" 1>&2 
+		HAS_ERROR=1
+	fi
 }
 
 function feder_test {
@@ -52,6 +57,7 @@ function feder_test {
 		feder_test_program_test tests/build/$2
 	else
 		echo "Compiler error"
+		HAS_ERROR=1
 	fi
 }
 
@@ -79,3 +85,5 @@ feder_test "tests/test_directory.fd" "directory"
 feder_test "tests/test_dynamic.fd" "dynamic"
 feder_test "tests/test_higher_order.fd" "higher_order"
 feder_test "tests/test_config.fd" "config"
+
+exit $HAS_ERROR
