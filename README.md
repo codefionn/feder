@@ -45,6 +45,15 @@ $ cd ..
 $ rm -rf feder
 ```
 
+### Installation on ArchLinux
+
+jfederc is available in the ArchLinx user repository (AUR). Use any aur helper
+or clone it directly from the AUR (in the example yaourt is used).
+
+```
+$ yaourt -S jfederc-git
+```
+
 ## Testing
 
 If an error occured during the tests, there could be an error in the Feder
