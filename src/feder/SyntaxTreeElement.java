@@ -1930,29 +1930,21 @@ public class SyntaxTreeElement {
 					throw new RuntimeException("Only len (array) is acceptable: Given object is not an array!");
 				}
 
-				FederBinding binding = body.getBinding(body, "int32", true);
-				if (binding == null) {
-					throw new RuntimeException("The class/data type 'int32' was not declared!");
+				boolean primDataArray = FederBinding.isDataType(((FederArray) returned).getType());
+				String ruleLenName = primDataArray ? "len_dataarray" : "len_classarray";
+				FederRule ruleLen = compiler.getApplyableRuleForBuildin(ruleLenName);
+				if (ruleLen == null) {
+					throw new RuntimeException("Buildin rule '" + ruleLenName + "' doesn't exists");
 				}
 
-				if (!(binding instanceof FederClass)) {
+				FederBinding binding = ruleLen.getSpecifiedResultValue();
+
+				if (binding == null || !(binding instanceof FederClass)) {
 					throw new RuntimeException("'int' was not declared as a class/data type!");
 				}
 
 				FederClass fc = (FederClass) binding;
-				if (FederBinding.isDataType(((FederArray) returned).getType())) {
-					result = new StringBuilder("fdGetTypeArrayLength ((fdtypearray*) " + compiled.toString() + ")");
-				} else {
-					result = new StringBuilder("fdGetClassArrayLength ((fdclassarray*) " + compiled.toString() + ")");
-				}
-
-				if (!fc.isType()) {
-					result.insert(0, "fdCreateInt(");
-					result.append(")");
-				} else if (fc.isType()) {
-					result.insert(0, "((" + fc.generateCName() + ") ");
-					result.append(")");
-				}
+				result = new StringBuilder(ruleLen.applyRule(body, compiled.toString()));
 
 				returnedClasses.clear();
 				returnedClasses.add(fc);

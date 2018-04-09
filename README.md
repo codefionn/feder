@@ -74,10 +74,10 @@ $ rm -rf feder
 ### Installation on ArchLinux
 
 jfederc is available in the ArchLinux user repository (AUR). Use any aur helper
-or clone it directly from the AUR (in the example yaourt is used).
+or clone it directly from the AUR (in the example aurman is used).
 
 ```
-$ yaourt -S jfederc-git
+$ aurman -S jfederc-git
 ```
 
 ## Testing
