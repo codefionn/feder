@@ -34,6 +34,32 @@ $ ./build.sh
 $ sudo ./install.sh
 ```
 
+### Uninstalling
+
+To uninstall Feder simply execute the uninstall.sh script in the master directory
+of the project.
+
+```
+$ sudo ./uninstall.sh
+```
+
+### Install to another location
+
+If you want to install Feder to another location (e.g.: ~/.local) use:
+
+```
+$ ./install.sh ~/.local
+```
+
+
+Uninstalling would look like this:
+
+```
+$ ./uninstall.sh ~/.local
+```
+
+### Cleaning up
+
 Now you have the scripts called "jfederc" and "jfedercnolib" at your complete
 disposal. "jfederc" already includes the Feder Standard Library, but if you
 don't want that, you should probably use "jfedercnolib", which doesn't include
@@ -47,7 +73,7 @@ $ rm -rf feder
 
 ### Installation on ArchLinux
 
-jfederc is available in the ArchLinx user repository (AUR). Use any aur helper
+jfederc is available in the ArchLinux user repository (AUR). Use any aur helper
 or clone it directly from the AUR (in the example yaourt is used).
 
 ```
