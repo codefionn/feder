@@ -5,11 +5,13 @@
 #  - Delete file /usr/bin/jfederc
 #  - Delete file /usr/bin/jfedercnolib
 
-if ( ! [ -w /usr/lib ] ) || ( ! [ -w /usr/bin ] ) ; then
+DEST_DIR=$1
+
+if ( ! [ -w $DEST_DIR/usr/lib ] ) || ( ! [ -w $DEST_DIR/usr/bin ] ) ; then
   echo "Insufficient permissions, run program as root"
   exit 1
 fi
 
-[ -d /usr/lib/feder ] && $(which rm) -r /usr/lib/feder
-[ -f /usr/bin/jfederc ] && $(which rm) /usr/bin/jfederc
-[ -f /usr/bin/jfedercnolib ] && $(which rm) /usr/bin/jfedercnolib
+[ -d $DEST_DIR/usr/lib/feder ] && $(which rm) -r $DEST_DIR/usr/lib/feder
+[ -f $DEST_DIR/usr/bin/jfederc ] && $(which rm) $DEST_DIR/usr/bin/jfederc
+[ -f $DEST_DIR/usr/bin/jfedercnolib ] && $(which rm) $DEST_DIR/usr/bin/jfedercnolib
