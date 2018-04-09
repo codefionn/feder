@@ -12,6 +12,7 @@ if ( ! [ -w $DEST_DIR/usr/lib ] ) || ( ! [ -w $DEST_DIR/usr/bin ] ) ; then
   exit 1
 fi
 
-[ -d $DEST_DIR/usr/lib/feder ] && $(which rm) -r $DEST_DIR/usr/lib/feder
+[ -d $DEST_DIR/usr/lib/feder/base ] && $(which rm) -r $DEST_DIR/usr/lib/feder/base
+[ -f $DEST_DIR/usr/share/java/jfederc.jar ] && $(which rm) $DEST_DIR/usr/share/java/jfederc.jar
 [ -f $DEST_DIR/usr/bin/jfederc ] && $(which rm) $DEST_DIR/usr/bin/jfederc
 [ -f $DEST_DIR/usr/bin/jfedercnolib ] && $(which rm) $DEST_DIR/usr/bin/jfedercnolib

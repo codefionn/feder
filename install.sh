@@ -14,8 +14,14 @@
 DEST_DIR=$1
 
 ! [ -d "$DEST_DIR/usr/lib" ] && mkdir --parents $DEST_DIR/usr/lib
+! [ -d "$DEST_DIR/usr/share/java" ] && mkdir --parents $DEST_DIR/usr/share/java
 
 if (! [ -w "$DEST_DIR/usr/lib" ] ) ; then
+  echo "Insufficient permissions, run this program as a privileged user"
+  exit 1
+fi
+
+if (! [ -w "$DEST_DIR/usr/share/java" ] ) ; then
   echo "Insufficient permissions, run this program as a privileged user"
   exit 1
 fi
@@ -31,7 +37,7 @@ if ! [ -f jfederc.jar ] ; then
   exit 1
 fi
 
-if ! cp jfederc.jar "$DEST_DIR/usr/lib/feder/" ; then
+if ! cp jfederc.jar "$DEST_DIR/usr/share/java/" ; then
   echo "Insufficient permissions, run this program as a privileged"
   exit 1
 fi
@@ -48,13 +54,13 @@ if ! uname -o | grep Cygwin > /dev/null ; then
 
 	cat > "$DEST_DIR/usr/bin/jfederc" << EOF
 #!/usr/bin/env bash
-java -jar /usr/lib/feder/jfederc.jar -I /usr/lib/feder/base \$@
+java -jar /usr/share/java/jfederc.jar -I /usr/lib/feder/base \$@
 exit \$?
 EOF
 else
 	cat > "$DEST_DIR/usr/bin/jfederc" << EOF
 #!/usr/bin/env bash
-java -jar \$(cygpath -w /usr/lib/feder/jfederc.jar) -I \$(cygpath -w /usr/lib/feder/base) \$@
+java -jar \$(cygpath -w /usr/share/java/jfederc.jar) -I \$(cygpath -w /usr/lib/feder/base) \$@
 exit \$?
 fi
 EOF
@@ -65,13 +71,13 @@ chmod a+x "$DEST_DIR/usr/bin/jfederc" # Allow exeuction (all users)
 if ! uname -o | grep Cygwin > /dev/null ; then
 	cat > "$DEST_DIR/usr/bin/jfedercnolib" << EOF
 #!/usr/bin/env bash
-java -jar /usr/lib/feder/jfederc.jar \$@
+java -jar /usr/share/java/jfederc.jar \$@
 exit \$?
 EOF
 else
 	cat > "$DEST_DIR/usr/bin/jfedercnolob" << EOF
 #!/usr/bin/env bash
-java -jar \$(cygpath -w /usr/lib/feder/jfeder.jar \$@
+java -jar \$(cygpath -w /usr/share/java/jfeder.jar \$@
 exit \$?
 EOF
 fi
