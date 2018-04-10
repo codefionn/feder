@@ -1,24 +1,24 @@
 include "stdio.fd"
 
 if (args.length () != 3
-		|| !(String from args.at (1)).isNumber (false)
-		|| !(String from args.at (2)).isNumber (false))
-	io.println ((String from args.at (0)) + " [Integer] [Integer]")
-	return false
+        || !(String from args.at (1)).isNumber (false)
+        || !(String from args.at (2)).isNumber (false))
+    io.println ((String from args.at (0)) + " [Integer] [Integer]")
+    return false
 ;
 
 n0 = (String from args.at (1)).toint32 ()
 n1 = (String from args.at (2)).toint32 ()
 
 if n0 == 0 || n1 == 0
-	io.println ("The numbers must not be 0")
-	return false
+    io.println ("The numbers must not be 0")
+    return false
 ;
 
 while n1 != 0
-	tmp = n0
-	n0 = n1
-	n1 = tmp % n1
+    tmp = n0
+    n0 = n1
+    n1 = tmp % n1
 ;
 
 io.println (n0)

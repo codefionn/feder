@@ -4,65 +4,65 @@ include "utils.fd"
 c = utils.Configuration
 c.currentGroup = ""
 if !utils.config.read (c, "ini", "main=Hello World")
-	io.println ("Test 01 'read ini' failed")
-	return false
+    io.println ("Test 01 'read ini' failed")
+    return false
 ;
 
 if !isEqual (c.getValue ("main"), "Hello World")
-	io.println ("Test 02 'get main' failed")
-	return false
+    io.println ("Test 02 'get main' failed")
+    return false
 ;
 
 if !utils.config.read (c, "ini", "1=11\n2=22\n3=33")
-	io.println ("Test 03 'read ini more lines' failed")
-	return false
+    io.println ("Test 03 'read ini more lines' failed")
+    return false
 ;
 
 if !isEqual (c.getValue ("1"), "11")
-	io.println ("Test 04 'get 1' failed")
-	return false
+    io.println ("Test 04 'get 1' failed")
+    return false
 ;
 
 if !isEqual (c.getValue ("2"), "22")
-	io.println ("Test 05 'get 2' failed")
-	return false
+    io.println ("Test 05 'get 2' failed")
+    return false
 ;
 
 if !isEqual (c.getValue ("3"), "33")
-	io.println ("Test 06 'get 3' failed")
-	return false
+    io.println ("Test 06 'get 3' failed")
+    return false
 ;
 
 # Reread the config
 txt = utils.config.write (c, "ini")
-if txt == null	
-	io.println (String from sys.errors.at (sys.errors.length()-1))
-	return false
+if txt == null    
+    io.println (String from sys.errors.at (sys.errors.length()-1))
+    return false
 ;
 
 # Recreate configuration
 c = utils.Configuration
 if !utils.config.read (c, "ini", txt)
-	io.println ("Test 07 'read created text' failed")
-	return false
+    io.println ("Test 07 'read created text' failed")
+    return false
 ;
 
 if !isEqual (c.getValue ("main"), "Hello World")
-	io.println ("Test 08 'get main' failed")
-	return false
+    io.println ("Test 08 'get main' failed")
+    return false
 ;
 
 if !isEqual (c.getValue ("1"), "11")
-	io.println ("Test 09 'get 1' failed")
-	return false
+    io.println ("Test 09 'get 1' failed")
+    return false
 ;
 
 if !isEqual (c.getValue ("2"), "22")
-	io.println ("Test 10 'get 2' failed")
-	return false
+    io.println ("Test 10 'get 2' failed")
+    return false
 ;
 
 if !isEqual (c.getValue ("3"), "33")
-	io.println ("Test 11 'get 3' failed")
-	return false
+    io.println ("Test 11 'get 3' failed")
+    return false
 ;

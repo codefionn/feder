@@ -15,21 +15,21 @@ s = "Hello World"
 
 # Test 01: equal
 if isEqual (s.length (), 11).isfalse ()
-	io.println ("Test 01-1 failed")
-	return false
+    io.println ("Test 01-1 failed")
+    return false
 ;
 
 if isEqual (s, "Hello World").isfalse ()
-	io.println ("Test 01-2 failed")
-	return false
+    io.println ("Test 01-2 failed")
+    return false
 ;
 
 io.println ("Test 01 passed")
 
 # Test 02: Not equal
 if isEqual (s, "Not the str")
-	io.println ("Test 02 failed")
-	return false
+    io.println ("Test 02 failed")
+    return false
 ;
 
 io.println ("Test 02 passed")
@@ -37,8 +37,8 @@ io.println ("Test 02 passed")
 # Test 03: subString
 s0 = s.subString(6, 10)
 if isEqual (s0, "World").isfalse ()
-	io.println ("Test 03 failed")
-	return false
+    io.println ("Test 03 failed")
+    return false
 ;
 
 io.println ("Test 03 passed")
@@ -47,13 +47,13 @@ io.println ("Test 03 passed")
 s0 = s.cp ()
 s1 = s0.remove (1, 9)
 if isEqual (s1, "ello Worl").isfalse ()
-	io.println ("Test 04-1 failed: ".add (s1))
-	return false
+    io.println ("Test 04-1 failed: ".add (s1))
+    return false
 ;
 
 if isEqual (s0, "Hd").isfalse ()
-	io.println ("Test 04-2 failed")
-	return false
+    io.println ("Test 04-2 failed")
+    return false
 ;
 
 io.println ("Test 04 passed")
@@ -61,23 +61,23 @@ io.println ("Test 04 passed")
 # Test 05: startsWith
 s = "Hello World"
 if s.startsWith ("Hello").isfalse ()
-	io.println ("Test 05-1 failed")
-	return false
+    io.println ("Test 05-1 failed")
+    return false
 ;
 
 if s.startsWith ("Worl", 6).isfalse ()
-	io.println ("Test 05-2 failed")
-	return false
+    io.println ("Test 05-2 failed")
+    return false
 ;
 
 if s.startsWith ("World")
-	io.println ("Test 05-3 failed")
-	return false
+    io.println ("Test 05-3 failed")
+    return false
 ;
 
 if s.startsWith ("Hello", 5)
-	io.println ("Test 05-4 failed")
-	return false
+    io.println ("Test 05-4 failed")
+    return false
 ;
 
 io.println ("Test 05 passed")
@@ -85,19 +85,19 @@ io.println ("Test 05 passed")
 # Test 06: insert
 s0 = s.cp ()
 if s0.insert ("H".at (0), 5) == null
-	io.println ("Test 06-01 failed")
-	return false
+    io.println ("Test 06-01 failed")
+    return false
 ;
 
 if isEqual (s0, "HelloH World").isfalse ()
-	io.println ("Test 06-02 failed")
-	return false
+    io.println ("Test 06-02 failed")
+    return false
 ;
 
 s0.insert ("ello", 6)
 if isEqual (s0, "HelloHello World").isfalse ()
-	io.println ("Test 06-03 failed: ".add (s0))
-	return false
+    io.println ("Test 06-03 failed: ".add (s0))
+    return false
 ;
 
 io.println ("Test 06 passed")
@@ -105,18 +105,18 @@ io.println ("Test 06 passed")
 # Test 07: remove (1 character)
 s0 = s.cp ()
 if isEqual (s0.remove (" "), 1).isfalse ()
-	io.println ("Test 07-1 failed: ".add (s0))
-	return false
+    io.println ("Test 07-1 failed: ".add (s0))
+    return false
 ;
 
 if isEqual (s0.remove ("l"), 3).isfalse ()
-	io.println ("Test 07-2 failed: ".add (s0))
-	return false
+    io.println ("Test 07-2 failed: ".add (s0))
+    return false
 ;
 
 if isEqual (s0, "HeoWord").isfalse ()
-	io.println ("Test 07-03 failed: ".add (s0))
-	return false
+    io.println ("Test 07-03 failed: ".add (s0))
+    return false
 ;
 
 io.println ("Test 07 passed")
@@ -124,24 +124,24 @@ io.println ("Test 07 passed")
 # Test 08: remove
 s0 = s.cp ()
 if isEqual (s0.remove ("Hello "), 1).isfalse ()
-	io.println ("Test 08-1 failed: ".add (s0))
-	return false
+    io.println ("Test 08-1 failed: ".add (s0))
+    return false
 ;
 
 if isEqual (s0, "World").isfalse ()
-	io.println ("Test 08-2 failed")
-	return false
+    io.println ("Test 08-2 failed")
+    return false
 ;
 
 s0 = s.cp ()
 if isEqual (s0.remove (" Worl"), 1).isfalse ()
-	io.println ("Test 08-3 failed")
-	return false
+    io.println ("Test 08-3 failed")
+    return false
 ;
 
 if isEqual (s0, "Hellod").isfalse ()
-	io.println ("Test 08-4 failed")
-	return false
+    io.println ("Test 08-4 failed")
+    return false
 ;
 
 io.println ("Test 08 passed")
@@ -149,18 +149,18 @@ io.println ("Test 08 passed")
 # Test 09: Uppercase/Lowercase
 s0 = s.cp ()
 if isEqual (s0.toUpper (), "HELLO WORLD").isfalse ()
-	io.println ("Test 09-1 failed: ".add (s0))
-	return false
+    io.println ("Test 09-1 failed: ".add (s0))
+    return false
 ;
 
 if isEqual (s0.toLower (), "hello world").isfalse ()
-	io.println ("Test 09-2 failed: ".add (s0))
-	return false
+    io.println ("Test 09-2 failed: ".add (s0))
+    return false
 ;
 
 if isEqualIgnoreCase (s0, "HELLO world").isfalse ()
-	io.println ("Test 09-3 failed: ".add (s0))
-	return false
+    io.println ("Test 09-3 failed: ".add (s0))
+    return false
 ;
 
 io.println ("Test 09 passed")
@@ -169,8 +169,8 @@ io.println ("Test 09 passed")
 s = "Hello World"
 
 if s0.contains ("12345")
-	io.println ("Test 10-1 failed")
-	return false
+    io.println ("Test 10-1 failed")
+    return false
 ;
 
 io.println ("Test 10 passed")
@@ -180,14 +180,14 @@ s = "Hello World"
 s0 = "Hello " + s
 
 if !isEqual (s0, "Hello Hello World")
-	io.println ("Test 11-01 failed")
-	return false
+    io.println ("Test 11-01 failed")
+    return false
 ;
 
 s0 = s + " Hello"
 if !isEqual (s0, "Hello World Hello")
-	io.println ("Test 11-02 failed")
-	return false
+    io.println ("Test 11-02 failed")
+    return false
 ;
 
 io.println ("Test 11 passed")
@@ -197,62 +197,62 @@ s = "Hello World"
 s0 = s.add (12)
 
 if !isEqual (s0, "Hello World12")
-	io.println ("Test 12-01 failed")
-	return false
+    io.println ("Test 12-01 failed")
+    return false
 ;
 
 s0 = s.add (12.0)
 if !s0.startsWith("Hello World12")
-	io.println ("Test 12-02 failed")
-	return false
+    io.println ("Test 12-02 failed")
+    return false
 ;
 
 s0 = s + 12
 if !isEqual (s0, "Hello World12")
-	io.println ("Test 12-03 failed")
-	return false
+    io.println ("Test 12-03 failed")
+    return false
 ;
 
 s0 = s + 12.0
 if !s0.startsWith ("Hello World12")
-	io.println ("Test 12-04 failed")
-	return false
+    io.println ("Test 12-04 failed")
+    return false
 ;
 
 io.println ("Test 12 passed")
 
 # Test 13: endsWith
 if !s.endsWith ("World")
-	io.println ("Test 13-01 failed")
-	return false
+    io.println ("Test 13-01 failed")
+    return false
 ;
 
 if !s.endsWith ("Worl", s.length ()-2)
-	io.println ("Test 13-02 failed")
-	return false
+    io.println ("Test 13-02 failed")
+    return false
 ;
 
 if !s.endsWith ("d")
-	io.println ("Test 13-03 failed")
-	return false
+    io.println ("Test 13-03 failed")
+    return false
 ;
 
 io.println ("Test 13 passed")
 
 # Test 14: ltrim, rtrim, trim
 if !isEqual ("  S D     ".ltrim (), "S D     ")
-	io.println ("Test 14-01 failed")
-	return false
+    io.println ("Test 14-01 failed")
+    return false
 ;
 
 if !isEqual ("  S D     ".rtrim (), "  S D")
-	io.println ("Test 14-02 failed")
-	return false
+    io.println ("Test 14-02 failed")
+    return false
 ;
 
 if !isEqual ("  Hello World     ".trim (), "Hello World")
-	io.println ("Test 14-03 failed")
-	return false
+    io.println ("Test 14-03 failed")
+    return false
 ;
 
 io.println ("Test 14 passed")

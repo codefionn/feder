@@ -1,36 +1,36 @@
 include "stdio.fd"
 
 int32[] func createArray
-	result = int32[100]
-	return result
+    result = int32[100]
+    return result
 ;
 
 ar = createArray ()
 if ar == null
-	io.println ("Test 01 failed")
-	return false
+    io.println ("Test 01 failed")
+    return false
 ;
 
 i = 0
 while i < len (ar)
-	ar[i] = 0
-	if isEqual (ar[i], 0).isfalse ()
-		io.println ("Test 02 failed")
-		return false
-	;
+    ar[i] = 0
+    if isEqual (ar[i], 0).isfalse ()
+        io.println ("Test 02 failed")
+        return false
+    ;
 
-	i++
+    i++
 ;
 
 max = len (ar) + 100
 while i < max
-	append (ar, 0)
-	if isEqual (ar[i], 0).isfalse ()
-		io.println ("Test 03 failed")
-		return false
-	;
+    append (ar, 0)
+    if isEqual (ar[i], 0).isfalse ()
+        io.println ("Test 03 failed")
+        return false
+    ;
 
-	i++
+    i++
 ;
 
 # Test cast
@@ -40,18 +40,18 @@ obj = object from ar
 n = 4
 args0 = String[n]
 if args0[0] != null
-	io.println ("Test 04 failed")
-	return false
+    io.println ("Test 04 failed")
+    return false
 ;
 
 if len (args0) != 4
-	io.print ("Test 05 failed: ")
-	io.println (len (args0))
-	return false
+    io.print ("Test 05 failed: ")
+    io.println (len (args0))
+    return false
 ;
 
 append (args0, "Hallo")
 if !isEqual (args0[4], "Hallo")
-	io.println ("Test 06 failed")
-	return false
+    io.println ("Test 06 failed")
+    return false
 ;

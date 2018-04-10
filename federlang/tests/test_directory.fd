@@ -9,14 +9,14 @@ include "stdio.fd"
 
 test_file = dir
 if test_file.open ("tests").isfalse ()
-	io.println ("Tests directory should exist!")
-	return false
+    io.println ("Tests directory should exist!")
+    return false
 ;
 
 contents = test_file.files ()
 
 if contents.contains (object from "test_directory.fd", isEqual_String_String).isfalse ()
 #if contents.contains (object from "test_directory.fd", null).isfalse ()
-	io.println ("test_directory.fd wasn't found!")
-	return false
+    io.println ("test_directory.fd wasn't found!")
+    return false
 ;

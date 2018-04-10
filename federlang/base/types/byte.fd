@@ -10,69 +10,69 @@ include "stdc.fd"
 include "types/bool.fd"
 
 namespace h_intern_bool_include
-	:#include <ctype.h>
+    :#include <ctype.h>
 ;
 
 type "signed char" byte
-	bool func isAlpha
-		bool result
-		:federobj_result = (fdc_bool) isalpha (*federobj_this);
-		return result
-	;
+    bool func isAlpha
+        bool result
+        :federobj_result = (fdc_bool) isalpha (*federobj_this);
+        return result
+    ;
 
-	bool func isDigit
-		bool result
-		:federobj_result = (fdc_bool) isdigit (*federobj_this);
-		return result
-	;
+    bool func isDigit
+        bool result
+        :federobj_result = (fdc_bool) isdigit (*federobj_this);
+        return result
+    ;
 
-	bool func isGraph
-		bool result
-		:federobj_result = (fdc_bool) isgraph (*federobj_this);
-		return result
-	;
+    bool func isGraph
+        bool result
+        :federobj_result = (fdc_bool) isgraph (*federobj_this);
+        return result
+    ;
 
-	bool func isLower
-		bool result
-		:federobj_result = (fdc_bool) islower (*federobj_this);
-		return result
-	;
+    bool func isLower
+        bool result
+        :federobj_result = (fdc_bool) islower (*federobj_this);
+        return result
+    ;
 
-	bool func isUpper
-		bool result
-		:federobj_result = (fdc_bool) isupper (*federobj_this);
-		return result
-	;
+    bool func isUpper
+        bool result
+        :federobj_result = (fdc_bool) isupper (*federobj_this);
+        return result
+    ;
 
-	bool func isPrint
-		bool result
-		:federobj_result = (fdc_bool) isprint (*federobj_this);
-		return result
-	;
+    bool func isPrint
+        bool result
+        :federobj_result = (fdc_bool) isprint (*federobj_this);
+        return result
+    ;
 
-	bool func isPunct
-		bool result
-		:federobj_result = (fdc_bool) ispunct (*federobj_this);
-		return result
-	;
+    bool func isPunct
+        bool result
+        :federobj_result = (fdc_bool) ispunct (*federobj_this);
+        return result
+    ;
 
-	bool func isHexdecimal
-		bool result
-		:federobj_result = (fdc_bool) isxdigit (*federobj_this);
-		return result
-	;
+    bool func isHexdecimal
+        bool result
+        :federobj_result = (fdc_bool) isxdigit (*federobj_this);
+        return result
+    ;
 
-	byte func upper
-		byte result
-		:federobj_result = (fdc_byte) toupper (*federobj_this);
-		return result
-	;
+    byte func upper
+        byte result
+        :federobj_result = (fdc_byte) toupper (*federobj_this);
+        return result
+    ;
 
-	byte func lower
-		byte result
-		:federobj_result = (fdc_byte) tolower (*federobj_this);
-		return result
-	;
+    byte func lower
+        byte result
+        :federobj_result = (fdc_byte) tolower (*federobj_this);
+        return result
+    ;
 ;
 
 ::rule pattern == "{0} == {1}" bool byte byte
@@ -82,67 +82,67 @@ type "unsigned char" ubyte
 ;
 
 namespace h_intern_byte
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_byte (fdtypearray* ar, signed char n);
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_byte (fdtypearray* ar, signed char n);
 ;
 
 namespace c_intern_byte
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_byte (fdtypearray* ar, signed char n) {
-		:return fdAppendToTypeArray (ar, (char*) &n);
-	:}
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_byte (fdtypearray* ar, signed char n) {
+        :return fdAppendToTypeArray (ar, (char*) &n);
+    :}
 ;
 
 ::rule buildin char "(fdc_byte) '{0}'" byte
 
 type "signed char" byte
-	bool func isNewLine
-		return this == '\n' || this == '\r'
-	;
+    bool func isNewLine
+        return this == '\n' || this == '\r'
+    ;
 ;
 
 class Byte
-	byte val
+    byte val
 
-	Byte func set (Byte b)
-		this.val = b.val
-		return this
-	;
+    Byte func set (Byte b)
+        this.val = b.val
+        return this
+    ;
 
-	Byte func set (byte b)
-		this.val = b
-		return this
-	;
+    Byte func set (byte b)
+        this.val = b
+        return this
+    ;
 
-	Byte func cp
-		return Byte.set (this)
-	;
+    Byte func cp
+        return Byte.set (this)
+    ;
 
-	bool func isDigit
-		return val.isDigit ()
-	;
+    bool func isDigit
+        return val.isDigit ()
+    ;
 
-	func toUpper
-		val = val.upper ()
-	;
+    func toUpper
+        val = val.upper ()
+    ;
 
-	func toLower
-		val = val.lower ()
-	;
+    func toLower
+        val = val.lower ()
+    ;
 ;
 
 namespace h_intern_Byte
-	:fdc_Byte *
-	:fdCreateByte (signed char c);
+    :fdc_Byte *
+    :fdCreateByte (signed char c);
 ;
 
 namespace c_intern_Byte
-	:fdc_Byte *
-	:fdCreateByte (signed char c) {
-		:fdc_Byte* result = fdCreateClass_fdc_Byte ();
-		:result->federobj_val = c;
-		:return result;
-	:}
+    :fdc_Byte *
+    :fdCreateByte (signed char c) {
+        :fdc_Byte* result = fdCreateClass_fdc_Byte ();
+        :result->federobj_val = c;
+        :return result;
+    :}
 ;
 
 ::rule pattern ! "!{1}" bool null bool

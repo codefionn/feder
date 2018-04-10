@@ -6,8 +6,8 @@ f.open ("jfederc", "r")
 
 byte b = f.readByte ()
 while f.finished ().isfalse ()
-	io.print (b)
-	b = f.readByte ()
+    io.print (b)
+    b = f.readByte ()
 ;
 
 # the file f gets automatically closed

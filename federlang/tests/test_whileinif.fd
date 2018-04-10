@@ -1,14 +1,14 @@
 include "stdio.fd"
 
 if true
-	i = 0
-	if false
-		
-	else if true
-		while i < 10
-			i++
-		;
-	;
+    i = 0
+    if false
+        
+    else if true
+        while i < 10
+            i++
+        ;
+    ;
 ;
 
 return true

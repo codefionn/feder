@@ -5,240 +5,240 @@ include "types/numcomp.fd"
 
 # Array
 class Array
-	:fdobject ** arr_objects;
-	int32 _len0
-	int32 _reservedLength
+    :fdobject ** arr_objects;
+    int32 _len0
+    int32 _reservedLength
 
-	func init
-		:(*federobj_this)->arr_objects = NULL;
-		:(*federobj_this)->arr_objects = (fdobject**) malloc (sizeof (fdobject*) * 10);
-		_reservedLength = 10
-		_len0 = 0
-	;
+    func init
+        :(*federobj_this)->arr_objects = NULL;
+        :(*federobj_this)->arr_objects = (fdobject**) malloc (sizeof (fdobject*) * 10);
+        _reservedLength = 10
+        _len0 = 0
+    ;
 
-	bool func isEmpty
-		return isEqual (_len0, 0)
-	;
+    bool func isEmpty
+        return isEqual (_len0, 0)
+    ;
 
-	int32 func length
-		return _len0.cp ()
-	;
+    int32 func length
+        return _len0.cp ()
+    ;
 
-	int32 func reservedLength
-		return _reservedLength.cp ()
-	;
+    int32 func reservedLength
+        return _reservedLength.cp ()
+    ;
 
-	##
-	# This function reserves new space, so it adds new space, which
-	# can be used
-	#
-	# len00 has to be at minimum 0
-	##
-	Array func reserve (int32 len0)
-		if len0 < 0
-			return null
-		;
+    ##
+    # This function reserves new space, so it adds new space, which
+    # can be used
+    #
+    # len00 has to be at minimum 0
+    ##
+    Array func reserve (int32 len0)
+        if len0 < 0
+            return null
+        ;
 
-		_reservedLength.addto (len0)
-		:(*federobj_this)->arr_objects = (fdobject**) realloc ((*federobj_this)->arr_objects,
-			:((*federobj_this)->federobj__len0 + federobj_len0) * sizeof (fdobject*));
+        _reservedLength.addto (len0)
+        :(*federobj_this)->arr_objects = (fdobject**) realloc ((*federobj_this)->arr_objects,
+            :((*federobj_this)->federobj__len0 + federobj_len0) * sizeof (fdobject*));
 
-		return this
-	;
+        return this
+    ;
 
-	##
-	# This function returns the object at 'index'
-	# If index is out of bounds, this function returns null.
-	##
-	object func at (int32 index)
-		if !(index < length ())
-			return null
-		;
+    ##
+    # This function returns the object at 'index'
+    # If index is out of bounds, this function returns null.
+    ##
+    object func at (int32 index)
+        if !(index < length ())
+            return null
+        ;
 
-		object result
-		:federobj_result = (fdc_object*) fdAssignObject ((fdobject*) (*federobj_this)->arr_objects [federobj_index]);
-		return result
-	;
+        object result
+        :federobj_result = (fdc_object*) fdAssignObject ((fdobject*) (*federobj_this)->arr_objects [federobj_index]);
+        return result
+    ;
 
-	##
-	# This function adds the object 'obj' to the list, also
-	# if the object 'obj' already exists in the list. This function
-	# returns the the object 'this' (so the object the function was
-	# executed with)
-	##
-	Array func add (object obj0)
-		if _len0 < _reservedLength
-			# There's nothing that has to be done to the size of the Array
-			# +1 use
-			:if (federobj_obj0) fdIncreaseUsage ((fdobject*) federobj_obj0);
-			:(*federobj_this)->arr_objects [(*federobj_this)->federobj__len0] = (fdobject*) federobj_obj0;
-			_len0.addto (1)
-			return this
-		;
+    ##
+    # This function adds the object 'obj' to the list, also
+    # if the object 'obj' already exists in the list. This function
+    # returns the the object 'this' (so the object the function was
+    # executed with)
+    ##
+    Array func add (object obj0)
+        if _len0 < _reservedLength
+            # There's nothing that has to be done to the size of the Array
+            # +1 use
+            :if (federobj_obj0) fdIncreaseUsage ((fdobject*) federobj_obj0);
+            :(*federobj_this)->arr_objects [(*federobj_this)->federobj__len0] = (fdobject*) federobj_obj0;
+            _len0.addto (1)
+            return this
+        ;
 
-		# Reserve some length
-		reserve (1)
-		return add (obj0)
-	;
+        # Reserve some length
+        reserve (1)
+        return add (obj0)
+    ;
 
-	Array func add (Array arr0)
-		size_missing = arr0.length ().add (length ()).sub (reservedLength ())
-		if size_missing > 0
-			if reserve (size_missing) == null
-				return null
-			;
-		;
+    Array func add (Array arr0)
+        size_missing = arr0.length ().add (length ()).sub (reservedLength ())
+        if size_missing > 0
+            if reserve (size_missing) == null
+                return null
+            ;
+        ;
 
-		i = 0
-		while i < arr0.length ()
-			add (arr0.at (i))
-			i.addto (1)
-		;
+        i = 0
+        while i < arr0.length ()
+            add (arr0.at (i))
+            i.addto (1)
+        ;
 
-		return this
-	;
+        return this
+    ;
 
-	Array func set (object obj0, int32 index)
-		if index > length ()
-			return null
-		;
+    Array func set (object obj0, int32 index)
+        if index > length ()
+            return null
+        ;
 
-		if isEqual (index, length ())
-			return add (obj0)
-		;
+        if isEqual (index, length ())
+            return add (obj0)
+        ;
 
-		:if (federobj_obj0) fdIncreaseUsage ((fdobject*) federobj_obj0);
+        :if (federobj_obj0) fdIncreaseUsage ((fdobject*) federobj_obj0);
 
-		:if ((*federobj_this)->arr_objects [federobj_index]) {
-			:fdRemoveObject ((fdobject*) (*federobj_this)->arr_objects [federobj_index]);
-		:}
+        :if ((*federobj_this)->arr_objects [federobj_index]) {
+            :fdRemoveObject ((fdobject*) (*federobj_this)->arr_objects [federobj_index]);
+        :}
 
-		:(*federobj_this)->arr_objects [federobj_index] = (fdobject*) federobj_obj0;
+        :(*federobj_this)->arr_objects [federobj_index] = (fdobject*) federobj_obj0;
 
-		return this
-	;
+        return this
+    ;
 
-	Array func insert (object obj0, int32 index)
-		if index < 0
-			return null
-		;
+    Array func insert (object obj0, int32 index)
+        if index < 0
+            return null
+        ;
 
-		if index > length ()
-			# Out of bounds
-			return null
-		;
+        if index > length ()
+            # Out of bounds
+            return null
+        ;
 
-		if isEqual (index, length ())
-			return add (obj0)
-		;
+        if isEqual (index, length ())
+            return add (obj0)
+        ;
 
-		if isEqual (reservedLength (), length ())
-			if reserve (10) == null
-				return null
-			;
-		;
+        if isEqual (reservedLength (), length ())
+            if reserve (10) == null
+                return null
+            ;
+        ;
 
-		i = index.add (1)
-		last_obj = at (index)
-		len0 = length ()
-		while !(i > len0)
-			object tmp = null
-			if isEqual (i, length ()).isfalse ()
-				tmp = at (i)
-			;
+        i = index.add (1)
+        last_obj = at (index)
+        len0 = length ()
+        while !(i > len0)
+            object tmp = null
+            if isEqual (i, length ()).isfalse ()
+                tmp = at (i)
+            ;
 
-			set (last_obj, i)
-			last_obj = tmp
+            set (last_obj, i)
+            last_obj = tmp
 
-			i.addto (1)
-		;
+            i.addto (1)
+        ;
 
-		set (obj0, index)
+        set (obj0, index)
 
-		return this
-	;
+        return this
+    ;
 
-	Array func insert (Array arr0, int32 index)
-		if index > length ()
-			return null
-		;
+    Array func insert (Array arr0, int32 index)
+        if index > length ()
+            return null
+        ;
 
-		if isEqual (index, length ())
-			return add (arr0)
-		;
+        if isEqual (index, length ())
+            return add (arr0)
+        ;
 
-		i = 0
-		while i < arr0.length ()
-			insert (arr0.at (i), index.add (i))
-			i.addto (1)
-		;
+        i = 0
+        while i < arr0.length ()
+            insert (arr0.at (i), index.add (i))
+            i.addto (1)
+        ;
 
-		return this
-	;
+        return this
+    ;
 
-	object func removeAt (int32 index)
-		if ! (index < length ())
-			return null
-		;
+    object func removeAt (int32 index)
+        if ! (index < length ())
+            return null
+        ;
 
-		result = at (index)
-		i = index.cp ()
-		lastindex = length ().sub (1)
-		while i < lastindex
-			set (at (i.add (1)), i)
-			i.addto (1)
-		;
+        result = at (index)
+        i = index.cp ()
+        lastindex = length ().sub (1)
+        while i < lastindex
+            set (at (i.add (1)), i)
+            i.addto (1)
+        ;
 
-		_len0.subto (1)
+        _len0.subto (1)
 
-		:if ((*federobj_this)->arr_objects [(*federobj_this)->federobj__len0]) {
-			:fdRemoveObject ((fdobject*) (*federobj_this)->arr_objects [(*federobj_this)->federobj__len0]);
-			:(*federobj_this)->arr_objects [(*federobj_this)->federobj__len0] = NULL;
-		:}
+        :if ((*federobj_this)->arr_objects [(*federobj_this)->federobj__len0]) {
+            :fdRemoveObject ((fdobject*) (*federobj_this)->arr_objects [(*federobj_this)->federobj__len0]);
+            :(*federobj_this)->arr_objects [(*federobj_this)->federobj__len0] = NULL;
+        :}
 
-		return result
-	;
+        return result
+    ;
 
-	object func pop
-		if isEqual (length (), 0)
-			return null
-		;
+    object func pop
+        if isEqual (length (), 0)
+            return null
+        ;
 
-		return removeAt (length ().sub (1))
-	;
+        return removeAt (length ().sub (1))
+    ;
 
-	int32 func indexOf (object obj0, int_isEqual fn_isEqual)
-		i = 0
-		while i < length ()
-			obj1 = at (i)
-			if fn_isEqual != null && fn_isEqual (obj1, obj0)
-				return i
-			else if fn_isEqual == null && obj1 == obj0
-				return i
-			;
+    int32 func indexOf (object obj0, int_isEqual fn_isEqual)
+        i = 0
+        while i < length ()
+            obj1 = at (i)
+            if fn_isEqual != null && fn_isEqual (obj1, obj0)
+                return i
+            else if fn_isEqual == null && obj1 == obj0
+                return i
+            ;
 
-			i.addto (1)
-		;
+            i.addto (1)
+        ;
 
-		return (1).makeNegative ()
-	;
+        return (1).makeNegative ()
+    ;
 
-	bool func contains (object obj0, int_isEqual fn_isEqual)
-		return isEqual (indexOf (obj0, fn_isEqual), (1).makeNegative ()).isfalse ()
-	;
+    bool func contains (object obj0, int_isEqual fn_isEqual)
+        return isEqual (indexOf (obj0, fn_isEqual), (1).makeNegative ()).isfalse ()
+    ;
 
-	int32 func clear
-		result = 0
-		while length () > 0
-			pop () # Removing always the first index would consume too much resources
-			result.addto (1)
-		;
+    int32 func clear
+        result = 0
+        while length () > 0
+            pop () # Removing always the first index would consume too much resources
+            result.addto (1)
+        ;
 
-		return result
-	;
+        return result
+    ;
 
-	func del
-		clear ()
-		:free ((*federobj_this)->arr_objects);
-	;
+    func del
+        clear ()
+        :free ((*federobj_this)->arr_objects);
+    ;
 ;

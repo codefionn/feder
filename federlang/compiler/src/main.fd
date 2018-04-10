@@ -10,16 +10,16 @@
 include "lexer.fd"
 
 if args.length() != 2
-	io.err.println("Not enough arguments")
-	return false
+    io.err.println("Not enough arguments")
+    return false
 ;
 
 global VERSION = "1.0"
 
 f = File
 if !f.open(String from args.at(1), "r")
-	io.err.println("Can't open given file")
-	return false
+    io.err.println("Can't open given file")
+    return false
 ;
 
 helper = compiler.lexer.LexerHelper
@@ -30,8 +30,8 @@ helper.buffer = object from f
 tokenKeys = int32[0]
 tokenValues = String[0]
 if !compiler.lexer.lex(helper, tokenKeys, tokenValues) || len(tokenKeys) != len(tokenValues)
-	io.err.println("- Lexical analysis failed")
-	return false
+    io.err.println("- Lexical analysis failed")
+    return false
 ;
 
 String func toAcceptableString(int32 i)

@@ -12,20 +12,20 @@ include "types/int.fd"
 include "types/double.fd"
 
 class Integer32
-	int32 val
+    int32 val
 
-	Integer32 func set (int32 val0)
-		val = val0
-		return this
-	;
+    Integer32 func set (int32 val0)
+        val = val0
+        return this
+    ;
 ;
 
 class Double
-	double val
+    double val
 
-	Double func set (double val0)
-		val = val0
-		return this
-	;
+    Double func set (double val0)
+        val = val0
+        return this
+    ;
 ;
 

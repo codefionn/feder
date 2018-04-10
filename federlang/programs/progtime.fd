@@ -6,8 +6,8 @@ t0 = sys.Time.current ()
 C0 = sys.Time.current ()
 c1 = sys.Time.current ()
 while c1.millisBetween (C0) < 3000
-	io.println (c1.millisBetween (C0))
-	c1 = sys.Time.current ()
+    io.println (c1.millisBetween (C0))
+    c1 = sys.Time.current ()
 ;
 
 io.println (sys.Time.current ().millisBetween (t0).div (double from 1000))

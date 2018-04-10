@@ -1,8 +1,8 @@
 include "stdc.fd"
 
 class smth
-	func _abitrary
-	;
+    func _abitrary
+    ;
 ;
 
 smth._abitrary

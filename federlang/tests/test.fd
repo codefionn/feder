@@ -1,19 +1,19 @@
 include "stdio.fd"
 
 class entity
-	int age
+    int age
 
-	func init
-		age = 18
-	;
+    func init
+        age = 18
+    ;
 ;
 
 class person entity
-	string name
+    string name
 
-	func init
-		name = "Fionn"
-	;
+    func init
+        name = "Fionn"
+    ;
 ;
 
 deve = person

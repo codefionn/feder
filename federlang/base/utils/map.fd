@@ -9,71 +9,71 @@
 include "stdtype.fd"
 
 class MapArray
-	Array _keys
-	Array _values
+    Array _keys
+    Array _values
 
-	func init
-		_keys = Array
-		_values = Array
-	;
+    func init
+        _keys = Array
+        _values = Array
+    ;
 
-	Array func getKeys
-		return _keys
-	;
+    Array func getKeys
+        return _keys
+    ;
 
-	Array func getValues
-		return _values
-	;
+    Array func getValues
+        return _values
+    ;
 
-	func add (object key, object value)	
-		_keys.add (key)
-		_values.add (value)
-	;
+    func add (object key, object value)    
+        _keys.add (key)
+        _values.add (value)
+    ;
 
-	##
-	# @return Returns the index of the found 'key'. If key isn't
-	# stored in this map, the function returns -1.
-	##
-	int32 func indexOf (object key, int_isEqual fn_equals)
-		return _keys.indexOf (key, fn_equals)
-	;
+    ##
+    # @return Returns the index of the found 'key'. If key isn't
+    # stored in this map, the function returns -1.
+    ##
+    int32 func indexOf (object key, int_isEqual fn_equals)
+        return _keys.indexOf (key, fn_equals)
+    ;
 
-	##
-	# @param key
-	# @return Returns the value of the 'key'. If the key was not
-	# found, this function returns 'null'.
-	##
-	object func getValue (object key, int_isEqual fn_equals)
-		index = _keys.indexOf (key, fn_equals)
-		if index < 0
-			# Not found
-			return null
-		;
+    ##
+    # @param key
+    # @return Returns the value of the 'key'. If the key was not
+    # found, this function returns 'null'.
+    ##
+    object func getValue (object key, int_isEqual fn_equals)
+        index = _keys.indexOf (key, fn_equals)
+        if index < 0
+            # Not found
+            return null
+        ;
 
-		# Do not check, if the index is in bounds
-		# because it should be, if not, someone has seriously
-		# messed with this class (like threads or functions created
-		# for this class)
-		return _values.at (index)
-	;
+        # Do not check, if the index is in bounds
+        # because it should be, if not, someone has seriously
+        # messed with this class (like threads or functions created
+        # for this class)
+        return _values.at (index)
+    ;
 
-	func removeAt (int32 index)
-		# Check if (not) in the bounds
-		if index < 0 || index >= _keys.length ()
-			return
-		;
+    func removeAt (int32 index)
+        # Check if (not) in the bounds
+        if index < 0 || index >= _keys.length ()
+            return
+        ;
 
-		_keys.removeAt (index)
-		_values.removeAt (index)
-	;
+        _keys.removeAt (index)
+        _values.removeAt (index)
+    ;
 
-	bool func remove (object key, int_isEqual fn_equals)
-		index = indexOf (key, fn_equals)
-		if index < 0
-			return false
-		;
+    bool func remove (object key, int_isEqual fn_equals)
+        index = indexOf (key, fn_equals)
+        if index < 0
+            return false
+        ;
 
-		removeAt (index)
-		return true
-	;
+        removeAt (index)
+        return true
+    ;
 ;

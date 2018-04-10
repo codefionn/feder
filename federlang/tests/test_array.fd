@@ -7,14 +7,14 @@ test_Array.add (object from Integer32.set (2))
 test_Array.set (object from Integer32.set (3), 0)
 i = 0
 while i < 10
-	test_Array.add (object from Integer32.set (i))
-	i++
+    test_Array.add (object from Integer32.set (i))
+    i++
 ;
 
 if isEqual ((Integer32 from test_Array.at (0)).val, 3).isfalse ()
-	return false
+    return false
 ;
 
 if isEqual ((Integer32 from test_Array.at (1)).val, 2).isfalse ()
-	return false
+    return false
 ;

@@ -2,12 +2,12 @@ include "stdio.fd"
 
 testdir = dir
 if testdir.open (".").isfalse ()
-	io.println ("Could not open directory")
-	return false
+    io.println ("Could not open directory")
+    return false
 ;
 
 contents = testdir.files ()
 
 for i = 0, i < contents.length (), i++
-	io.println (String from contents.at (i))
+    io.println (String from contents.at (i))
 ;

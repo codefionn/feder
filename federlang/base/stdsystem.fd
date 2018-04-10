@@ -9,137 +9,137 @@
 include "stdtype.fd"
 
 namespace h_intern_stdargs
-	:#include <stdlib.h>
-	:#include <time.h>
+    :#include <stdlib.h>
+    :#include <time.h>
 
-	::if WINDOWS
-	:#include <windows.h>
-	::fi
+    ::if WINDOWS
+    :#include <windows.h>
+    ::fi
 ;
 
 namespace sys
-	namespace std
-		::if POSIX
-		global newline = "\n"
-		::elif WINDOWS
-		global newline =  "\n\r"
-		::fi
+    namespace std
+        ::if POSIX
+        global newline = "\n"
+        ::elif WINDOWS
+        global newline =  "\n\r"
+        ::fi
 
-		::if POSIX
-		global pathSeparator = ":"
-		::elif WINDOWS
-		global pathSeparator = ";"
-		::fi
+        ::if POSIX
+        global pathSeparator = ":"
+        ::elif WINDOWS
+        global pathSeparator = ";"
+        ::fi
 
-		::if POSIX
-		global pathNameSeparator = "/"
-		::elif WINDOWS
-		global pathNameSeparator = "\\"
-		::fi
-	;
+        ::if POSIX
+        global pathNameSeparator = "/"
+        ::elif WINDOWS
+        global pathNameSeparator = "\\"
+        ::fi
+    ;
 
-	::if POSIX
-	type "struct timespec " _posix_time
-	;
+    ::if POSIX
+    type "struct timespec " _posix_time
+    ;
 
-	class Time
-		_posix_time _time
+    class Time
+        _posix_time _time
 
-		##
-		# This function sets 'this' to the current
-		# time and returns 'this'. Returns null if
-		# an error occured.
-		##
-		Time func current
-			int32 result_code
-			:federobj_result_code = clock_gettime (CLOCK_REALTIME, &((*federobj_this)->federobj__time));
-			if isEqual (result_code, 0).isfalse ()
-				return null
-			;
+        ##
+        # This function sets 'this' to the current
+        # time and returns 'this'. Returns null if
+        # an error occured.
+        ##
+        Time func current
+            int32 result_code
+            :federobj_result_code = clock_gettime (CLOCK_REALTIME, &((*federobj_this)->federobj__time));
+            if isEqual (result_code, 0).isfalse ()
+                return null
+            ;
 
-			return this
-		;
+            return this
+        ;
 
-		double func millisBetween (Time t0)
-			double seconds
-			:federobj_seconds = difftime ((*federobj_this)->federobj__time.tv_sec, federobj_t0->federobj__time.tv_sec);
-			double nanoseconds
-			:federobj_nanoseconds = (*federobj_this)->federobj__time.tv_nsec - federobj_t0->federobj__time.tv_nsec;
-			seconds.multto (double from 1000)
-			nanoseconds.divto (double from 1000000)
+        double func millisBetween (Time t0)
+            double seconds
+            :federobj_seconds = difftime ((*federobj_this)->federobj__time.tv_sec, federobj_t0->federobj__time.tv_sec);
+            double nanoseconds
+            :federobj_nanoseconds = (*federobj_this)->federobj__time.tv_nsec - federobj_t0->federobj__time.tv_nsec;
+            seconds.multto (double from 1000)
+            nanoseconds.divto (double from 1000000)
 
-			double milliseconds = seconds.add (nanoseconds)
-			return milliseconds
-		;
-	;
-	::elif WINDOWS
-	type "LARGE_INTEGER" _windows_time
-	;
+            double milliseconds = seconds.add (nanoseconds)
+            return milliseconds
+        ;
+    ;
+    ::elif WINDOWS
+    type "LARGE_INTEGER" _windows_time
+    ;
 
-	class Time
-		_windows_time _time
+    class Time
+        _windows_time _time
 
-		##
-		# This function sets 'this' to the current time
-		# and returns 'this'. Returns null if an error occured.
-		##
-		Time func current
-			int32 result_code
-			:federobj_result_code = QueryPerformanceCounter(&((*federobj_this)->federobj__time));
-			if isEqual (result_code, 0)
-				return null
-			;
+        ##
+        # This function sets 'this' to the current time
+        # and returns 'this'. Returns null if an error occured.
+        ##
+        Time func current
+            int32 result_code
+            :federobj_result_code = QueryPerformanceCounter(&((*federobj_this)->federobj__time));
+            if isEqual (result_code, 0)
+                return null
+            ;
 
-			return this
-		;
+            return this
+        ;
 
-		double func millisBetween (Time t0)
-			_windows_time frequency
-			:QueryPerformanceFrequency(&federobj_frequency);
-			_windows_time delta
-			:federobj_delta.QuadPart = (*federobj_this)->federobj__time.QuadPart - federobj_t0->federobj__time.QuadPart;
-			:federobj_delta.QuadPart *= 1000000; // Microseconds !!!
-			:federobj_delta.QuadPart /= federobj_frequency.QuadPart;
-			int64 microseconds
-			:federobj_microseconds = (fdc_int64) federobj_delta.QuadPart;
-			return (double from microseconds).div (double from 1000)
-		;
-	;
-	::fi
+        double func millisBetween (Time t0)
+            _windows_time frequency
+            :QueryPerformanceFrequency(&federobj_frequency);
+            _windows_time delta
+            :federobj_delta.QuadPart = (*federobj_this)->federobj__time.QuadPart - federobj_t0->federobj__time.QuadPart;
+            :federobj_delta.QuadPart *= 1000000; // Microseconds !!!
+            :federobj_delta.QuadPart /= federobj_frequency.QuadPart;
+            int64 microseconds
+            :federobj_microseconds = (fdc_int64) federobj_delta.QuadPart;
+            return (double from microseconds).div (double from 1000)
+        ;
+    ;
+    ::fi
 
-	##
-	# This functions lets the system's command processor (like sh in Unix-like
-	# environments) execute the argument 'cmd'
-	#
-	# Returns the exit code of the program
-	##
-	int32 func system (String cmd)
-		:char * command = fdStringToCString (federobj_cmd);
-		int32 result
-		:federobj_result = system (command);
-		:free (command);
+    ##
+    # This functions lets the system's command processor (like sh in Unix-like
+    # environments) execute the argument 'cmd'
+    #
+    # Returns the exit code of the program
+    ##
+    int32 func system (String cmd)
+        :char * command = fdStringToCString (federobj_cmd);
+        int32 result
+        :federobj_result = system (command);
+        :free (command);
 
-		return result
-	;
+        return result
+    ;
 
-	##
-	# This function returns the time the program consumed in milli seconds
-	##
-	double func clock
-		double result
-		:federobj_result = ((double) clock ()) * 1000 / CLOCKS_PER_SEC;
-		return result
-	;
+    ##
+    # This function returns the time the program consumed in milli seconds
+    ##
+    double func clock
+        double result
+        :federobj_result = ((double) clock ()) * 1000 / CLOCKS_PER_SEC;
+        return result
+    ;
 
-	# Error handling
+    # Error handling
 
-	##
-	# This list contains string objects
-	##
-	global List errors = List
+    ##
+    # This list contains string objects
+    ##
+    global List errors = List
 
-	bool func hasErrors
-		return errors.isEmpty ().isfalse ()
-	;
+    bool func hasErrors
+        return errors.isEmpty ().isfalse ()
+    ;
 ;
 

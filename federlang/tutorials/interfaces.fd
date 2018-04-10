@@ -3,7 +3,7 @@ include "stdio.fd"
 int32 interface int_sum (int32 n0, int32 n1)
 
 int32 func sum (int32 n0, int32 n1)
-	return n0 + n1
+    return n0 + n1
 ;
 
 

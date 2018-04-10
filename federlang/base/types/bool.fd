@@ -9,17 +9,17 @@
 include "stdc.fd"
 
 namespace h_intern_types_bool_include
-	:#include <stdbool.h> // A standard C header
+    :#include <stdbool.h> // A standard C header
 ;
 
 type "bool" bool
-	func set (bool val)
-		:*federobj_this = federobj_val;
-	;
+    func set (bool val)
+        :*federobj_this = federobj_val;
+    ;
 
-	bool func isfalse
-		:return !(*federobj_this);
-	;
+    bool func isfalse
+        :return !(*federobj_this);
+    ;
 ;
 
 
@@ -52,27 +52,27 @@ type "bool" bool
 bool interface int_isEqual (object obj0, object obj1)
 
 namespace h_intern_types_bool
-	:fdc_bool
-	:fdIsNull (fdobject * obj);
+    :fdc_bool
+    :fdIsNull (fdobject * obj);
 
-	:fdc_bool
-	:fdCompareObjects (fdobject * obj0, fdobject * obj1);
+    :fdc_bool
+    :fdCompareObjects (fdobject * obj0, fdobject * obj1);
 ;
 
 namespace c_intern_types_bool
-	:fdc_bool
-	:fdIsNull (fdobject * obj) {
-		:if (!obj) {
-			:return true;
-		:}
+    :fdc_bool
+    :fdIsNull (fdobject * obj) {
+        :if (!obj) {
+            :return true;
+        :}
 
-		:fdRemoveObject_func (obj);
-		:return false;
-	:}
+        :fdRemoveObject_func (obj);
+        :return false;
+    :}
 
-	:fdc_bool
-	:fdCompareObjects (fdobject * obj0, fdobject * obj1) {
-		:return obj0 == obj1;
-	:}
+    :fdc_bool
+    :fdCompareObjects (fdobject * obj0, fdobject * obj1) {
+        :return obj0 == obj1;
+    :}
 ;
 

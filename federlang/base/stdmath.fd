@@ -6,79 +6,79 @@
 include "stdtype.fd"
 
 namespace h_intern_stdmath
-	:#include <math.h>
+    :#include <math.h>
 ;
 
 # Tell the C compiler to use the math library
 ::use -lm
 
 namespace math
-	::rule buildin func_sqrt "sqrt ({0})" double
+    ::rule buildin func_sqrt "sqrt ({0})" double
 
-	double func sqrt (double n)
-		double result = sqrt!(n)
-		#:federobj_result = sqrt (federobj_n);
-		return result
-	;
+    double func sqrt (double n)
+        double result = sqrt!(n)
+        #:federobj_result = sqrt (federobj_n);
+        return result
+    ;
 
-	int64 func sqrt (int64 n)
-		int64 result = int64 from sqrt!(double from n)
-		return result
-	;
+    int64 func sqrt (int64 n)
+        int64 result = int64 from sqrt!(double from n)
+        return result
+    ;
 
-	uint64 func sqrt (uint64 n)
-		uint64 result = uint64 from sqrt!(uint64 from n)
-		return result
-	;
+    uint64 func sqrt (uint64 n)
+        uint64 result = uint64 from sqrt!(uint64 from n)
+        return result
+    ;
 
-	int32 func sqrt (int32 n)
-		int32 result = int32 from sqrt!(double from n)
-		return result
-	;
+    int32 func sqrt (int32 n)
+        int32 result = int32 from sqrt!(double from n)
+        return result
+    ;
 
-	uint32 func sqrt (uint32 n)
-		uint32 result
-		:federobj_result = (fdc_uint32) sqrt ((double) federobj_n);
-		return result
-	;
+    uint32 func sqrt (uint32 n)
+        uint32 result
+        :federobj_result = (fdc_uint32) sqrt ((double) federobj_n);
+        return result
+    ;
 
-	double func floor (double n)
-		double result
-		:federobj_result = (fdc_double) floor (federobj_n);
-		return result
-	;
+    double func floor (double n)
+        double result
+        :federobj_result = (fdc_double) floor (federobj_n);
+        return result
+    ;
 
-	double func ceil (double n)
-		double result
-		:federobj_result = (fdc_double) ceil (federobj_n);
-		return result
-	;
+    double func ceil (double n)
+        double result
+        :federobj_result = (fdc_double) ceil (federobj_n);
+        return result
+    ;
 
-	class Vector2i32
-		int32 x0
-		int32 x1
-		
-		Vector2i32 func new (int32 ax0, int32 ax1)
-			x0 = ax0
-			x1 = ax1
-			return this
-		;
+    class Vector2i32
+        int32 x0
+        int32 x1
+        
+        Vector2i32 func new (int32 ax0, int32 ax1)
+            x0 = ax0
+            x1 = ax1
+            return this
+        ;
 
-		int32 func lengthSqrt
-			return (x0 * x0) + (x1 * x1)
-		;
+        int32 func lengthSqrt
+            return (x0 * x0) + (x1 * x1)
+        ;
 
-		double func length
-			return math.sqrt (double from lengthSqrt ())
-		;
+        double func length
+            return math.sqrt (double from lengthSqrt ())
+        ;
 
-		Vector2i32 func add (Vector2i32 v0)
-			x0 += v0.x0
-			x1 += v0.x1
-		;
-		
-		int32 func scalar (Vector2i32 v0)
-			return x0 * v0.x0 + x1 * v0.x1
-		;
-	;
+        Vector2i32 func add (Vector2i32 v0)
+            x0 += v0.x0
+            x1 += v0.x1
+        ;
+        
+        int32 func scalar (Vector2i32 v0)
+            return x0 * v0.x0 + x1 * v0.x1
+        ;
+    ;
 ;

@@ -2,7 +2,7 @@ include "stdio.fd"
 include "test_libloader0.fd"
 
 if isEqual (n, 1)
-	return true
+    return true
 ;
 
 return false

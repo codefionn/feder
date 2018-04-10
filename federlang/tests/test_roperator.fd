@@ -5,9 +5,9 @@ result = 5 - 5 + 4 - 2
 # Right to left (err): -2
 
 if result != 2
-	io.print ("Error: ")
-	io.println (result)
-	return false
+    io.print ("Error: ")
+    io.println (result)
+    return false
 ;
 
 # Also testing precedence
@@ -17,12 +17,12 @@ result = 5 + 2 * 4
 # with: 13
 
 if result != 13
-	io.println ("Error: " + result)
-	return false
+    io.println ("Error: " + result)
+    return false
 ;
 
 result = 2 * 4 + 5 * 2
 if result != 18
-	io.println ("Error 3: " + result)
-	return false
+    io.println ("Error 3: " + result)
+    return false
 ;

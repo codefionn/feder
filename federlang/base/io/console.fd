@@ -2,252 +2,252 @@ include "stdc.fd"
 include "stdtype.fd"
 
 namespace h_intern_io
-		:#include <stdio.h>
-		# Include directories
-		::if POSIX
-		:#include <dirent.h>
-		::elif WINDOWS
-		:#include <windows.h>
-		:#include <tchar.h>
-		:#include <strsafe.h>
-		::fi
+    	:#include <stdio.h>
+    	# Include directories
+    	::if POSIX
+    	:#include <dirent.h>
+    	::elif WINDOWS
+    	:#include <windows.h>
+    	:#include <tchar.h>
+    	:#include <strsafe.h>
+    	::fi
 ;
 
 namespace io
-	String func readString
-		String result = String
-		byte b
-		:int c;
-		:while ((c = fgetc (stdin)) != EOF && c != '\n' && c != '\r') {
-			:federobj_b = (signed char) c;
-			result.addto (Byte.set (b))
-		:}
+    String func readString
+    	String result = String
+    	byte b
+    	:int c;
+    	:while ((c = fgetc (stdin)) != EOF && c != '\n' && c != '\r') {
+    		:federobj_b = (signed char) c;
+    		result.addto (Byte.set (b))
+    	:}
 
-		return result
-	;
+    	return result
+    ;
 
-	int32 func readint32
-		int32 result = 0
-		:if (scanf ("%i", &federobj_result) == EOF) {
-			return -1
-		:}
+    int32 func readint32
+    	int32 result = 0
+    	:if (scanf ("%i", &federobj_result) == EOF) {
+    		return -1
+    	:}
 
-		return result
-	;
+    	return result
+    ;
 
-	double func readdouble
-		double result = 0.0
-		:if (scanf ("%lf", &federobj_result) == EOF) {
-			return -1.0
-		:}
+    double func readdouble
+    	double result = 0.0
+    	:if (scanf ("%lf", &federobj_result) == EOF) {
+    		return -1.0
+    	:}
 
-		return result
-	;
+    	return result
+    ;
 
-	::rule buildin func_printf_str "printf (\"%s\", {0})" null
+    ::rule buildin func_printf_str "printf (\"%s\", {0})" null
 
-	# This function "prints" a String to the
-	# current terminal
-	func print (String s)
-		if s == null
-			print ("null")
-			return
-		;
-		
-#		:printf ("%s", ((fdc_String*)federobj_s)->cString);
-		#:char * achars = fdStringToCString (federobj_s);
-		#:printf ("%s", achars);
-		#:free (achars);
-		cstring tmp_str = fdStringToCString!(s)
-		printf_str!(tmp_str)
-		free (tmp_str)
-	;
+    # This function "prints" a String to the
+    # current terminal
+    func print (String s)
+    	if s == null
+    		print ("null")
+    		return
+    	;
+    	
+#    	:printf ("%s", ((fdc_String*)federobj_s)->cString);
+    	#:char * achars = fdStringToCString (federobj_s);
+    	#:printf ("%s", achars);
+    	#:free (achars);
+    	cstring tmp_str = fdStringToCString!(s)
+    	printf_str!(tmp_str)
+    	free (tmp_str)
+    ;
 
-	# This function prints a new line
-	func println
-		print ("\n")
-	;
+    # This function prints a new line
+    func println
+    	print ("\n")
+    ;
 
-	# This function calls io.print (s) and io.println ()
-	func println (String s)
-		print (s)
-		println ()
-	;
+    # This function calls io.print (s) and io.println ()
+    func println (String s)
+    	print (s)
+    	println ()
+    ;
 
-	# This function "prints" an integer to console
-	func print (int32 n)
-		:printf ("%i", federobj_n);
-	;
+    # This function "prints" an integer to console
+    func print (int32 n)
+    	:printf ("%i", federobj_n);
+    ;
 
-	# This functions calls io.print (n) and io.println ()
-	func println (int32 n)
-		print (n)
-		println ()
-	;
+    # This functions calls io.print (n) and io.println ()
+    func println (int32 n)
+    	print (n)
+    	println ()
+    ;
 
-	# This function "prints" an unsigned integer to console
-	func print (uint32 n)
-		:printf ("%u", federobj_n);
-	;
+    # This function "prints" an unsigned integer to console
+    func print (uint32 n)
+    	:printf ("%u", federobj_n);
+    ;
 
-	# This functions calls io.print (n) and io.println ()
-	func println (uint32 n)
-		print (n)
-		println ()
-	;
+    # This functions calls io.print (n) and io.println ()
+    func println (uint32 n)
+    	print (n)
+    	println ()
+    ;
 
-	func print (int64 n)
-		::if POSIX
-		:printf ("%li", federobj_n);
-		::elif WINDOWS
-		:printf ("%lli", federobj_n);
-		::fi
-	;
+    func print (int64 n)
+    	::if POSIX
+    	:printf ("%li", federobj_n);
+    	::elif WINDOWS
+    	:printf ("%lli", federobj_n);
+    	::fi
+    ;
 
-	func println (int64 n)
-		print (n)
-		println ()
-	;
+    func println (int64 n)
+    	print (n)
+    	println ()
+    ;
 
-	func print (uint64 n)
-		::if POSIX
-		:printf ("%lu", federobj_n);
-		::elif WINDOWS
-		:printf ("%llu", federobj_n);
-		::fi
-	;
+    func print (uint64 n)
+    	::if POSIX
+    	:printf ("%lu", federobj_n);
+    	::elif WINDOWS
+    	:printf ("%llu", federobj_n);
+    	::fi
+    ;
 
-	func println (uint64 n)
-		print (n)
-		println ()
-	;
+    func println (uint64 n)
+    	print (n)
+    	println ()
+    ;
 
-	# This function "prints" a double to console
-	func print (double n)
-		:printf ("%lf", federobj_n);
-	;
+    # This function "prints" a double to console
+    func print (double n)
+    	:printf ("%lf", federobj_n);
+    ;
 
-	# This function calls io.print (n) and io.println ()
-	func println (double n)
-		print (n)
-		println ()
-	;
+    # This function calls io.print (n) and io.println ()
+    func println (double n)
+    	print (n)
+    	println ()
+    ;
 
-	func print (byte b)
-		:printf ("%c", (char) federobj_b);
-	;
+    func print (byte b)
+    	:printf ("%c", (char) federobj_b);
+    ;
 
-	func println (byte b)
-		print (b)
-		println ()
-	;
+    func println (byte b)
+    	print (b)
+    	println ()
+    ;
 
-	func print (ubyte b)
-		print (byte from b)
-	;
+    func print (ubyte b)
+    	print (byte from b)
+    ;
 
-	func println (ubyte b)
-		println (byte from b)
-	;
+    func println (ubyte b)
+    	println (byte from b)
+    ;
 
-	namespace err
-		func print (String s)
-			if s == null
-				print ("null")
-				return
-			;
-		
-			:char * achars = fdStringToCString (federobj_s);
-			:fprintf (stderr, "%s", achars);
-			:free (achars);
-		;
+    namespace err
+    	func print (String s)
+    		if s == null
+    			print ("null")
+    			return
+    		;
+    	
+    		:char * achars = fdStringToCString (federobj_s);
+    		:fprintf (stderr, "%s", achars);
+    		:free (achars);
+    	;
 
-		func println
-			print ("\n")
-		;
+    	func println
+    		print ("\n")
+    	;
 
-		func println (String s)
-			if s == null
-				println ("null")
-				return
-			;
+    	func println (String s)
+    		if s == null
+    			println ("null")
+    			return
+    		;
 
-			print (s)
-			print ("\n")
-		;
+    		print (s)
+    		print ("\n")
+    	;
 
-		# This function "prints" an integer to console
-		func print (int32 n)
-			:fprintf (stderr, "%i", federobj_n);
-		;
+    	# This function "prints" an integer to console
+    	func print (int32 n)
+    		:fprintf (stderr, "%i", federobj_n);
+    	;
 
-		# This functions calls io.print (n) and io.println ()
-		func println (int32 n)
-			print (n)
-			println ()
-		;
+    	# This functions calls io.print (n) and io.println ()
+    	func println (int32 n)
+    		print (n)
+    		println ()
+    	;
 
-		func print (uint32 n)
-			:fprintf (stderr, "%u", federobj_n);
-		;
+    	func print (uint32 n)
+    		:fprintf (stderr, "%u", federobj_n);
+    	;
 
-		func println (uint32 n)
-			print (n)
-			println ()
-		;
+    	func println (uint32 n)
+    		print (n)
+    		println ()
+    	;
 
-		func print (int64 n)
-			::if POSIX
-			:fprintf (stderr, "%li", federobj_n);
-			::elif WINDOWS
-			:fprintf (stderr, "%lli", federobj_n);
-			::fi
-		;
+    	func print (int64 n)
+    		::if POSIX
+    		:fprintf (stderr, "%li", federobj_n);
+    		::elif WINDOWS
+    		:fprintf (stderr, "%lli", federobj_n);
+    		::fi
+    	;
 
-		func println (int64 n)
-			print (n)
-			println ()
-		;
+    	func println (int64 n)
+    		print (n)
+    		println ()
+    	;
 
-		func print (uint64 n)
-			::if POSIX
-			:fprintf (stderr, "%lu", federobj_n);
-			::elif WINDOWS
-			:fprintf (stderr, "%llu", federobj_n);
-			::fi
-		;
+    	func print (uint64 n)
+    		::if POSIX
+    		:fprintf (stderr, "%lu", federobj_n);
+    		::elif WINDOWS
+    		:fprintf (stderr, "%llu", federobj_n);
+    		::fi
+    	;
 
-		func println (uint64 n)
-			print (n)
-			println ()
-		;
+    	func println (uint64 n)
+    		print (n)
+    		println ()
+    	;
 
-		# This function "prints" a double to console
-		func print (double n)
-			:fprintf (stderr, "%lf", federobj_n);
-		;
+    	# This function "prints" a double to console
+    	func print (double n)
+    		:fprintf (stderr, "%lf", federobj_n);
+    	;
 
-		# This function calls io.print (n) and io.println ()
-		func println (double n)
-			print (n)
-			println ()
-		;
+    	# This function calls io.print (n) and io.println ()
+    	func println (double n)
+    		print (n)
+    		println ()
+    	;
 
-		func print (byte b)
-			:fprintf (stderr, "%c", (char) federobj_b);
-		;
+    	func print (byte b)
+    		:fprintf (stderr, "%c", (char) federobj_b);
+    	;
 
-		func println (byte b)
-			print (b)
-			println ()
-		;
+    	func println (byte b)
+    		print (b)
+    		println ()
+    	;
 
-		func print (ubyte b)
-			print (byte from b)
-		;
+    	func print (ubyte b)
+    		print (byte from b)
+    	;
 
-		func println (ubyte b)
-			println (byte from b)
-		;
-	;
+    	func println (ubyte b)
+    		println (byte from b)
+    	;
+    ;
 ;

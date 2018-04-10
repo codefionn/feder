@@ -3,14 +3,14 @@ include "stdio.fd"
 
 n = 3 + 7
 if n != 10
-	io.println ("Test 01 failed")
-	return false
+    io.println ("Test 01 failed")
+    return false
 ;
 
 n = 13 * 2
 if n != 26
-	io.println ("Test 02 failed")
-	return false
+    io.println ("Test 02 failed")
+    return false
 ;
 
 return true

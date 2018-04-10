@@ -9,22 +9,22 @@ include "types/numcomp.fd"
 # The  following class declares & defines the class for node of a linked List.
 ##
 class List_node
-	object data
-	List_node next
+    object data
+    List_node next
 
-	# An function for "initializing" this class
-	List_node func new (object data0)
-		data = data0 
-		return this
-	;
+    # An function for "initializing" this class
+    List_node func new (object data0)
+        data = data0 
+        return this
+    ;
 
-	# An 'initializing' function for this class 'List_node'
-	List_node func new (object data0, List_node next0)
-		data = data0
-		next = next0
-	
-		return this
-	; 
+    # An 'initializing' function for this class 'List_node'
+    List_node func new (object data0, List_node next0)
+        data = data0
+        next = next0
+    
+        return this
+    ; 
 ; 
 
 ##
@@ -44,296 +44,296 @@ class List_node
 # to linked Lists.
 ##
 class List
-	List_node first
-	List_node last
+    List_node first
+    List_node last
 
-	##
-	# This function returns true if the List has no nodes, false if
-	# the List has at least 1 node
-	##
-	bool func isEmpty
-		return first == null
-	;
-	
-	##
-	# This function returns the length of this List.
-	# But since this List is a linked List, this operation is very slow, so
-	# one should save the length if one needs it more frequent.
-	# If one wants to check if the List is empty, don't use this function, as
-	# it could take too long, instead use the function 'isEmpty'
-	##
-	int32 func length
-		if first == null
-			# If the first node is null, the List
-			# doesn't contain any nodes at all
-			return 0
-		;
+    ##
+    # This function returns true if the List has no nodes, false if
+    # the List has at least 1 node
+    ##
+    bool func isEmpty
+        return first == null
+    ;
+    
+    ##
+    # This function returns the length of this List.
+    # But since this List is a linked List, this operation is very slow, so
+    # one should save the length if one needs it more frequent.
+    # If one wants to check if the List is empty, don't use this function, as
+    # it could take too long, instead use the function 'isEmpty'
+    ##
+    int32 func length
+        if first == null
+            # If the first node is null, the List
+            # doesn't contain any nodes at all
+            return 0
+        ;
 
-		if last == null # First is not null, but the last,
-			# so the List is one unit long
-			return 1
-		;
+        if last == null # First is not null, but the last,
+            # so the List is one unit long
+            return 1
+        ;
 
-		result = 0
-		node = first
-		while node != null
-			result.addto (1)
-			node = node.next
-		;
+        result = 0
+        node = first
+        while node != null
+            result.addto (1)
+            node = node.next
+        ;
 
-		return result
-	;
+        return result
+    ;
 
-	##
-	# This function returns the object at the index 'index'.
-	# If the index is not in the range 0<=index<=length(), then
-	# this function is not successfull and returns null.
-	##
-	object func at (int32 index)
-		current_index = 0
-		node = first
-		while node != null
-			if isEqual (index, current_index)
-				return node.data
-			;
+    ##
+    # This function returns the object at the index 'index'.
+    # If the index is not in the range 0<=index<=length(), then
+    # this function is not successfull and returns null.
+    ##
+    object func at (int32 index)
+        current_index = 0
+        node = first
+        while node != null
+            if isEqual (index, current_index)
+                return node.data
+            ;
 
-			current_index.addto (1)
-			node = node.next
-		;
-		
-		return null
-	;
+            current_index.addto (1)
+            node = node.next
+        ;
+        
+        return null
+    ;
 
-	##
-	# This function adds the object 'obj' to the List, also
-	# if the object 'obj' already exists in the List. This function
-	# returns the the object 'this' (so the object the function was
-	# executed with)
-	##
-	List func add (object obj)
-		node = List_node.new (obj)
+    ##
+    # This function adds the object 'obj' to the List, also
+    # if the object 'obj' already exists in the List. This function
+    # returns the the object 'this' (so the object the function was
+    # executed with)
+    ##
+    List func add (object obj)
+        node = List_node.new (obj)
 
-		if first == null
-			first = node
-		else if last == null
-			first.next = node
-			last = node
-		else
-			last.next = node
-			last = node
-		;
+        if first == null
+            first = node
+        else if last == null
+            first.next = node
+            last = node
+        else
+            last.next = node
+            last = node
+        ;
 
-		return this
-	;
+        return this
+    ;
 
-	##
-	# This function adds all data contained in List0 to
-	# this List.
-	#
-	# Returns itself
-	##
-	List func add (List List0)
-		node = List0.first
-		while node != null
-			add (node.data)
-			node = node.next
-		;
+    ##
+    # This function adds all data contained in List0 to
+    # this List.
+    #
+    # Returns itself
+    ##
+    List func add (List List0)
+        node = List0.first
+        while node != null
+            add (node.data)
+            node = node.next
+        ;
 
-		return this
-	;
+        return this
+    ;
 
-	##
-	# This function inserts 'obj' at position 'index'
-	#
-	# Returns itself. And if the index is out of bounds, this function
-	# returns null.
-	##
-	List func insert (object obj, int32 index)
-		len0 = length ()
-		if isEqual (index, len0)
-			return add (obj)
-		;
-		
-		if index > len0
-			return null
-		;
+    ##
+    # This function inserts 'obj' at position 'index'
+    #
+    # Returns itself. And if the index is out of bounds, this function
+    # returns null.
+    ##
+    List func insert (object obj, int32 index)
+        len0 = length ()
+        if isEqual (index, len0)
+            return add (obj)
+        ;
+        
+        if index > len0
+            return null
+        ;
 
-		current_index = 0
-		node = first
-		List_node node_previous = null
-		while node != null
-			if isEqual (index, current_index)
-				# This is the correct index
-				newnode = List_node.new (obj, node)
-				node_previous.next = newnode
-				return this
-			;
-				
-			current_index.addto (1)
-			node_previous = node
-			node = node.next
-		;
-		
-		return null
-	;
+        current_index = 0
+        node = first
+        List_node node_previous = null
+        while node != null
+            if isEqual (index, current_index)
+                # This is the correct index
+                newnode = List_node.new (obj, node)
+                node_previous.next = newnode
+                return this
+            ;
+                
+            current_index.addto (1)
+            node_previous = node
+            node = node.next
+        ;
+        
+        return null
+    ;
 
-	List func insert (List List0, int32 index)
-		if List0.isEmpty ()
-			return null
-		;
-		
-		len0 = length ()
-		if isEqual (index, len0)
-			return add (List0)
-		;
-		
-		if index > len0
-			return null
-		;
+    List func insert (List List0, int32 index)
+        if List0.isEmpty ()
+            return null
+        ;
+        
+        len0 = length ()
+        if isEqual (index, len0)
+            return add (List0)
+        ;
+        
+        if index > len0
+            return null
+        ;
 
-		if isEqual (index, 0)
-			
-		;
+        if isEqual (index, 0)
+            
+        ;
 
-		current_index = 0
-		node = first
-		List_node previous_node = null
-		while node != null
-			if isEqual (index, current_index)
-				# This is the index, were the List should be inserted
-				nextnode = node
-				i = 0
-				len0 = List0.length ()
-				while i < len0
-					newnode = List_node.new (List0.at (i))	
-					if previous_node == null
-						# This seems to be the first node in the List
-						first = newnode
-					else
-						previous_node.next = newnode
-					;
+        current_index = 0
+        node = first
+        List_node previous_node = null
+        while node != null
+            if isEqual (index, current_index)
+                # This is the index, were the List should be inserted
+                nextnode = node
+                i = 0
+                len0 = List0.length ()
+                while i < len0
+                    newnode = List_node.new (List0.at (i))    
+                    if previous_node == null
+                        # This seems to be the first node in the List
+                        first = newnode
+                    else
+                        previous_node.next = newnode
+                    ;
 
-					previous_node = newnode
-					
-					i.addto (1)
-				;
+                    previous_node = newnode
+                    
+                    i.addto (1)
+                ;
 
-				previous_node.next = nextnode
+                previous_node.next = nextnode
 
-				return this	
-			;
-				
-			current_index.addto (1)
-			previous_node = node
-			node = node.next
-		;
-		
-		return null
-	;
+                return this    
+            ;
+                
+            current_index.addto (1)
+            previous_node = node
+            node = node.next
+        ;
+        
+        return null
+    ;
 
 
-	##
-	# This function removes an object at the index 'index'.
-	# If 'index' is out of the List's bounds this function returns null.
-	# If the function successfully removed the object from the List,
-	# it returns the removed object.
-	##
-	object func removeAt (int32 index)
-		current_index = 0
-		node = first
-		List_node node_previous = null
-		while node != null
-			if isEqual (index, current_index)
-				if node == first
-					first = node.next
-					if first == last
-						last = null
-					;
+    ##
+    # This function removes an object at the index 'index'.
+    # If 'index' is out of the List's bounds this function returns null.
+    # If the function successfully removed the object from the List,
+    # it returns the removed object.
+    ##
+    object func removeAt (int32 index)
+        current_index = 0
+        node = first
+        List_node node_previous = null
+        while node != null
+            if isEqual (index, current_index)
+                if node == first
+                    first = node.next
+                    if first == last
+                        last = null
+                    ;
 
-					return node.data
-				else if node == last
-					last = node_previous
-					last.next = null
-					
-					return node.data
-				else
-					node_previous.next = node.next
-					
-					return node.data
-				;
-			;
-				
-			current_index.addto (1)
-			node_previous = node
-			node = node.next
-		;
-		
-		return null
-	;
+                    return node.data
+                else if node == last
+                    last = node_previous
+                    last.next = null
+                    
+                    return node.data
+                else
+                    node_previous.next = node.next
+                    
+                    return node.data
+                ;
+            ;
+                
+            current_index.addto (1)
+            node_previous = node
+            node = node.next
+        ;
+        
+        return null
+    ;
 
-	##
-	# This function removes the last object of
-	# the current List and returns the removed object
-	##
-	object func pop
-		len00 = length ()
-		if isEqual (len00, 0)
-			return null
-		;
+    ##
+    # This function removes the last object of
+    # the current List and returns the removed object
+    ##
+    object func pop
+        len00 = length ()
+        if isEqual (len00, 0)
+            return null
+        ;
 
-		i = len00.sub (1)
-		return removeAt (i)
-	;
+        i = len00.sub (1)
+        return removeAt (i)
+    ;
 
-	##
-	# This function returns null, if the object 'obj' could not be found,
-	# otherwise a which is 0<=index<=length ().
-	# Finding an object means: The int32erface fn_isEqual returned
-	# true, when the given object 'obj' and the object at an index
-	# are the same. The index of that object is returned by this function.
-	# This function returns the first occurence of the object (if it has
-	# been found).
-	# The int32erface fn_isEqual can be null, if that's the case, both object are
-	# compared with the == operator
-	##
-	int32 func indexOf (object obj, int_isEqual fn_isEqual)
-		current_index = 0
-		node = first
-		while node != null
-			if fn_isEqual != null && fn_isEqual (obj, node.data)
-				return current_index
-			else if fn_isEqual == null && obj == node.data
-				return current_index
-			;
-			
-			node = node.next
-			current_index.addto (1)
-		;
+    ##
+    # This function returns null, if the object 'obj' could not be found,
+    # otherwise a which is 0<=index<=length ().
+    # Finding an object means: The int32erface fn_isEqual returned
+    # true, when the given object 'obj' and the object at an index
+    # are the same. The index of that object is returned by this function.
+    # This function returns the first occurence of the object (if it has
+    # been found).
+    # The int32erface fn_isEqual can be null, if that's the case, both object are
+    # compared with the == operator
+    ##
+    int32 func indexOf (object obj, int_isEqual fn_isEqual)
+        current_index = 0
+        node = first
+        while node != null
+            if fn_isEqual != null && fn_isEqual (obj, node.data)
+                return current_index
+            else if fn_isEqual == null && obj == node.data
+                return current_index
+            ;
+            
+            node = node.next
+            current_index.addto (1)
+        ;
 
-		return (1).makeNegative ()
-	;
+        return (1).makeNegative ()
+    ;
 
-	##
-	# This function return false, if the object 'obj' could not be found,
-	# otherwise true.
-	# Find an object means: The int32erface fn_isEqual returned true, when
-	# the given object 'obj' and the object an an index are the same.
-	##
-	bool func contains (object obj, int_isEqual fn_isEqual)
-		return isEqual (indexOf (obj, fn_isEqual), (1).makeNegative ()).isfalse ()
-	;
+    ##
+    # This function return false, if the object 'obj' could not be found,
+    # otherwise true.
+    # Find an object means: The int32erface fn_isEqual returned true, when
+    # the given object 'obj' and the object an an index are the same.
+    ##
+    bool func contains (object obj, int_isEqual fn_isEqual)
+        return isEqual (indexOf (obj, fn_isEqual), (1).makeNegative ()).isfalse ()
+    ;
 
-	##
-	# This function clears the List, so it removes all nodes from the List.
-	# Returns the length of all the removed nodes
-	##
-	int32 func clear
-		current_index = 0
-		while isEmpty ().isfalse ()
-			removeAt (0)
-			current_index.addto (0)
-		;
+    ##
+    # This function clears the List, so it removes all nodes from the List.
+    # Returns the length of all the removed nodes
+    ##
+    int32 func clear
+        current_index = 0
+        while isEmpty ().isfalse ()
+            removeAt (0)
+            current_index.addto (0)
+        ;
 
-		return current_index
-	;
+        return current_index
+    ;
 ;

@@ -1,19 +1,19 @@
 include "stdio.fd"
 
 func printHelp (List args0)
-	io.print ("Error: Expected: ")
-	io.print (String from args0.at(0))
-	io.println (" [double]")
+    io.print ("Error: Expected: ")
+    io.print (String from args0.at(0))
+    io.println (" [double]")
 ;
 
 if isEqual (args.length (), 2).isfalse ()
-	printHelp (args)
-	return false
+    printHelp (args)
+    return false
 ;
 
 if (String from args.at (1)).isNumber (true).isfalse ()
-	printHelp (args)
-	return false
+    printHelp (args)
+    return false
 ;
 
 fahrenheit = (String from args.at (1)).todouble ()

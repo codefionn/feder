@@ -1,6 +1,6 @@
 include "stdio.fd"
 
 if !isEqual (0x0002, 2)
-	return false
+    return false
 ;
 

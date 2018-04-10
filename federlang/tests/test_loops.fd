@@ -12,28 +12,28 @@ include "stdio.fd"
 b = true
 count = 0
 while b
-	# Loop should not be accessed one time
-	b = false
+    # Loop should not be accessed one time
+    b = false
 
-	if count > 0
-		# This should not happen
-		return false
-	;
+    if count > 0
+        # This should not happen
+        return false
+    ;
 
-	count++
-	break
+    count++
+    break
 
-	# This should not happen
-	return false
+    # This should not happen
+    return false
 ;
 
 # Test the 'continue' statement
 count = 0
 while count < 10
-	
-	count++
-	continue
+    
+    count++
+    continue
 
-	# This should not happen
-	return false
+    # This should not happen
+    return false
 ;

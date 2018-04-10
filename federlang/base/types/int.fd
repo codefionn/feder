@@ -10,160 +10,160 @@ include "stdc.fd"
 include "types/bool.fd"
 
 namespace h_intern_int_include
-	:#include <stdint.h>
+    :#include <stdint.h>
 ;
 
 type "int16_t" int16
-	##
-	# Makes 'this' negative (if you used a bound object,
-	# that object will be negetive)
-	# @return Returns 'this' (or a copy)
-	##
-	int16 func makeNegative
-		:if (*federobj_this > 0) {
-			:*federobj_this *= -1;
-		:}
+    ##
+    # Makes 'this' negative (if you used a bound object,
+    # that object will be negetive)
+    # @return Returns 'this' (or a copy)
+    ##
+    int16 func makeNegative
+        :if (*federobj_this > 0) {
+            :*federobj_this *= -1;
+        :}
 
-		return this
-	;
+        return this
+    ;
 
-	##
-	# @return Returns a copy of 'this' type
-	##
-	int16 func cp
-		result = this
-		return result
-	;
+    ##
+    # @return Returns a copy of 'this' type
+    ##
+    int16 func cp
+        result = this
+        return result
+    ;
 ;
 
 type "uint16_t" uint16
-	##
-	# @return Returns a copy of 'this' type
-	##
-	uint16 func cp
-		result = this
-		return result
-	;
+    ##
+    # @return Returns a copy of 'this' type
+    ##
+    uint16 func cp
+        result = this
+        return result
+    ;
 ;
 
 type "int32_t" int32
-	##
-	# Makes 'this' negative (if you used a bound object,
-	# that object will be negetive)
-	# @return Returns 'this' (or a copy)
-	##
-	int32 func makeNegative
-		:if (*federobj_this > 0) {
-			:*federobj_this *= -1;
-		:}
+    ##
+    # Makes 'this' negative (if you used a bound object,
+    # that object will be negetive)
+    # @return Returns 'this' (or a copy)
+    ##
+    int32 func makeNegative
+        :if (*federobj_this > 0) {
+            :*federobj_this *= -1;
+        :}
 
-		return this
-	;
+        return this
+    ;
 
-	##
-	# @return Returns a copy of 'this' type
-	##
-	int32 func cp
-		result = this
-		return result
-	;
+    ##
+    # @return Returns a copy of 'this' type
+    ##
+    int32 func cp
+        result = this
+        return result
+    ;
 ;
 
 ::rule buildin int "(fdc_int32) {0}" int32
 
 type "uint32_t" uint32
-	##
-	# @return Returns a copy of 'this' type
-	##
-	uint32 func cp
-		result = this
-		return result
-	;
+    ##
+    # @return Returns a copy of 'this' type
+    ##
+    uint32 func cp
+        result = this
+        return result
+    ;
 ;
 
 type "int64_t" int64
-	##
-	# Makes 'this' negative (if you used a bound object,
-	# that object will be negetive)
-	# @return Returns 'this' (or a copy)
-	##
-	int64 func makeNegative
-		:if (*federobj_this > 0) {
-			:*federobj_this *= -1;
-		:}
-		
-		return this
-	;
+    ##
+    # Makes 'this' negative (if you used a bound object,
+    # that object will be negetive)
+    # @return Returns 'this' (or a copy)
+    ##
+    int64 func makeNegative
+        :if (*federobj_this > 0) {
+            :*federobj_this *= -1;
+        :}
+        
+        return this
+    ;
 
-	##
-	# @return Returns a copy of 'this' type
-	##
-	int64 func cp
-		result = this
-		return result
-	;
+    ##
+    # @return Returns a copy of 'this' type
+    ##
+    int64 func cp
+        result = this
+        return result
+    ;
 ;
 
 type "uint64_t" uint64
-	##
-	# @return Returns a copy of 'this' type
-	##
-	uint64 func cp
-		result = this
-		return result
-	;
+    ##
+    # @return Returns a copy of 'this' type
+    ##
+    uint64 func cp
+        result = this
+        return result
+    ;
 ;
 
 namespace h_intern_int
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_int16 (fdtypearray* ar, fdc_int16 n);
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_int16 (fdtypearray* ar, fdc_int16 n);
 
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_uint16 (fdtypearray* ar, fdc_uint16 n);
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_uint16 (fdtypearray* ar, fdc_uint16 n);
 
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_int32 (fdtypearray* ar, fdc_int32 n);
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_int32 (fdtypearray* ar, fdc_int32 n);
 
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_uint32 (fdtypearray* ar, fdc_uint32 n);
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_uint32 (fdtypearray* ar, fdc_uint32 n);
 
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_int64 (fdtypearray* ar, fdc_int64 n);
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_int64 (fdtypearray* ar, fdc_int64 n);
 
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_uint64 (fdtypearray* ar, fdc_uint64 n);
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_uint64 (fdtypearray* ar, fdc_uint64 n);
 ;
 
 namespace c_intern_int
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_int16 (fdtypearray* ar, fdc_int16 n) {
-		:return fdAppendToTypeArray (ar, (char*) &n);
-	:}
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_int16 (fdtypearray* ar, fdc_int16 n) {
+        :return fdAppendToTypeArray (ar, (char*) &n);
+    :}
 
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_uint16 (fdtypearray* ar, fdc_uint16 n) {
-		:return fdAppendToTypeArray (ar, (char*) &n);
-	:}
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_uint16 (fdtypearray* ar, fdc_uint16 n) {
+        :return fdAppendToTypeArray (ar, (char*) &n);
+    :}
 
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_int32 (fdtypearray* ar, fdc_int32 n) {
-		:return fdAppendToTypeArray (ar, (char*) &n);
-	:}
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_int32 (fdtypearray* ar, fdc_int32 n) {
+        :return fdAppendToTypeArray (ar, (char*) &n);
+    :}
 
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_uint32 (fdtypearray* ar, fdc_uint32 n) {
-		:return fdAppendToTypeArray (ar, (char*) &n);
-	:}
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_uint32 (fdtypearray* ar, fdc_uint32 n) {
+        :return fdAppendToTypeArray (ar, (char*) &n);
+    :}
 
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_int64 (fdtypearray* ar, fdc_int64 n) {
-		:return fdAppendToTypeArray (ar, (char*) &n);
-	:}
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_int64 (fdtypearray* ar, fdc_int64 n) {
+        :return fdAppendToTypeArray (ar, (char*) &n);
+    :}
 
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_uint64 (fdtypearray* ar, fdc_uint64 n) {
-		:return fdAppendToTypeArray (ar, (char*) &n);
-	:}
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_uint64 (fdtypearray* ar, fdc_uint64 n) {
+        :return fdAppendToTypeArray (ar, (char*) &n);
+    :}
 ;
 
 # Feder ::rules
@@ -262,25 +262,25 @@ namespace c_intern_int
 ::rule pattern != "{0} != {1}" bool int32 int32
 
 type "int32_t" int32
-	int32 func add (int32 n)
-		result = this + n
-		return result
-	;
+    int32 func add (int32 n)
+        result = this + n
+        return result
+    ;
 
-	int32 func sub (int32 n)
-		result = this - n
-		return result
-	;
+    int32 func sub (int32 n)
+        result = this - n
+        return result
+    ;
 
-	int32 func addto (int32 n)
-		this += n
-		return this
-	;
+    int32 func addto (int32 n)
+        this += n
+        return this
+    ;
 
-	int32 func subto (int32 n)
-		this -= n
-		return this
-	;
+    int32 func subto (int32 n)
+        this -= n
+        return this
+    ;
 ;
 
 # uint32

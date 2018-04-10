@@ -12,302 +12,302 @@ include "stdsystem.fd"
 include "utils/map.fd"
 
 namespace utils
-	class Configuration
-		##
-		# Contains String, Map
-		# The value 'Map' is a MapArray consiting of String, String
-		##
-		MapArray _groups
+    class Configuration
+        ##
+        # Contains String, Map
+        # The value 'Map' is a MapArray consiting of String, String
+        ##
+        MapArray _groups
 
-		##
-		# The current group to use (default: "")
-		##
-		String currentGroup
+        ##
+        # The current group to use (default: "")
+        ##
+        String currentGroup
 
-		func init
-			_groups = MapArray
-			currentGroup = ""
-		;
+        func init
+            _groups = MapArray
+            currentGroup = ""
+        ;
 
-		MapArray func getGroups
-			return _groups
-		;
+        MapArray func getGroups
+            return _groups
+        ;
 
-		##
-		# @param group The group to use
-		# @param key The key to search in 'group'
-		# @return Returns the value of 'key' in 'group'.
-		# If nothing was found ('group' doesn't exist, or 'key' doesn't)
-		# the function returns 'null'.
-		##
-		String func getValue (String groupName, String key)
-			group = MapArray from _groups.getValue (object from groupName,
- 			                                        isEqual_String_String)
-			if group == null
-				return null
-			;
+        ##
+        # @param group The group to use
+        # @param key The key to search in 'group'
+        # @return Returns the value of 'key' in 'group'.
+        # If nothing was found ('group' doesn't exist, or 'key' doesn't)
+        # the function returns 'null'.
+        ##
+        String func getValue (String groupName, String key)
+            group = MapArray from _groups.getValue (object from groupName,
+                                                     isEqual_String_String)
+            if group == null
+                return null
+            ;
 
-			return String from group.getValue (object from key, isEqual_String_String)
-		;
+            return String from group.getValue (object from key, isEqual_String_String)
+        ;
 
-		##
-		# @param key The key to search in 'currentGroup'
-		# @return Returns the value of 'key' in 'currentGroup'.
-		# If nothing was found ('currentGroup' doesn't exist, or 'key' doesn't)
-		# the function returns 'null'.
-		##
-		String func getValue (String key)
-			return getValue (currentGroup, key)
-		;
+        ##
+        # @param key The key to search in 'currentGroup'
+        # @return Returns the value of 'key' in 'currentGroup'.
+        # If nothing was found ('currentGroup' doesn't exist, or 'key' doesn't)
+        # the function returns 'null'.
+        ##
+        String func getValue (String key)
+            return getValue (currentGroup, key)
+        ;
 
-		##
-		# Adds 'key' and 'value' to 'groupName'. If the key already exists,
-		# it will be removed and added again as specified.
-		# @param groupName The group to use. If 'groupName' doesn't exist
-		# a new group named 'groupName' will be created.
-		# @param key
-		# @param value
-		# @return Returns 'this'
-		##
-		Configuration func add (String groupName, String key, String value)
-			group = MapArray from _groups.getValue (object from groupName,
-			                                   isEqual_String_String)
-			if group == null
-				group = MapArray
-				_groups.add (object from groupName, object from group)
-			;
+        ##
+        # Adds 'key' and 'value' to 'groupName'. If the key already exists,
+        # it will be removed and added again as specified.
+        # @param groupName The group to use. If 'groupName' doesn't exist
+        # a new group named 'groupName' will be created.
+        # @param key
+        # @param value
+        # @return Returns 'this'
+        ##
+        Configuration func add (String groupName, String key, String value)
+            group = MapArray from _groups.getValue (object from groupName,
+                                               isEqual_String_String)
+            if group == null
+                group = MapArray
+                _groups.add (object from groupName, object from group)
+            ;
 
-			index = group.indexOf (object from key, isEqual_String_String)
-			if index >= 0
-				# Remove the key, because it exists (at position 'index')
-				group.removeAt (index)
-			;
-				
-			group.add (object from key, object from value)
+            index = group.indexOf (object from key, isEqual_String_String)
+            if index >= 0
+                # Remove the key, because it exists (at position 'index')
+                group.removeAt (index)
+            ;
+                
+            group.add (object from key, object from value)
 
-			return this
-		;
+            return this
+        ;
 
-		##
-		# Adds 'key' and 'value'  to 'currentGroup'. If the key already exists,
-		# it will be removed and added again as specified.
-		# @param key
-		# @param value
-		# @return Returns 'this'
-		##
-		Configuration func add (String key, String value)
-			group = MapArray from _groups.getValue (object from currentGroup,
-			                                        isEqual_String_String)
-			if group == null
-				group = MapArray
-				_groups.add (object from currentGroup, object from group)
-			;
+        ##
+        # Adds 'key' and 'value'  to 'currentGroup'. If the key already exists,
+        # it will be removed and added again as specified.
+        # @param key
+        # @param value
+        # @return Returns 'this'
+        ##
+        Configuration func add (String key, String value)
+            group = MapArray from _groups.getValue (object from currentGroup,
+                                                    isEqual_String_String)
+            if group == null
+                group = MapArray
+                _groups.add (object from currentGroup, object from group)
+            ;
 
-			index = group.indexOf (object from key, isEqual_String_String)
-			if index >= 0
-				# Remove the key, because it exists (at position 'index')
-				group.removeAt (index)
-			;
-				
-			group.add (object from key, object from value)
+            index = group.indexOf (object from key, isEqual_String_String)
+            if index >= 0
+                # Remove the key, because it exists (at position 'index')
+                group.removeAt (index)
+            ;
+                
+            group.add (object from key, object from value)
 
-			return this
-		;
-	;
+            return this
+        ;
+    ;
 
-	namespace config
-		##
-		# @param text The text to read (which follows a specific configuration
-		# language specification)
-		# @return Returns true, if the text has been read successfully
-		##
-		bool interface int_readConfigurationText (Configuration config,
-		                                          String text)
+    namespace config
+        ##
+        # @param text The text to read (which follows a specific configuration
+        # language specification)
+        # @return Returns true, if the text has been read successfully
+        ##
+        bool interface int_readConfigurationText (Configuration config,
+                                                  String text)
 
-		##
-		# @param config
-		# @return Returns a String, which applies to a specific format
-		##
-	    String interface int_writeConfigurationText (Configuration config)
+        ##
+        # @param config
+        # @return Returns a String, which applies to a specific format
+        ##
+        String interface int_writeConfigurationText (Configuration config)
 
-		class ConfigurationReadInterface
-			int_readConfigurationText fn_read
+        class ConfigurationReadInterface
+            int_readConfigurationText fn_read
 
-			ConfigurationReadInterface func new (int_readConfigurationText fn_read0)
-				fn_read = fn_read0
-				return this
-			;
-		;
+            ConfigurationReadInterface func new (int_readConfigurationText fn_read0)
+                fn_read = fn_read0
+                return this
+            ;
+        ;
 
-		class ConfigurationWriteInterface
-			int_writeConfigurationText fn_write
-			
-			ConfigurationWriteInterface func new (int_writeConfigurationText fn_write0)
-				fn_write = fn_write0
-				return this
-			;
-		;
+        class ConfigurationWriteInterface
+            int_writeConfigurationText fn_write
+            
+            ConfigurationWriteInterface func new (int_writeConfigurationText fn_write0)
+                fn_write = fn_write0
+                return this
+            ;
+        ;
 
-		##
-		# The keys of the map are String (s) describing the format
-		# of the text, the interface has to read
-		##
-		global MapArray readers = MapArray
+        ##
+        # The keys of the map are String (s) describing the format
+        # of the text, the interface has to read
+        ##
+        global MapArray readers = MapArray
 
-		##
-		# The keys of the map are String (s) describing the format
-		# that is exported (written in)
-		##
-		global MapArray writers = MapArray
+        ##
+        # The keys of the map are String (s) describing the format
+        # that is exported (written in)
+        ##
+        global MapArray writers = MapArray
 
-		##
-		# If an error occures, the error description will be stored in
-		# 'stdsystem.fd' -> sys.errors
-		# @param config
-		# @param text The text, which should be specified by the INI format
-		# @return Returns true, if the text has been read successfully
-		##
-		bool func readConfigurationText_ini (Configuration config, String text)
-			String key = null
-			String value = null
+        ##
+        # If an error occures, the error description will be stored in
+        # 'stdsystem.fd' -> sys.errors
+        # @param config
+        # @param text The text, which should be specified by the INI format
+        # @return Returns true, if the text has been read successfully
+        ##
+        bool func readConfigurationText_ini (Configuration config, String text)
+            String key = null
+            String value = null
 
-			# Automatically detect a new line combination used
-			String newline = null
+            # Automatically detect a new line combination used
+            String newline = null
 
-			linecount = 1
+            linecount = 1
 
-			for i = 0, i <= text.length (), i++
-				if newline == null && i < text.length ()
-					# Auto-detect newline mechanism
-					if text.startsWith ("\n\r", i)
-						newline = "\n\r"
-					else if text.startsWith ("\r\n", i)
-						newline = "\r\n"
-					else if text.startsWith ("\n", i)
-						newline = "\n"
-					else if text.startsWith ("\r", i)
-						newline = "\r"
-					;
-				;
+            for i = 0, i <= text.length (), i++
+                if newline == null && i < text.length ()
+                    # Auto-detect newline mechanism
+                    if text.startsWith ("\n\r", i)
+                        newline = "\n\r"
+                    else if text.startsWith ("\r\n", i)
+                        newline = "\r\n"
+                    else if text.startsWith ("\n", i)
+                        newline = "\n"
+                    else if text.startsWith ("\r", i)
+                        newline = "\r"
+                    ;
+                ;
 
-				if i == text.length () || (newline != null && text.startsWith (newline, i))
-					# Newline detected
-					if key != null && value != null
-						config.add (key.trim(), value.trim())
-					else if key != null && value == null
-						if !(key.startsWith ("[") && key.endsWith ("]"))
-							sys.errors.add (object from "In line " + linecount
-							                + ": '" + key
-											+ "' is not a valid group specified. Must start with [ end end with ]")
-							return false
-						;
+                if i == text.length () || (newline != null && text.startsWith (newline, i))
+                    # Newline detected
+                    if key != null && value != null
+                        config.add (key.trim(), value.trim())
+                    else if key != null && value == null
+                        if !(key.startsWith ("[") && key.endsWith ("]"))
+                            sys.errors.add (object from "In line " + linecount
+                                            + ": '" + key
+                                            + "' is not a valid group specified. Must start with [ end end with ]")
+                            return false
+                        ;
 
-						config.currentGroup = key.subString (1, key.length () - 2).trim ()
-					else if key == null && value != null
-						sys.errors.add (object from "In line " + linecount + ": "
-						                + "Is not a valid assignment, key is nothing!")
-						return false
-					;
+                        config.currentGroup = key.subString (1, key.length () - 2).trim ()
+                    else if key == null && value != null
+                        sys.errors.add (object from "In line " + linecount + ": "
+                                        + "Is not a valid assignment, key is nothing!")
+                        return false
+                    ;
 
-					key = null
-					value = null
-					if newline != null
-						i += (newline.length () - 1)
-					;
+                    key = null
+                    value = null
+                    if newline != null
+                        i += (newline.length () - 1)
+                    ;
 
-					linecount++
-					continue
-				;
+                    linecount++
+                    continue
+                ;
 
-				if i == text.length ()
-					break
-				;
+                if i == text.length ()
+                    break
+                ;
 
-				if value == null && text.startsWith ("=", i)
-					value = ""
-					continue
-				;
+                if value == null && text.startsWith ("=", i)
+                    value = ""
+                    continue
+                ;
 
-				if value != null
-					value.addto (text.at (i).cp ())
-				else
-					if key == null
-						key = ""
-					;
+                if value != null
+                    value.addto (text.at (i).cp ())
+                else
+                    if key == null
+                        key = ""
+                    ;
 
-					key.addto (text.at (i).cp ())
-				;
-			;
+                    key.addto (text.at (i).cp ())
+                ;
+            ;
 
-			return true
-		;
+            return true
+        ;
 
-		String func writeConfigurationText_ini (Configuration config)
-			groups = config.getGroups ()
-			
-			itKeys = groups.getKeys ().createIterator ()
-			itValues = groups.getValues ().createIterator ()
+        String func writeConfigurationText_ini (Configuration config)
+            groups = config.getGroups ()
+            
+            itKeys = groups.getKeys ().createIterator ()
+            itValues = groups.getValues ().createIterator ()
 
-			result = String
+            result = String
 
-			while itKeys.hasNext () && itValues.hasNext ()
-				key = (String from itKeys.next ()).trim ()
-				group = MapArray from itValues.next ()
+            while itKeys.hasNext () && itValues.hasNext ()
+                key = (String from itKeys.next ()).trim ()
+                group = MapArray from itValues.next ()
 
-				if !key.isEmpty ()
-					result.addto ("[")
-					result.addto (key)
-					result.addto ("]")
-					result.addto (sys.std.newline)
-				;
+                if !key.isEmpty ()
+                    result.addto ("[")
+                    result.addto (key)
+                    result.addto ("]")
+                    result.addto (sys.std.newline)
+                ;
 
-				itGroupKeys = group.getKeys ().createIterator ()
-				itGroupValues = group.getValues ().createIterator ()
+                itGroupKeys = group.getKeys ().createIterator ()
+                itGroupValues = group.getValues ().createIterator ()
 
-				while itGroupKeys.hasNext () && itGroupValues.hasNext ()
-					result.addto (String from itGroupKeys.next ())
-					result.addto ("=")
-					result.addto (String from itGroupValues.next ())
-					result.addto (sys.std.newline)
-				;
+                while itGroupKeys.hasNext () && itGroupValues.hasNext ()
+                    result.addto (String from itGroupKeys.next ())
+                    result.addto ("=")
+                    result.addto (String from itGroupValues.next ())
+                    result.addto (sys.std.newline)
+                ;
 
-				result.addto (sys.std.newline)
-			;
+                result.addto (sys.std.newline)
+            ;
 
-			return result
-		;
+            return result
+        ;
 
-		# Add reader 'ini'
-		readers.add (object from "ini", object from ConfigurationReadInterface.new (readConfigurationText_ini))
+        # Add reader 'ini'
+        readers.add (object from "ini", object from ConfigurationReadInterface.new (readConfigurationText_ini))
 
-		# Add writer 'ini'
-		writers.add (object from "ini", object from ConfigurationWriteInterface.new (writeConfigurationText_ini))
+        # Add writer 'ini'
+        writers.add (object from "ini", object from ConfigurationWriteInterface.new (writeConfigurationText_ini))
 
-		##
-		# @param config The configuration where the read config will be added to
-		# @param formatName name of the format (a key saved in 'config.readers')
-		# @param The text, which will be analysed by the reader found in 'config.readers'
-		##
-		bool func read (Configuration config,
-		                String formatName, String text)
-			reader = ConfigurationReadInterface from readers.getValue (object from formatName, isEqual_String_String)
-			if reader == null
-				sys.errors.add (object from "Reader '" + formatName + "' not found")
-				return false
-			;
+        ##
+        # @param config The configuration where the read config will be added to
+        # @param formatName name of the format (a key saved in 'config.readers')
+        # @param The text, which will be analysed by the reader found in 'config.readers'
+        ##
+        bool func read (Configuration config,
+                        String formatName, String text)
+            reader = ConfigurationReadInterface from readers.getValue (object from formatName, isEqual_String_String)
+            if reader == null
+                sys.errors.add (object from "Reader '" + formatName + "' not found")
+                return false
+            ;
 
-			return reader.fn_read (config, text)
-		;
+            return reader.fn_read (config, text)
+        ;
 
-		String func write (Configuration config,
-		                   String formatName)
-			writer = ConfigurationWriteInterface from writers.getValue (object from formatName, isEqual_String_String)
-			if writer == null
-				sys.errors.add (object from "Writer '" + formatName + "' not found")
-				return null
-			;
+        String func write (Configuration config,
+                           String formatName)
+            writer = ConfigurationWriteInterface from writers.getValue (object from formatName, isEqual_String_String)
+            if writer == null
+                sys.errors.add (object from "Writer '" + formatName + "' not found")
+                return null
+            ;
 
-			return writer.fn_write (config)
-		;
-	;
+            return writer.fn_write (config)
+        ;
+    ;
 ;

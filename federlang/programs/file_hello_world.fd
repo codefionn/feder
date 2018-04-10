@@ -9,16 +9,16 @@ include "stdio.fd"
 
 towrite = File
 if towrite.open ("hello_world.txt", "w").isfalse ()
-	io.println ("Failed to file \"hello_world\"!")
-	return false
+    io.println ("Failed to file \"hello_world\"!")
+    return false
 ;
 
 s = "Hello, World!"
 for i = 0, i < s.length (), i++
-	if towrite.write (s.at (i).val).isfalse ()
-		io.println ("Failed to write to file")
-		return false
-	;
+    if towrite.write (s.at (i).val).isfalse ()
+        io.println ("Failed to write to file")
+        return false
+    ;
 ;
 
 io.println ("File has been created!")

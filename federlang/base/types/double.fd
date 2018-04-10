@@ -11,66 +11,66 @@ include "types/bool.fd"
 include "types/int.fd"
 
 type "double" double
-	func addto (double n)
-		:*federobj_this += federobj_n;
-	;
+    func addto (double n)
+        :*federobj_this += federobj_n;
+    ;
 
-	func subto (double n)
-		:*federobj_this -= federobj_n;
-	;
+    func subto (double n)
+        :*federobj_this -= federobj_n;
+    ;
 
-	func multto (double n)
-		:*federobj_this *= federobj_n;
-	;
+    func multto (double n)
+        :*federobj_this *= federobj_n;
+    ;
 
-	func divto (double n)
-		:*federobj_this /= federobj_n;
-	;
+    func divto (double n)
+        :*federobj_this /= federobj_n;
+    ;
 
-	
-	double func add (double n)
-		double result = this
-		result.addto (n)
-		return result
-	;
+    
+    double func add (double n)
+        double result = this
+        result.addto (n)
+        return result
+    ;
 
-	double func sub (double n)
-		double result = this
-		result.subto (n)
-		return result
-	;
+    double func sub (double n)
+        double result = this
+        result.subto (n)
+        return result
+    ;
 
-	double func mult (double n)
-		double result = this
-		result.multto (n)
-		return result
-	;
+    double func mult (double n)
+        double result = this
+        result.multto (n)
+        return result
+    ;
 
-	double func div (double n)
-		double result = this
-		result.divto (n)
-		return result
-	;
+    double func div (double n)
+        double result = this
+        result.divto (n)
+        return result
+    ;
 
-	double func makeNegative
-		:if (*federobj_this > 0) {
-			:*federobj_this *= -1;
-		:}
+    double func makeNegative
+        :if (*federobj_this > 0) {
+            :*federobj_this *= -1;
+        :}
 
-		return this
-	;
+        return this
+    ;
 ;
 
 namespace h_intern_double
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_double (fdtypearray* ar, double n);
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_double (fdtypearray* ar, double n);
 ;
 
 namespace c_intern_double
-	:fdtypearray*
-	:fdAppendToTypeArray_fdc_double (fdtypearray* ar, double n) {
-		:return fdAppendToTypeArray (ar, (char*) &n);
-	:}
+    :fdtypearray*
+    :fdAppendToTypeArray_fdc_double (fdtypearray* ar, double n) {
+        :return fdAppendToTypeArray (ar, (char*) &n);
+    :}
 ;
 
 ::rule buildin double "(fdc_double) {0}" double

@@ -3,11 +3,11 @@ include "stdio.fd"
 mkdir ("io_dir_test_dir")
 test_dir = dir
 if !test_dir.open ("io_dir_test_dir") && !test_dir.isOpen ()
-	io.println ("Test 01 failed")
-	return false
+    io.println ("Test 01 failed")
+    return false
 ;
 
 if !test_dir.rm ()
-	io.println ("Test 02 failed")
-	return false
+    io.println ("Test 02 failed")
+    return false
 ;
