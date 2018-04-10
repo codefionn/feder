@@ -27,31 +27,53 @@ helper.fn_buffer_readbyte = compiler.lexer.readbyteFile
 helper.fn_buffer_close = compiler.lexer.closeFile
 helper.buffer = object from f
 
-tokenKeys = String[0]
+tokenKeys = int32[0]
 tokenValues = String[0]
 if !compiler.lexer.lex(helper, tokenKeys, tokenValues) || len(tokenKeys) != len(tokenValues)
 	io.err.println("- Lexical analysis failed")
 	return false
 ;
 
+String func toAcceptableString(int32 i)
+    result = i.toString()
+    while result.length() < 4
+        result.addto(" ")
+    ;
+
+    return result
+;
+
+int32 line = 1
+io.print(toAcceptableString(line++))
+
 ilast = 0
 for i = 0, i < len(tokenKeys), i++
     tokenKey = tokenKeys[i]
-    if isEqual(tokenKey, "newline")
-        io.println()
+    if tokenKey == compiler.LEX_LINE
+        if ilast != i
+            io.println()
+            io.print("    ")
+        ;
+
         for ii = ilast, ii < i, ii++
             if !isEqual(tokenValues[ii], "\n")
                 io.print(tokenValues[ii])
             ;
 
-            io.print("  ")
+            io.print(" ")
         ;
 
         ilast = i + 1
 
         io.println()
+
+        if ilast == len(tokenKeys)
+            break
+        ;
+
+        io.print(toAcceptableString(line++))
     else
-        io.print(tokenKey)
+        io.print(compiler.ARRAY_LEX_NAMES[tokenKey])
         io.print (" ")
     ;
 ;

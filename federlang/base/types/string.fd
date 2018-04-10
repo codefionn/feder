@@ -142,10 +142,8 @@ class String
 	String func cp
 		result = String
 		len0 = length ()
-		i = 0
-		while i < len0
+		for i = 0, i < len0, i++
 			result.addto (at (i).cp ())
-			i.addto (1)
 		;
 		
 		return result
@@ -161,11 +159,9 @@ class String
 			return null
 		;
 
-		i = 0
 		len0 = str0.length ()
-		while i < len0
+		for i = 0, i < len0, i++
 			addto (str0.at (i))
-			i.addto (1)
 		;
 		
 		return this
@@ -181,24 +177,29 @@ class String
 		return result
 	;
 
-	bool func isNumber (bool allowFloatingPoint32)
+    ##
+    # @param allowFloatingPoint Allows one '.'
+    #
+    # @return Returns false, if the string is empty or null.
+    # Returns true, if the number is an integer and true if
+    # it is an floating-point number (if allowFloatingPoint is
+    # true)
+    ##
+	bool func isNumber(bool allowFloatingPoint)
 		if this == null || isEmpty()
 			return false
 		;
 
 		dotCame = false
 		
-		i = 0
-		len0 = length ()
-		while i < len0
-			character = at (i)
-			if character != null && character.val == '.' && dotCame.isfalse () && allowFloatingPoint32
+		len0 = length()
+		for i = 0, i < len0, i++
+			character = at (i).val
+			if character == '.' && !dotCame && allowFloatingPoint
 				dotCame = true
-			else if character.isDigit ().isfalse ()
+			else if !character.isDigit()
 				return false
 			;
-
-			i.addto (1)
 		;
 
 		return true
@@ -602,14 +603,17 @@ class String
 			return false
 		;
 
-		if !startsWith("0x") && isEqual(this, "0x")
+		if !startsWith("0x") || isEqual(this, "0x")
 			return false
 		;
 
-		for i = 2, i < length(), i++
+        len0 = length()
+		for i = 2, i < len0, i++
 		 	# Character pool: A-F, a-f, 0-9
-			byte c = at(i).val
-			if !c.isDigit() && !(c >= 'A' && c <= 'F') && !(c >= 'a' && c <= 'f')
+			c = at(i).val
+			if !(c.isDigit() || (c >= 'A' && c <= 'F')
+                || (c >= 'a' && c <= 'f'))
+
 				return false
 			;
 		;

@@ -6,6 +6,21 @@
 include "stdio.fd"
 
 namespace compiler
+    global LEX_SYMBOL = 0
+    global LEX_KEYWORD = 1
+    global LEX_OPERATOR = 2
+    global LEX_STRING = 3
+    global LEX_CHAR = 4
+    global LEX_INTEGER = 5
+    global LEX_DOUBLE = 6
+    global LEX_LINE = 7
+    global LEX_COMMAND = 8
+    global LEX_BUILDIN = 9
+
+    global ARRAY_LEX_NAMES = append(String[0], "symbol", "keyword",
+        "operator", "string", "char", "integer", "double", "line",
+        "command", "buildin")
+
 	namespace lexer
 		##
 		# This interface should provide a function, which reads through
@@ -123,10 +138,10 @@ namespace compiler
 				return c
 			;
 
-			func newLine (String[] tokenKeys, String[] tokenValues)
+			func newLine (int32[] tokenKeys, String[] tokenValues)
 				for linesInUnit > (-1)
 					linesInUnit--
-					append(tokenKeys, "newline")
+					append(tokenKeys, LEX_LINE)
 					append(tokenValues, "\n")
 				;
 
@@ -137,7 +152,7 @@ namespace compiler
 				column = 0
 			;
 
-			func newError (String[] tokenKeys, String[] tokenValues, String msg)
+			func newError (int32[] tokenKeys, String[] tokenValues, String msg)
 				error_count++
 				oldColumn = column
 
@@ -153,7 +168,6 @@ namespace compiler
 					readNextChar()
 				;
 
-				newLine(tokenKeys, tokenValues)
 
 				error += "Line=" + iLine + "\n"
 				error += sLine
@@ -166,8 +180,64 @@ namespace compiler
 				error += "Description="
 				error += msg
 				error += "\n"
+
+				newLine(tokenKeys, tokenValues)
+                io.err.println(error)
 			;
 		;
+
+        func _workOnString(LexerHelper helper,
+                           int32[] tokenKeys,
+                           String[] tokenValues)
+
+            String buffer_tokenValue = String
+
+            cbegin = helper.c
+			helper.readNextChar()
+			ignore = false
+
+			while (ignore || helper.c != cbegin) && helper.c != '\0'
+    			if helper.c == '\n' || helper.c == '\r'
+                    begin_line = helper.c
+					helper.readNextChar()
+					if (helper.c == '\n' || helper.c == '\r') && helper.c != begin_line
+						helper.readNextChar()
+					;
+							
+					helper.linesInUnit++
+                    continue
+				;
+						
+				buffer_tokenValue.addto(Byte.set(helper.c))
+
+				if !ignore && helper.c == '\\'
+					ignore = true
+				else if ignore
+					ignore = false
+				;
+						
+				helper.readNextChar()
+			;
+
+			if helper.c == '\0'
+				helper.newError(tokenKeys, tokenValues,
+					"String not closed")
+                return
+			;
+
+			if cbegin == '\''
+				append(tokenKeys, LEX_CHAR)
+			else if cbegin == '\"'
+				append(tokenKeys, LEX_STRING)
+            else
+                helper.newError(tokenKeys, tokenValues,
+                    "Internal error")
+                return
+            ;
+
+			append(tokenValues, buffer_tokenValue)
+			helper.readNextChar()
+        ;
 
 		##
 		# This function reads through the given 'buffer' (in 'helper') with the
@@ -185,7 +255,7 @@ namespace compiler
 		# description is added to 'error'.
 		##
 		bool func lex (LexerHelper helper,
-					   String[] tokenKeys,
+					   int32[] tokenKeys,
 					   String[] tokenValues)
 			
 			String buffer_tokenValue = String
@@ -253,7 +323,7 @@ namespace compiler
 				;
 
 				if (len(tokenKeys) == 0
-					|| isEqual(tokenKeys[len(tokenKeys) - 1], "newline")) && helper.c == ':'
+					|| tokenKeys[len(tokenKeys) - 1] == LEX_LINE) && helper.c == ':'
 					
 					helper.readNextChar()
 					iscommand = false
@@ -264,50 +334,10 @@ namespace compiler
 					
 				;
 
-				if (helper.c == '\"' || helper.c == '\'')
-					cbegin = helper.c
-					helper.readNextChar()
-					ignore = false
-					while (ignore || helper.c == cbegin) && helper.c != '\0'
-
-						if helper.c == '\n' || helper.c == '\r'
-							beginc = helper.c
-							helper.readNextChar()
-							if (helper.c == '\n' || helper.c == '\r') && helper.c != beginc
-								helper.readNextChar()
-							;
-							
-							helper.linesInUnit++
-							continue
-						;
-						
-						buffer_tokenValue.addto(Byte.set(helper.c))
-
-						if !ignore && helper.c == '\\'
-							ignore = true
-						else if ignore
-							ignore = false
-						;
-						
-						helper.readNextChar()
-					;
-
-					if helper.c == '\0'
-						helper.newError(tokenKeys, tokenValues,
-							"String not closed")
-						continue
-					;
-
-					if cbegin == '\''
-						append(tokenKeys, "char")
-					else
-						append(tokenKeys, "string")
-					;
-
-					append(tokenValues, buffer_tokenValue)
-					buffer_tokenValue = String
-					helper.readNextChar()
-				;
+				if helper.c == '\"' || helper.c == '\''
+                    _workOnString(helper, tokenKeys, tokenValues)
+                    continue
+			    ;
 
 				buffer_tokenValue.addto(Byte.set(helper.c))
 				bool isBufferOperator = false
@@ -329,7 +359,7 @@ namespace compiler
 						buffer_tokenValue.removeAt(buffer_tokenValue.length()-1)
 					;
 
-					append(tokenKeys, "operator")
+					append(tokenKeys, LEX_OPERATOR)
 					append(tokenValues, buffer_tokenValue)
 					buffer_tokenValue = String
 					continue
@@ -347,7 +377,7 @@ namespace compiler
 
 				# Read the symbol (only digits, alphabetic characters and '_'
 				# are allowed)
-				for helper.c.isDigit() && helper.c.isAlpha() && helper.c != '_'
+				for helper.c.isDigit() || helper.c.isAlpha() || helper.c == '_'
 					buffer_tokenValue.addto(Byte.set(helper.c))
 					helper.readNextChar()
 				;
@@ -356,20 +386,21 @@ namespace compiler
 					|| buffer_tokenValue.isHexadecimal())
 
 					# buffer_tokenValue is an integer
-					append(tokenKeys, "int")
+					append(tokenKeys, LEX_INTEGER)
 					append(tokenValues, buffer_tokenValue)
 					buffer_tokenValue = String
 				else if buffer_tokenValue.isNumber(true)
 					# buffer_tokenValue is a floating point number
-					append(tokenKeys, "float")
+					append(tokenKeys, LEX_DOUBLE)
 					append(tokenValues, buffer_tokenValue)
 					buffer_tokenValue = String
 				else if buffer_tokenValue.at(0).val.isDigit()
-					helper.newError(tokenKeys, tokenValues, "Invalid Symbol, because a symbol can't start with a digit!")
+					helper.newError(tokenKeys, tokenValues,
+                        "Invalid Symbol, because a symbol can't start with a digit!")
 					buffer_tokenValue = String
 					continue
 				else
-					append(tokenKeys, "symbol")
+					append(tokenKeys, LEX_SYMBOL)
 					append(tokenValues, buffer_tokenValue)
 					buffer_tokenValue = String
 					continue
@@ -378,7 +409,7 @@ namespace compiler
 				helper.newError(tokenKeys, tokenValues, "Invalid character")
 			;
 
-			return helper.error_count > 0
+            return helper.error_count == 0
 		;
 	;
 ;

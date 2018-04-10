@@ -823,8 +823,10 @@ public class SyntaxTreeElement {
 				}
 			}
 
-			if (isNew && obj.getResultType() == null && binding instanceof FederArray) {
-				result = new StringBuilder(binding.generateCName() + " " + obj.generateCName() + " = ");
+			if ((isNew || isGlobal) && obj.getResultType() == null && binding instanceof FederArray) {
+				if (!isGlobal)
+                    result = new StringBuilder(binding.generateCName() + " " + obj.generateCName() + " = ");
+
 				obj.isForced = true;
 				obj.setTypeManual(binding);
 			}
@@ -1290,20 +1292,15 @@ public class SyntaxTreeElement {
 		 * Create an array with size [x]
 		 */
 		if (getfrombinding != null && nextToken.equals("[")
-		        && (getfrombinding instanceof FederClass || getfrombinding instanceof FederInterface
+		        && (getfrombinding instanceof FederClass
+                || getfrombinding instanceof FederInterface
 		            && returnedClasses.size() == 0)) {
-
-			/*if (getfrombinding instanceof FederClass) {
-				FederClass fc = (FederClass) getfrombinding;
-				if (!fc.isType()) {
-					throw new RuntimeException("Current arrays can only be created with types or interfaces!");
-				}
-			}*/
 
 			if (getfrombinding instanceof FederInterface) {
 				FederInterface inter = (FederInterface) getfrombinding;
 				if (inter.canBeCalled()) {
-					throw new RuntimeException("Array can only be created from the interface not from the object!");
+					throw new RuntimeException("Array can only be created from "
+                        + "the interface not from the object!");
 				}
 			}
 
