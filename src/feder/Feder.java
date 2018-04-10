@@ -59,9 +59,9 @@ public class Feder {
 	 *   - Give more and more competences to the library files written in Feder
 	 *
 	 * How the compiler works:
-	 *   
+	 *
 	 *   - The given files (as arguments) are read and processed by
-	 *     FederCompiler and there with Lexer and Syntax (lexical 
+	 *     FederCompiler and there with Lexer and Syntax (lexical
 	 *     and syntax analysis)
 	 *   - FederCompiler creates
 	 *     @link SyntaxTreeElement SyntaxTreeElements @endlink, which then

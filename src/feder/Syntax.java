@@ -227,12 +227,12 @@ public class Syntax {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("roperator", "name", "(", ")", "true",
 				                        "false", "null", "string", "char",
-										"int", "double", "append", "len");
+				                        "int", "double", "append", "len");
 			} else if (token.equals(")")) {
 				lexer.indexList++;
 				lexer.getTokenWhitelist(".", "newline", ")", ",", "(", "||",
 				                        "&&", "!=", "==", "[", "]",
-										"roperator");
+				                        "roperator");
 			} else if (token.equals(";")) {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("newline");
@@ -243,7 +243,7 @@ public class Syntax {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("(", "int", "double", "string", "char",
 				                        "name", "null", "true", "false",
-										"newline", "roperator");
+				                        "newline", "roperator");
 			} else if (token.equals("null")) {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("newline", ")", ",", "&&", "||", "roperator");

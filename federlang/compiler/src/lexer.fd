@@ -42,7 +42,7 @@ namespace compiler
 		;
 
 		global String[] operators = append (String[0],
-				                    "(", ")", ",", ".",
+				                    "(", ")", ",", ".", ";",
 									"[]", "[", "]",
 									"&&", "||",
 									"==", "!=", "<=", ">=",
@@ -118,6 +118,8 @@ namespace compiler
 					sLine.addto(Byte.set(c))
 				;
 
+                io.print(c)
+
 				return c
 			;
 
@@ -125,7 +127,7 @@ namespace compiler
 				for linesInUnit > (-1)
 					linesInUnit--
 					append(tokenKeys, "newline")
-					append(tokenKeys, "\n")
+					append(tokenValues, "\n")
 				;
 
 				linesInUnit = 0
@@ -208,6 +210,105 @@ namespace compiler
 					continue
 				;
 
+				if helper.c == '#'
+					helper.readNextChar()
+					if helper.c == '#'
+						helper.readNextChar()
+						while helper.c != '\0'
+							if helper.c == '#'
+								helper.readNextChar()
+								if helper.c == '#'
+                                    break
+								;
+
+                                continue
+							;
+
+                            if helper.c == '\n' || helper.c == '\r'
+                                cbegin = helper.c
+                                helper.readNextChar()
+                                if (helper.c == '\n' || helper.c == '\r') && helper.c != cbegin
+                                    helper.readNextChar()
+                                ;
+
+                                helper.linesInUnit++
+                                continue
+                            ;
+
+							helper.readNextChar()
+						;
+
+                        if helper.c != '\0'
+                            helper.readNextChar()
+                        ;
+
+                        continue
+					;
+
+					while helper.c != '\0' && helper.c != '\n' && helper.c != '\r'
+						helper.readNextChar()
+					;
+					
+					continue
+				;
+
+				if (len(tokenKeys) == 0
+					|| isEqual(tokenKeys[len(tokenKeys) - 1], "newline")) && helper.c == ':'
+					
+					helper.readNextChar()
+					iscommand = false
+					if helper.c == ':'
+						iscommand = true
+					;
+
+					
+				;
+
+				if (helper.c == '\"' || helper.c == '\'')
+					cbegin = helper.c
+					helper.readNextChar()
+					ignore = false
+					while (ignore || helper.c == cbegin) && helper.c != '\0'
+
+						if helper.c == '\n' || helper.c == '\r'
+							beginc = helper.c
+							helper.readNextChar()
+							if (helper.c == '\n' || helper.c == '\r') && helper.c != beginc
+								helper.readNextChar()
+							;
+							
+							helper.linesInUnit++
+							continue
+						;
+						
+						buffer_tokenValue.addto(Byte.set(helper.c))
+
+						if !ignore && helper.c == '\\'
+							ignore = true
+						else if ignore
+							ignore = false
+						;
+						
+						helper.readNextChar()
+					;
+
+					if helper.c == '\0'
+						helper.newError(tokenKeys, tokenValues,
+							"String not closed")
+						continue
+					;
+
+					if cbegin == '\''
+						append(tokenKeys, "char")
+					else
+						append(tokenKeys, "string")
+					;
+
+					append(tokenValues, buffer_tokenValue)
+					buffer_tokenValue = String
+					helper.readNextChar()
+				;
+
 				buffer_tokenValue.addto(Byte.set(helper.c))
 				bool isBufferOperator = false
 				for (helper.c != '\t' && helper.c != ' '
@@ -255,7 +356,7 @@ namespace compiler
 					|| buffer_tokenValue.isHexadecimal())
 
 					# buffer_tokenValue is an integer
-					append(tokenKeys, "integer")
+					append(tokenKeys, "int")
 					append(tokenValues, buffer_tokenValue)
 					buffer_tokenValue = String
 				else if buffer_tokenValue.isNumber(true)

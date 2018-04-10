@@ -101,7 +101,7 @@ public class SyntaxTreeElementUtils {
 
 
 		FederRule ruleRemove = body.getCompiler().getApplyableRuleForStruct("remove");
-			
+
 		for (FederBinding binding : body.getBindings()) {
 			if (binding == null)
 				continue;
@@ -180,6 +180,13 @@ public class SyntaxTreeElementUtils {
 		_generateGlobalEnding(fmn.getMainNamespace(), mainMethod, new LinkedList<>());
 	}
 
+    public static void generateGlobalEnding(List<FederCompiler> compilers, StringBuilder mainMethod) {
+        List<FederBinding> objs = new LinkedList<>();
+        for (FederCompiler compiler : compilers) {
+            _generateGlobalEnding(compiler.main, mainMethod, objs);
+        }
+    }
+
 	private static void _generateGlobalEnding(FederBody fmn, StringBuilder mainMethod, List<FederBinding> objs) {
 		for (FederBinding bind : fmn.getBindings()) {
 			if (bind instanceof FederObject) {
@@ -216,6 +223,16 @@ public class SyntaxTreeElementUtils {
 	public static String generateGlobalStart(FederBody fmn) {
 		return _generateGlobalStart(fmn, new LinkedList<>());
 	}
+
+    public static String generateGlobalStart(List<FederCompiler> compilers) {
+        List<FederBinding> objs = new LinkedList<>();
+        StringBuilder result = new StringBuilder();
+        for (FederCompiler compiler : compilers) {
+            result.append(_generateGlobalStart(compiler.main, objs));
+        }
+
+        return result.toString();
+    }
 
 	private static String _generateGlobalStart(FederBody fmn, List<FederBinding> objs) {
 		StringBuilder sb = new StringBuilder();
@@ -733,7 +750,7 @@ public class SyntaxTreeElementUtils {
 		        && (scope > 0
 		            || !isOperator(tokens.get(i))
 		            || (getOperatorPrecedence(ste, stringsOfTokens.get(i)) != precedence
-						&& !stringsOfTokens.get(i).equals(operatorSearched))) ; i++) {
+		                && !stringsOfTokens.get(i).equals(operatorSearched))) ; i++) {
 
 			if (tokens.get(i).equals("(") || tokens.get(i).equals("["))
 				scope++;
@@ -792,12 +809,12 @@ public class SyntaxTreeElementUtils {
 
 		int indexNextOperator = -1;
 		while ((indexNextOperator = lookaheadNextOperator (ste_left,
-				minPrecedence, operatorSearched,
-				tokens, stringsOfTokens, indexStart))
-			<= indexNextLessOperator) {
+		                            minPrecedence, operatorSearched,
+		                            tokens, stringsOfTokens, indexStart))
+		        <= indexNextLessOperator) {
 
 			SyntaxTreeElement ste_right = createInRange(ste_left,
-				tokens, stringsOfTokens, indexStart, indexNextOperator-1);
+			                              tokens, stringsOfTokens, indexStart, indexNextOperator-1);
 			ste_right.result = ste_right.compile();
 
 			SyntaxTreeElement old_ste_left = ste_left;

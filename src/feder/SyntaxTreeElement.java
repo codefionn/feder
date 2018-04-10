@@ -765,12 +765,15 @@ public class SyntaxTreeElement {
 				}
 
 				if (ste.returnedClasses.get(0) != null
-						&& !((FederInterface) obj.getResultType()).isEqual(null, FederFunction
-				        .objectListToClassList(((FederArguments) ste.returnedClasses.get(0)).getArguments()))) {
+				        && !((FederInterface) obj.getResultType()).isEqual(null, FederFunction
+				                .objectListToClassList(((FederArguments) ste.returnedClasses.get(0)).getArguments()))) {
 					throw new RuntimeException("The arguments of the interface and the function must be equal!");
 				}
 
 				result.append(compiled.toString());
+
+				returnedClasses.clear();
+				getfrombinding = null;
 
 				indexToken += 1 + tokenscount;
 				return;
@@ -784,8 +787,8 @@ public class SyntaxTreeElement {
 			}
 
 			if (ste.returnedClasses.get(0) != null
-					&& !(ste.returnedClasses.get(0) instanceof FederClass
-			        || ste.returnedClasses.get(0) instanceof FederArray)) {
+			        && !(ste.returnedClasses.get(0) instanceof FederClass
+			             || ste.returnedClasses.get(0) instanceof FederArray)) {
 				throw new RuntimeException("Did not return a regular object (array/class/data type)");
 			}
 
@@ -793,9 +796,9 @@ public class SyntaxTreeElement {
 			FederBinding binding = ste.returnedClasses.get(0);
 
 			if (binding != null
-					&& binding instanceof FederClass
-					&& (!FederBinding.areSameTypes(obj.getResultType(), binding)
-						|| obj.getResultType() == null)) {
+			        && binding instanceof FederClass
+			        && (!FederBinding.areSameTypes(obj.getResultType(), binding)
+			            || obj.getResultType() == null)) {
 				FederClass fc = (FederClass) binding;
 
 				if (fc != null && obj.isForced && !FederBinding.areSameTypes(fc, obj.getResultType())) {
@@ -806,7 +809,7 @@ public class SyntaxTreeElement {
 						obj.setTypeManual(fc);
 						obj.isForced = true;
 						result = new StringBuilder(fc.generateCName()
-								+ " " + obj.generateCName() + " = ");
+						                           + " " + obj.generateCName() + " = ");
 					} else if (fc.isType() && !(obj.isGlobal && isGlobal)) {
 						throw new RuntimeException(
 						    "Can't assign object (class not a type declaration) to a object with class with one.");
@@ -857,6 +860,7 @@ public class SyntaxTreeElement {
 
 			indexToken += 1 + tokenscount;
 			returnedClasses.clear();
+			getfrombinding = null;
 
 			return;
 		}
@@ -991,7 +995,7 @@ public class SyntaxTreeElement {
 					result = new StringBuilder(func.generateCName() + "(("
 					                           + ((FederFunction) func).getParent().generateCName() + "*)&" + result.toString() + "");
 				else if (getfrombinding instanceof FederObject
-					&& !((FederObject) getfrombinding).isGlobal) {
+				         && !((FederObject) getfrombinding).isGlobal) {
 
 					String sresult = result.toString();
 					int braces = 0;
@@ -1156,7 +1160,7 @@ public class SyntaxTreeElement {
 				type_of_object = getfromhistory.get(getfromhistory.size() - 2);
 			} else if (getfromhistory.size() > 1 && !wasdotinfront) {
 				throw new RuntimeException(
-				    "Not defined in language grammer.\n" + "([class]|[interface]) [name] '=' [instructions]");
+				    "Not defined in language grammer.\n" + "([class]|[interface]|[array]) [name] '=' [instructions]");
 			}
 
 			FederObject obj = null;
@@ -1416,8 +1420,8 @@ public class SyntaxTreeElement {
 			String token = tokens.get(i);
 			String stoken = stringsOfTokens.get(i);
 			if (scope == 0 && token.equals("roperator")
-				&& stoken.equals("<=>")) {
-				
+			        && stoken.equals("<=>")) {
+
 				return true;
 			}
 
@@ -1444,11 +1448,11 @@ public class SyntaxTreeElement {
 			String stoken = i < tokens.size() ? stringsOfTokens.get(i) : "";
 
 			if (scope == 0 && (token.equals(",")
-				|| (token.equals("roperator") && stoken.equals("<=>"))
-				|| token.isEmpty())) {
+			                   || (token.equals("roperator") && stoken.equals("<=>"))
+			                   || token.isEmpty())) {
 
 				SyntaxTreeElement ste = new SyntaxTreeElement(
-					compiler, body, line, tokens0, stringsOfTokens0);
+				    compiler, body, line, tokens0, stringsOfTokens0);
 				ste.isMain = true;
 
 				if (isLeft) {
@@ -1476,33 +1480,33 @@ public class SyntaxTreeElement {
 
 		if (elementsLeft.size() == 0 || elementsLeft.size() > 2) {
 			throw new RuntimeException("The size of arguments of the "
-				+ "exchange operator at the left side should be 1 or 2: "
-				+ elementsLeft.size());
+			                           + "exchange operator at the left side should be 1 or 2: "
+			                           + elementsLeft.size());
 		}
 
 		if (elementsRight.size() == 0 || elementsRight.size() > 2) {
 			throw new RuntimeException("The size of arguments of the "
-				+ "exchange operator at the right side should be 1 or 2: "
-				+ elementsRight.size());
+			                           + "exchange operator at the right side should be 1 or 2: "
+			                           + elementsRight.size());
 		}
 
 		if (elementsLeft.size() == 1) {
 			elementsLeft.add(new SyntaxTreeElement(compiler, body, line,
-				new LinkedList<>(elementsLeft.get(0).tokens),
-				new LinkedList<>(elementsLeft.get(0).stringsOfTokens)));
+			                                       new LinkedList<>(elementsLeft.get(0).tokens),
+			                                       new LinkedList<>(elementsLeft.get(0).stringsOfTokens)));
 		}
 
 		if (elementsRight.size() == 1) {
 			elementsRight.add(new SyntaxTreeElement(compiler, body, line,
-				new LinkedList<>(elementsRight.get(0).tokens),
-				new LinkedList<>(elementsRight.get(0).stringsOfTokens)));
+			                                        new LinkedList<>(elementsRight.get(0).tokens),
+			                                        new LinkedList<>(elementsRight.get(0).stringsOfTokens)));
 		}
 
 		String tmp_name = "0tmp_" + line;
 
 		SyntaxTreeElement saveLeft = new SyntaxTreeElement(compiler, body,
-			line, new LinkedList<>(elementsLeft.get(1).tokens),
-			new LinkedList<>(elementsLeft.get(1).stringsOfTokens));
+		        line, new LinkedList<>(elementsLeft.get(1).tokens),
+		        new LinkedList<>(elementsLeft.get(1).stringsOfTokens));
 
 		saveLeft.isMain = true;
 		saveLeft.tokens.add(0, "=");
@@ -2180,7 +2184,7 @@ public class SyntaxTreeElement {
 				}
 
 				result = new StringBuilder(rule.applyRule(body, stoken));
-				
+
 				returnedClasses.clear();
 				returnedClasses.add(rule.getSpecifiedResultValue());
 				getfrombinding = rule.getSpecifiedResultValue();

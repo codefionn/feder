@@ -751,13 +751,8 @@ public class FederCompiler {
 				}
 
 				// Generate an ending for all global values
-				for (FederCompiler compiler : globalIncluded) {
-					SyntaxTreeElementUtils.generateGlobalEnding(compiler.main, mainmethod);
-				}
-
-				for (FederCompiler compiler : globalIncluded) {
-					compileFile.write(SyntaxTreeElementUtils.generateGlobalStart(compiler.main));
-				}
+			    SyntaxTreeElementUtils.generateGlobalEnding(globalIncluded, mainmethod);
+				compileFile.write(SyntaxTreeElementUtils.generateGlobalStart(globalIncluded));
 
 				compileFile.write(mainmethod.toString());
 				compileFile.write(returnExitSuccess);

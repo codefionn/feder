@@ -192,7 +192,7 @@ class String
 		len0 = length ()
 		while i < len0
 			character = at (i)
-			if isEqual (character, ".".at (0)) && dotCame.isfalse () && allowFloatingPoint32
+			if character != null && character.val == '.' && dotCame.isfalse () && allowFloatingPoint32
 				dotCame = true
 			else if character.isDigit ().isfalse ()
 				return false
@@ -926,13 +926,14 @@ namespace c_intern_String
 		:fdc_int32 len0 = strlen (cString);
 		:fdc_int32 i = -1;
 		:while (++i < len0) {
-		::if STRING_USE_ARRAY
-			:fdfunc_Array_1object_0add (&result->federobj_chars,
-				:(fdc_object*) fdCreateByte ((signed char) cString [i]));
-		::else
-			:fdfunc_List_1object_0add (&result->federobj_chars,
-				:(fdc_object*) fdCreateByte ((signed char) cString [i]));
-		::fi
+            :fdc_object* obj = (fdc_object*) fdCreateByte ((signed char) cString [i]);
+            :obj->usage++;
+::if STRING_USE_ARRAY
+			:fdfunc_Array_1object_0add (&result->federobj_chars, obj);
+::else
+			:fdfunc_List_1object_0add (&result->federobj_chars, obj);
+::fi
+            :obj->usage--;
 		:}
 
 		:result->usage -= 1;
