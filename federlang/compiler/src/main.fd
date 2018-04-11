@@ -7,10 +7,12 @@
 # file.
 ##
 
+include "stdio.fd"
 include "lexer.fd"
+include "help.fd"
 
 if args.length() != 2
-    io.err.println("Not enough arguments")
+    compiler.help.general()
     return false
 ;
 
@@ -29,7 +31,9 @@ helper.buffer = object from f
 
 tokenKeys = int32[0]
 tokenValues = String[0]
-if !compiler.lexer.lex(helper, tokenKeys, tokenValues) || len(tokenKeys) != len(tokenValues)
+tokenPositions = int32[0]
+
+if !compiler.lexer.lex(helper, tokenKeys, tokenValues, tokenPositions) || len(tokenKeys) != len(tokenValues)
     io.err.println("- Lexical analysis failed")
     return false
 ;

@@ -1106,10 +1106,6 @@ public class SyntaxTreeElement {
 				returnedClasses.add(func.getReturnType());
 			}
 
-			/*
-			 * if (func.getName().equals("clear")) System.err.println(result.toString())
-			 */
-
 			return;
 		}
 
@@ -1142,11 +1138,8 @@ public class SyntaxTreeElement {
 
 		if (nextToken.equals("=") || (nextToken.equals("newline") && !wasdotinfront && getfrombinding == null
 		                              && getfromhistory.size() > 1 && (getfromhistory.get(getfromhistory.size() - 2) instanceof FederClass
-		                                      || getfromhistory.get(getfromhistory.size() - 2) instanceof FederInterface))) {
-			/*
-			 * Declare/Assign object
-			 */
-
+		                                      || getfromhistory.get(getfromhistory.size() - 2) instanceof FederInterface
+                                              || getfromhistory.get(getfromhistory.size() - 2) instanceof FederArray))) {
 			// int reslen = result.length();
 			// String oldresultpointerto = result.toString ();
 

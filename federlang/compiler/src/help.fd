@@ -1,0 +1,37 @@
+##
+# helper.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+##
+
+include "stdio.fd"
+
+namespace compiler
+    namespace help
+        func _printOperation(String opName)
+            io.print("    ")
+            io.print(opName)
+
+            length = 10 - opName.length()
+            for length > 0
+                io.print(' ')
+                length--
+            ;
+        ;
+
+        func general
+            io.println("federc: A Feder compiler & a bit more")
+            io.println()
+            io.println("Usage:")
+            io.println("    federc [operation] [arguments]")
+            io.println("[operation]s are:")
+
+            _printOperation("compile")
+            io.println("Compile Feder source code")
+
+            _printOperation("style")
+            io.println("Reformat source code to apply to Feder's standards")
+
+            io.println("Issue 'federc help [operation]' for more help about an operation")
+        ;
+    ;
+;

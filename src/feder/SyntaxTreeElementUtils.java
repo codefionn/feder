@@ -515,6 +515,30 @@ public class SyntaxTreeElementUtils {
 		}
 	}
 
+    private static void addToNamespace(FederNamespace s0, FederNamespace addto) {
+        for (FederBinding binding : addto.getBindings()) {
+		    if (!s0.getBindings().contains(binding)) {
+                if (binding instanceof FederNamespace) {
+                    boolean found = false;
+                    for (FederBinding b0 : s0.getBindings()) {
+                        if (b0 instanceof FederNamespace
+                            && b0.getName().equals(binding.getName())) {
+                                
+                            found = true;
+                            addToNamespace((FederNamespace) b0, (FederNamespace) binding);
+                            break;
+                        }
+                    }
+
+                    if (found)
+                         continue;
+               }
+
+			    s0.addBinding(binding);
+            }
+        }
+    }
+
 	/**
 	 * This function fails, if the include file could not be found.
 	 * If the file was already included in the same compiler or if the
@@ -543,9 +567,25 @@ public class SyntaxTreeElementUtils {
 			for (FederBinding binding : fc.main.getBindings()) {
 				binding.setHasToBuild(false);
 
-				if (!compiler.main.getBindings().contains(binding))
-					compiler.main.addBinding(binding);
+				if (!compiler.main.getBindings().contains(binding)) {
+                    if (binding instanceof FederNamespace) {
+                        boolean found = false;
+                        for (FederBinding b0 : compiler.main.getBindings()) {
+                            if (b0 instanceof FederNamespace
+                                && b0.getName().equals(binding.getName())) {
+                                
+                                found = true;
+                                addToNamespace((FederNamespace) b0, (FederNamespace) binding);
+                                break;
+                            }
+                        }
 
+                        if (found)
+                            continue;
+                    }
+
+					compiler.main.addBinding(binding);
+                }
 			}
 
 			compiler.included.add(fc);
@@ -597,8 +637,25 @@ public class SyntaxTreeElementUtils {
 		for (FederBinding binding : main.getBindings()) {
 			binding.setHasToBuild(false);
 
-			if (!compiler.main.getBindings().contains(binding))
+			if (!compiler.main.getBindings().contains(binding)) {
+                if (binding instanceof FederNamespace) {
+                    boolean found = false;
+                    for (FederBinding b0 : compiler.main.getBindings()) {
+                        if (b0 instanceof FederNamespace
+                            && b0.getName().equals(binding.getName())) {
+                        
+                            found = true;
+                            addToNamespace((FederNamespace) b0, (FederNamespace) binding);
+                            break;
+                        }
+                    }
+
+                    if (found)
+                        continue;
+                }
+
 				compiler.main.addBinding(binding);
+            }
 		}
 
 		compiler.informInclude(name);

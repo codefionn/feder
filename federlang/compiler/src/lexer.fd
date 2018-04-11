@@ -6,6 +6,7 @@
 include "stdio.fd"
 
 namespace compiler
+    # Tokens (Keys)
     global LEX_SYMBOL = 0
     global LEX_KEYWORD = 1
     global LEX_OPERATOR = 2
@@ -17,6 +18,10 @@ namespace compiler
     global LEX_COMMAND = 8
     global LEX_BUILDIN = 9
 
+    ##
+    # Contains strings, which should be used, if you want a token (those
+    # variables starting with 'LEX_' in the namespace 'compiler') as a string
+    ##
     global ARRAY_LEX_NAMES = append(String[0], "symbol", "keyword",
         "operator", "string", "char", "integer", "double", "line",
         "command", "buildin")
@@ -65,6 +70,7 @@ namespace compiler
                                     "%=", "&=", "|=",
                                     "++", "--",
                                     "=",
+                                    "<", ">",
                                     "!", "+", "-", "*", "/",
                                     "&", "|", "^")
 
@@ -94,6 +100,8 @@ namespace compiler
 
             byte c
 
+            String[] lines
+
             func init
                 error = String
                 error_count = 0
@@ -104,6 +112,8 @@ namespace compiler
 
                 linesInUnit = 0
                 currentScope = 0
+
+                lines = String[0]
             ;
 
             bool func isKeyword(String s)
@@ -133,7 +143,7 @@ namespace compiler
                     sLine.addto(Byte.set(c))
                 ;
 
-                io.print(c)
+                #io.print(c)
 
                 return c
             ;
@@ -143,15 +153,25 @@ namespace compiler
                     linesInUnit--
                     append(tokenKeys, LEX_LINE)
                     append(tokenValues, "\n")
+                    append(lines, "")
                 ;
 
                 linesInUnit = 0
 
                 iLine++
-                sLine = ""
+                append(lines, sLine)
+                sLine = String
                 column = 0
             ;
 
+            ##
+            # Prints an error to the console (msg)
+            # but print the line number above and the current text position
+            # (with the actual used text)
+            # @param tokenKeys
+            # @param tokenValues
+            # @param msg
+            ##
             func newError (int32[] tokenKeys, String[] tokenValues, String msg)
                 error_count++
                 oldColumn = column
@@ -172,6 +192,7 @@ namespace compiler
                 error += "Line=" + iLine + "\n"
                 error += sLine
                 error += "\n"
+                oldColumn--
                 for (oldColumn--) > 0
                     error += " "
                 ;
@@ -186,9 +207,17 @@ namespace compiler
             ;
         ;
 
+        ##
+        # Should work on a string or character. The current character
+        # (helper.c) should be '"' or '\'' (Not the next character).
+        # @param helper
+        # @param tokenKeys
+        # @param tokenValues
+        ##
         func _workOnString(LexerHelper helper,
                            int32[] tokenKeys,
-                           String[] tokenValues)
+                           String[] tokenValues,
+                           int32[] tokenPositions)
 
             String buffer_tokenValue = String
 
@@ -215,7 +244,8 @@ namespace compiler
                 else if ignore
                     ignore = false
                 ;
-                        
+                
+                # Read in next character
                 helper.readNextChar()
             ;
 
@@ -240,13 +270,110 @@ namespace compiler
         ;
 
         ##
+        # Should work on a comment. The current character (helper.c)
+        # should be '# (Not the next character)'
+        # @param helper
+        # @param tokenKeys
+        # @param tokenValues
+        ##
+        func _workOnComment(LexerHelper helper,
+                            int32[] tokenKeys,
+                            String[] tokenValues)
+
+            String buffer_tokenValue = String
+            
+            helper.readNextChar()
+            if helper.c == '#'
+                # It's a (possible) multi line comment
+                helper.readNextChar()
+                while helper.c != '\0'
+                    if helper.c == '#'
+                        helper.readNextChar()
+                        if helper.c == '#'
+                            break
+                        ;
+
+                        continue
+                    ;
+
+                    if helper.c == '\n' || helper.c == '\r'
+                        # A new line has been started
+                        cbegin = helper.c
+                        helper.readNextChar()
+                        if (helper.c == '\n' || helper.c == '\r') && helper.c != cbegin
+                            helper.readNextChar()
+                        ;
+
+                        helper.linesInUnit++
+                        continue
+                    ;
+
+                    helper.readNextChar()
+                ;
+
+                if helper.c != '\0'
+                    helper.readNextChar()
+                ;
+            
+                # End multi line comment
+                return
+            ;
+
+            # It's a single line comment
+            while helper.c != '\0' && helper.c != '\n' && helper.c != '\r'
+                helper.readNextChar()
+            ;
+        ;
+
+        ##
+        # Should work on commands and buildins. The current character should
+        # be ':' (Not the next character).
+        # @param helper
+        # @param tokenKeys
+        # @param tokenValues
+        ##
+        func _workOnCommand(LexerHelper helper,
+                            int32[] tokenKeys,
+                            String[] tokenValues)
+
+            # Current character is ':', so read new one
+            helper.readNextChar()
+            String buffer_tokenValue = String
+
+            iscommand = false
+            if helper.c == ':'
+                # Started with '::' => Command
+                iscommand = true
+                # Current char ':' (used in last comparison,
+                # we need a new one) => read new one
+                helper.readNextChar()
+            ;
+
+            # Read till the end of the line
+            for helper.c != '\r' && helper.c != '\n' && helper.c != '\0'
+                buffer_tokenValue.addto(Byte.set(helper.c))
+                helper.readNextChar()
+            ;
+
+            # Command '::', Build-in ':'
+            if iscommand
+                append(tokenKeys, LEX_COMMAND)
+            else
+                append(tokenKeys, LEX_BUILDIN)
+            ;
+
+            append(tokenValues, buffer_tokenValue)
+        ;
+
+        ##
         # This function reads through the given 'buffer' (in 'helper') with the
         # interface fn_buffer_readbyte (in 'helper'). If the buffer's end has
         # been reached, the buffer will be closed by 'fn_buffer_close' (in
         # 'helper').
         #
         # @param tokenKeys The result of lexer (tokenizer), These are tokens,
-        # which described the elements in 'tokenValues'.
+        # which described the elements in 'tokenValues' (The elements of this
+        # array can have the values from 'compiler.LEX_*' (wildcard)
         # @param tokenValues The result of the lexer (tokennizer). The elements
         # of this list are the real values, described by 'tokenKeys'.
         #
@@ -256,10 +383,12 @@ namespace compiler
         ##
         bool func lex (LexerHelper helper,
                        int32[] tokenKeys,
-                       String[] tokenValues)
+                       String[] tokenValues,
+                       int32[] tokenPositions)
             
             String buffer_tokenValue = String
 
+            # Read first character
             helper.readNextChar()
             for helper.c != '\0'
                 if helper.c == '\n' || helper.c == '\r'
@@ -275,67 +404,30 @@ namespace compiler
                     continue
                 ;
 
+                # Ignore 'spaces'
                 if helper.c == '\t' || helper.c == ' '
                     helper.readNextChar()
                     continue
                 ;
 
+                # Start of a single line or multi line comment
                 if helper.c == '#'
-                    helper.readNextChar()
-                    if helper.c == '#'
-                        helper.readNextChar()
-                        while helper.c != '\0'
-                            if helper.c == '#'
-                                helper.readNextChar()
-                                if helper.c == '#'
-                                    break
-                                ;
-
-                                continue
-                            ;
-
-                            if helper.c == '\n' || helper.c == '\r'
-                                cbegin = helper.c
-                                helper.readNextChar()
-                                if (helper.c == '\n' || helper.c == '\r') && helper.c != cbegin
-                                    helper.readNextChar()
-                                ;
-
-                                helper.linesInUnit++
-                                continue
-                            ;
-
-                            helper.readNextChar()
-                        ;
-
-                        if helper.c != '\0'
-                            helper.readNextChar()
-                        ;
-
-                        continue
-                    ;
-
-                    while helper.c != '\0' && helper.c != '\n' && helper.c != '\r'
-                        helper.readNextChar()
-                    ;
-                    
+                    _workOnComment(helper, tokenKeys, tokenValues)
                     continue
                 ;
 
+                # Start of commands or build-ins (both starting with ':')
                 if (len(tokenKeys) == 0
                     || tokenKeys[len(tokenKeys) - 1] == LEX_LINE) && helper.c == ':'
                     
-                    helper.readNextChar()
-                    iscommand = false
-                    if helper.c == ':'
-                        iscommand = true
-                    ;
-
-                    
+                    _workOnCommand(helper, tokenKeys, tokenValues)
+                    continue
                 ;
 
+                # Check if character or string (character which starts
+                # those are '\'' or '"'
                 if helper.c == '\"' || helper.c == '\''
-                    _workOnString(helper, tokenKeys, tokenValues)
+                    _workOnString(helper, tokenKeys, tokenValues, tokenPositions)
                     continue
                 ;
 
@@ -365,6 +457,7 @@ namespace compiler
                     continue
                 ;
 
+                # Unknown ?
                 if !helper.c.isDigit() && !helper.c.isAlpha() && helper.c != '_'
 
                     # Well, buffer_tokenValue contains something that is not
@@ -373,6 +466,8 @@ namespace compiler
                     continue
                 ;
 
+                # Read the next character, last one was already added to
+                # buffer_tokenValue
                 helper.readNextChar()
 
                 # Read the symbol (only digits, alphabetic characters and '_'
@@ -389,26 +484,41 @@ namespace compiler
                     append(tokenKeys, LEX_INTEGER)
                     append(tokenValues, buffer_tokenValue)
                     buffer_tokenValue = String
+                    continue
                 else if buffer_tokenValue.isNumber(true)
                     # buffer_tokenValue is a floating point number
                     append(tokenKeys, LEX_DOUBLE)
                     append(tokenValues, buffer_tokenValue)
                     buffer_tokenValue = String
+                    continue
                 else if buffer_tokenValue.at(0).val.isDigit()
                     helper.newError(tokenKeys, tokenValues,
                         "Invalid Symbol, because a symbol can't start with a digit!")
                     buffer_tokenValue = String
                     continue
                 else
-                    append(tokenKeys, LEX_SYMBOL)
+                    # Could still be a keyword
+                    if helper.isKeyword(buffer_tokenValue)
+                        append(tokenKeys, LEX_KEYWORD)
+                    else
+                        # Not a keyword, an ordinary symbol
+                        append(tokenKeys, LEX_SYMBOL)
+                    ;
+
+                    # The value is the same, regardless of the the
+                    # values token type
                     append(tokenValues, buffer_tokenValue)
+
+                    # Reset the tokenValue buffer
                     buffer_tokenValue = String
                     continue
                 ;
 
+                # Unknown character
                 helper.newError(tokenKeys, tokenValues, "Invalid character")
             ;
 
+            # error_count is null => No error occured
             return helper.error_count == 0
         ;
     ;
