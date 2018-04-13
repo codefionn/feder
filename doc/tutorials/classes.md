@@ -38,3 +38,10 @@ obj.set (18, "Fionn Langhans")
 obj = Person.set (18, "Fionn Langhans")
 obj.printData ()
 ```
+
+A class could include two special functions, one called 'init' and the other
+one is called 'del'. Both functions mustn't have a return type or any arguments.
+The init function is called, if an object is being created from the class and the 'del'
+function is called, if an object is being deleted (Deconstructor). The deconstructor
+should only contain operations, which ensure, if a programmer didn't know better,
+that greater evil is prevented.

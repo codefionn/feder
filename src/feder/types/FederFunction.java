@@ -206,9 +206,9 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 	@Override
 	public String generateInCompile()
 	{
-		if (!(getParent() instanceof FederClass)) {
+		/*if (!(getParent() instanceof FederClass)) {
 			return "";
-		}
+		}*/
 
 		StringBuilder appendto = new StringBuilder(
 		    "ptr_" + generateCName() + " (" + generateArgumentsListString(getParent(), arguments, false) + ") {\n");
@@ -242,6 +242,13 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 		}
 
 		appendto.append(");\n}\n");
+
+        if (!(getParent() instanceof FederClass)) {
+            if (isPrivate())
+                return result.toString();
+
+            return "";
+        }
 
 		if (isPrivate()) {
 			result.append(appendto);

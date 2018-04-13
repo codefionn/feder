@@ -148,7 +148,7 @@ feder
         base        Feder Standard Library (/usr/lib/feder/base)
         clean.sh    Removes build files
         comparison  Compare runtime speed (C, Feder, Go, Python, Java)
-		compiler    A sub-project: A Feder compiler written in Feder
+        compiler    A sub-project: A Feder compiler written in Feder
         failtests   Tests which should fail to compile (./failtests/test.sh)
         jfederc     Compiles Feder source code (use /usr/bin/jfederc)
         programs    Programs written in Feder (examples)
@@ -159,7 +159,7 @@ feder
     LICENSE         zlib license
     README.md       This file
     src             Source files for the Java Feder compiler
-    uninstall.sh 	Uninstall files & directories installed by install.sh
+    uninstall.sh     Uninstall files & directories installed by install.sh
 ```
 
 ## Documentation

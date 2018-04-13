@@ -665,16 +665,16 @@ public class SyntaxTreeElement {
 		result = new StringBuilder(func.generateCName() + " ("
 		                           + FederFunction.generateArgumentsListString(func.getParent(), func.getArguments()) + ") {\n");
 
-		if (func.isPrivate()) {
-			result.insert(0, "static ");
-		}
-
 		if (func.getReturnType() == null) {
 			result.insert(0, "void ");
 		} else if (func.getReturnType() instanceof FederClass) {
 			result.insert(0, func.getReturnType().generateCName() + " ");
 		} else {
 			result.insert(0, func.getReturnType().generateCName() + " ");
+		}
+        
+		if (func.isPrivate()) {
+			result.insert(0, "static ");
 		}
 
 		for (FederObject arg : func.arguments) {
@@ -1300,6 +1300,24 @@ public class SyntaxTreeElement {
 			SyntaxTreeElement ste = newBranchAt (indexToken);
 			int tokenslen = ste.tokens.size();
 			StringBuilder compiled = ste.compile();
+
+            FederRule ruleArrayCreateNumber = compiler.getApplyableRuleForBuildin("array_create_number");
+            if (ruleArrayCreateNumber == null) {
+                throw new RuntimeException("No buildin rule for 'array_create_number' found!");
+            }
+
+            if (ste.returnedClasses.size() != 1
+                || !FederBinding.areSameTypes(ste.returnedClasses.get(0),
+                    ruleArrayCreateNumber.getSpecifiedResultValue())) {
+
+                String typeName = "int";
+                if (ruleArrayCreateNumber.getSpecifiedResultValue() != null) {
+                    typeName = ruleArrayCreateNumber.getSpecifiedResultValue().getName();
+                }
+
+                throw new RuntimeException("The type of the value between the "
+                    + "squared brackets has to be '" + typeName + "'.");
+            }
 
 			if (FederBinding.isDataType(getfrombinding)) {
 				result = new StringBuilder("fdCreateTypeArray (sizeof (" + getfrombinding.generateCName() + ")");

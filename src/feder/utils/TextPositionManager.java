@@ -169,7 +169,7 @@ public class TextPositionManager
 			 */
 		}
 
-		if (result != text.length())
+		if (result < text.length())
 			result += getNewLineOperatorLength(result);
 
 		return result;

@@ -7,6 +7,11 @@ include "stdio.fd"
 
 namespace compiler
     namespace help
+        func err
+            io.err.println("Help:")
+            io.err.println("    federc help")
+        ;
+
         func _printOperation(String opName)
             io.print("    ")
             io.print(opName)
@@ -31,7 +36,30 @@ namespace compiler
             _printOperation("style")
             io.println("Reformat source code to apply to Feder's standards")
 
+            _printOperation("version")
+            io.println("Prints the current version of the program")
+
+            _printOperation("license")
+            io.println("Prints the license of this program")
+
             io.println("Issue 'federc help [operation]' for more help about an operation")
+        ;
+
+        func compile
+            io.println("Usage:")
+            io.println("    federc compile [options] [files]")
+            io.println("[options]:")
+        ;
+
+        func style
+            io.println("Usage:")
+            io.println("   federc style [options] [files]")
+            io.println("[options]")
+            
+        ;
+
+        func license
+            io.println("Prints a zlib-license")
         ;
     ;
 ;

@@ -7,6 +7,9 @@ include "stdio.fd"
 
 namespace compiler
     # Tokens (Keys)
+
+    # Symbols could be the name of a function, variable
+    # class, interface, namespace, ...
     global LEX_SYMBOL = 0
     global LEX_KEYWORD = 1
     global LEX_OPERATOR = 2
@@ -14,6 +17,7 @@ namespace compiler
     global LEX_CHAR = 4
     global LEX_INTEGER = 5
     global LEX_DOUBLE = 6
+    # New line
     global LEX_LINE = 7
     global LEX_COMMAND = 8
     global LEX_BUILDIN = 9
@@ -25,6 +29,71 @@ namespace compiler
     global ARRAY_LEX_NAMES = append(String[0], "symbol", "keyword",
         "operator", "string", "char", "integer", "double", "line",
         "command", "buildin")
+
+    String func _constructLine_detect(int32 tokenKey)
+        if tokenKey == LEX_STRING
+            return "\""
+        else if tokenKey == LEX_CHAR
+            return "\'"
+        ;
+
+        return ""
+    ;
+
+    ##
+    # @param index
+    # @param tokenKeys
+    # @param tokenValues
+    # @param tokenPositions
+    # @return Returns an empty string if an error occured or the line
+    # is simply empty. Returns a whole line (which like in the original
+    # source code) which can be found with index in tokenKeys (searches
+    # a new line 'LEX_LINE' which is in front of 'index'. The reconstructs
+    # the line from the found index to the next line or the end of tokenValues.
+    ##
+    String func constructLine(int32 index,
+                         int32[] tokenKeys,
+                         String[] tokenValues,
+                         int32[] tokenPositions)
+
+        if index < 0
+            # Correct
+            index = 0
+        ;
+
+        if index >= len(tokenKeys) || index < 0
+            # Exception
+            return ""
+        ;
+        
+        if tokenKeys[index] == LEX_LINE
+            # Exception
+            return ""
+        ;
+        
+        for index > 0 && tokenKeys[index] != LEX_LINE
+            index--
+        ;
+
+        if tokenKeys[index] == LEX_LINE
+            index++
+        ;
+
+        String result = String
+
+        for index < len(tokenKeys) && tokenKeys[index] != LEX_LINE, index++
+            String s = _constructLine_detect(tokenKeys[index])
+            for result.length() + s.length() < tokenPositions[index]
+                result += " "
+            ;
+
+            result += s
+            result += tokenValues[index]
+            result += s
+        ;
+
+        return result
+    ;
 
     namespace lexer
         ##
@@ -79,6 +148,7 @@ namespace compiler
                                    "while", "for", "if", "else",
                                    "break", "continue", "return",
                                    "len", "append",
+                                   "from",
                                    "true", "false", "null",
                                    "include", "import",
                                    "global")
@@ -100,7 +170,8 @@ namespace compiler
 
             byte c
 
-            String[] lines
+            int32 scopeCurly
+            int32 scopeSquare
 
             func init
                 error = String
@@ -113,7 +184,8 @@ namespace compiler
                 linesInUnit = 0
                 currentScope = 0
 
-                lines = String[0]
+                scopeCurly = 0
+                scopeSquare = 0
             ;
 
             bool func isKeyword(String s)
@@ -138,9 +210,12 @@ namespace compiler
 
             byte func readNextChar
                 c = fn_buffer_readbyte(buffer)
-                if c != '\n' && c != '\r'
-                    column++
+                column++
+                if c != '\n' && c != '\r' && c != '\0' && c != '\t'
                     sLine.addto(Byte.set(c))
+                else if c == '\t'
+                    column += 3
+                    sLine.addto("    ")
                 ;
 
                 #io.print(c)
@@ -148,19 +223,20 @@ namespace compiler
                 return c
             ;
 
-            func newLine (int32[] tokenKeys, String[] tokenValues)
+            func newLine (int32[] tokenKeys,
+                          String[] tokenValues,
+                          int32[] tokenPositions)
+
                 for linesInUnit > (-1)
                     linesInUnit--
                     append(tokenKeys, LEX_LINE)
                     append(tokenValues, "\n")
-                    append(lines, "")
+                    append(tokenPositions, 0)
                 ;
 
                 linesInUnit = 0
 
                 iLine++
-                append(lines, sLine)
-                sLine = String
                 column = 0
             ;
 
@@ -172,7 +248,10 @@ namespace compiler
             # @param tokenValues
             # @param msg
             ##
-            func newError (int32[] tokenKeys, String[] tokenValues, String msg)
+            func newError (int32[] tokenKeys, String[] tokenValues,
+                           int32[] tokenPositions,
+                           String msg)
+
                 error_count++
                 oldColumn = column
 
@@ -202,7 +281,7 @@ namespace compiler
                 error += msg
                 error += "\n"
 
-                newLine(tokenKeys, tokenValues)
+                newLine(tokenKeys, tokenValues, tokenPositions)
                 io.err.println(error)
             ;
         ;
@@ -225,6 +304,8 @@ namespace compiler
             helper.readNextChar()
             ignore = false
 
+            beginColumn = helper.column
+
             while (ignore || helper.c != cbegin) && helper.c != '\0'
                 if helper.c == '\n' || helper.c == '\r'
                     begin_line = helper.c
@@ -242,6 +323,7 @@ namespace compiler
                 if !ignore && helper.c == '\\'
                     ignore = true
                 else if ignore
+                    # TODO: Check if character is really an escape-able character
                     ignore = false
                 ;
                 
@@ -251,6 +333,7 @@ namespace compiler
 
             if helper.c == '\0'
                 helper.newError(tokenKeys, tokenValues,
+                    tokenPositions,
                     "String not closed")
                 return
             ;
@@ -261,11 +344,13 @@ namespace compiler
                 append(tokenKeys, LEX_STRING)
             else
                 helper.newError(tokenKeys, tokenValues,
+                    tokenPositions,
                     "Internal error")
                 return
             ;
 
             append(tokenValues, buffer_tokenValue)
+            append(tokenPositions, beginColumn)
             helper.readNextChar()
         ;
 
@@ -278,7 +363,8 @@ namespace compiler
         ##
         func _workOnComment(LexerHelper helper,
                             int32[] tokenKeys,
-                            String[] tokenValues)
+                            String[] tokenValues,
+                            int32[] tokenPositions)
 
             String buffer_tokenValue = String
             
@@ -304,6 +390,11 @@ namespace compiler
                             helper.readNextChar()
                         ;
 
+                        helper.sLine.insert("\n", helper.sLine.length()-1)
+
+                        # No lines must be added,
+                        # because the source code unit could continue
+                        # following the end of this comment
                         helper.linesInUnit++
                         continue
                     ;
@@ -334,7 +425,8 @@ namespace compiler
         ##
         func _workOnCommand(LexerHelper helper,
                             int32[] tokenKeys,
-                            String[] tokenValues)
+                            String[] tokenValues,
+                            int32[] tokenPositions)
 
             # Current character is ':', so read new one
             helper.readNextChar()
@@ -363,6 +455,7 @@ namespace compiler
             ;
 
             append(tokenValues, buffer_tokenValue)
+            append(tokenPositions, helper.column - buffer_tokenValue.length())
         ;
 
         ##
@@ -400,7 +493,12 @@ namespace compiler
                         helper.readNextChar()
                     ;
 
-                    helper.newLine(tokenKeys, tokenValues)
+                    if helper.scopeCurly == 0 && helper.scopeSquare == 0
+                        helper.newLine(tokenKeys, tokenValues, tokenPositions)
+                    else
+                        helper.linesInUnit++
+                    ;
+
                     continue
                 ;
 
@@ -412,7 +510,7 @@ namespace compiler
 
                 # Start of a single line or multi line comment
                 if helper.c == '#'
-                    _workOnComment(helper, tokenKeys, tokenValues)
+                    _workOnComment(helper, tokenKeys, tokenValues, tokenPositions)
                     continue
                 ;
 
@@ -420,7 +518,7 @@ namespace compiler
                 if (len(tokenKeys) == 0
                     || tokenKeys[len(tokenKeys) - 1] == LEX_LINE) && helper.c == ':'
                     
-                    _workOnCommand(helper, tokenKeys, tokenValues)
+                    _workOnCommand(helper, tokenKeys, tokenValues, tokenPositions)
                     continue
                 ;
 
@@ -453,6 +551,33 @@ namespace compiler
 
                     append(tokenKeys, LEX_OPERATOR)
                     append(tokenValues, buffer_tokenValue)
+                    append(tokenPositions, helper.column - buffer_tokenValue.length())
+
+                    # scopes (brackets)
+                    if isEqual(buffer_tokenValue, "(")
+                        helper.scopeCurly++
+                    else if isEqual(buffer_tokenValue, "[")
+                        helper.scopeSquare++
+                    else if isEqual(buffer_tokenValue, ")")
+                        helper.scopeCurly--
+                        if helper.scopeCurly < 0
+                            helper.newError(tokenKeys,
+                                            tokenValues,
+                                            tokenPositions,
+                                            "One or more '(' are missing or this sign is too much!")
+                            helper.scopeCurly = 0
+                        ;
+                    else if isEqual(buffer_tokenValue, "]")
+                        helper.scopeSquare--
+                        if helper.scopeSquare < 0
+                            helper.newError(tokenKeys,
+                                            tokenValues,
+                                            tokenPositions,
+                                            "One or more '[' are missing or this sign is too much!")
+                            helper.scopeSquare = 0
+                        ;
+                    ;
+
                     buffer_tokenValue = String
                     continue
                 ;
@@ -462,7 +587,9 @@ namespace compiler
 
                     # Well, buffer_tokenValue contains something that is not
                     # an operator, but is also not applyable as a symbol
-                    helper.newError(tokenKeys, tokenValues, "Unknown operator")
+                    helper.newError(tokenKeys,
+                                    tokenValues,
+                                    tokenPositions, "Unknown operator")
                     continue
                 ;
 
@@ -483,16 +610,18 @@ namespace compiler
                     # buffer_tokenValue is an integer
                     append(tokenKeys, LEX_INTEGER)
                     append(tokenValues, buffer_tokenValue)
+                    append(tokenPositions, helper.column - buffer_tokenValue.length())
                     buffer_tokenValue = String
                     continue
                 else if buffer_tokenValue.isNumber(true)
                     # buffer_tokenValue is a floating point number
                     append(tokenKeys, LEX_DOUBLE)
                     append(tokenValues, buffer_tokenValue)
+                    append(tokenPositions, helper.column - buffer_tokenValue.length())
                     buffer_tokenValue = String
                     continue
                 else if buffer_tokenValue.at(0).val.isDigit()
-                    helper.newError(tokenKeys, tokenValues,
+                    helper.newError(tokenKeys, tokenValues, tokenPositions,
                         "Invalid Symbol, because a symbol can't start with a digit!")
                     buffer_tokenValue = String
                     continue
@@ -509,13 +638,17 @@ namespace compiler
                     # values token type
                     append(tokenValues, buffer_tokenValue)
 
+                    append(tokenPositions, helper.column - buffer_tokenValue.length())
+
                     # Reset the tokenValue buffer
                     buffer_tokenValue = String
                     continue
                 ;
 
                 # Unknown character
-                helper.newError(tokenKeys, tokenValues, "Invalid character")
+                helper.newError(tokenKeys,
+                                tokenValues,
+                                tokenPositions, "Invalid character")
             ;
 
             # error_count is null => No error occured

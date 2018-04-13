@@ -1,0 +1,69 @@
+##
+# main.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is part of the Feder compiler. It is the main
+# file of the compiler and should be compiled as the main
+# file.
+##
+
+include "stdio.fd"
+include "federc/compile.fd"
+include "federc/help.fd"
+include "federc/license.fd"
+
+if args.length() == 1
+    compiler.help.err()
+    return false
+;
+
+global FEDERC_VERSION = "1.0"
+
+if isEqual(String from args.at(1), "help")
+    # Help was requested
+    if args.length() == 2
+        compiler.help.general()
+        return true
+    ;
+
+    if args.length() > 3
+        # Invalid usage: Should only be 3 arguments
+        io.err.println("Usage:")
+        io.err.println("    federc help [operation]")
+        return false
+    ;
+
+    if isEqual(String from args.at(2), "compile")
+        # Operation: compile
+        compiler.help.compile()
+        return true
+    else if isEqual(String from args.at(2), "style")
+        # Operation: style
+        compiler.help.style()
+        return true
+    else if isEqual(String from args.at(2), "license")
+        # Operation: license
+        compiler.help.license()
+        return true
+    ;
+
+    io.err.println("Help:")
+    io.err.println("    federc help")
+    return false
+else if isEqual(String from args.at(1), "compile")
+
+else if isEqual(String from args.at(1), "style")
+
+else if isEqual(String from args.at(1), "license")
+    # Print the license of this program
+    compiler.federc.license()
+    return true
+else if isEqual(String from args.at(1), "version")
+    # Print version of this program
+    io.print("federc version ")
+    io.println(FEDERC_VERSION)
+    return true
+;
+
+compiler.help.err()
+return false

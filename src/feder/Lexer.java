@@ -231,15 +231,15 @@ public class Lexer {
 
 			// One liners (comments)
 			if (tpm.startsWith("#")) {
-				tokens.add("newline");
-				softokens.add("\n");
-
 				tpm.toNextLine();
+                linestoadd++;
 
-				for (; linestoadd > 0; linestoadd--) {
-					tokens.add("newline");
-					softokens.add("\n");
-				}
+                if (scope == 0) {
+    				for (; linestoadd > 0; linestoadd--) {
+				    	tokens.add("newline");
+				    	softokens.add("\n");
+				    }
+                }
 
 				continue;
 			}

@@ -264,7 +264,7 @@ public class Syntax {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("name", "int", "float", "double",
 				                        "string", "char", "true", "false",
-				                        "(", "null");
+				                        "(", "null", "append", "len");
 			}/* else if (token.equals("==") || token.equals("!=")) {
 				lexer.indexList++;
 				lexer.getTokenWhitelist("name", "!", "(", "null", "int", "double", "roperator");

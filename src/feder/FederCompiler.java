@@ -691,6 +691,7 @@ public class FederCompiler {
 			}
 
 			writeToFileForwardDeclaration(headerFile);
+            writeToFileForwardCompileDeclaration(compileFile);
 			headerFile.write("\n");
 
 			writeToFile(compileFile, headerFile, main);
@@ -893,45 +894,13 @@ public class FederCompiler {
 		}
 	}
 
-	/*
-	 * public void writeToFile (BufferedWriter compileFile, BufferedWriter
-	 * headerFile) throws IOException { for (FederBinding body1 : buildOrder) {
-	 *
-	 * if (body1 instanceof FederObject) { if (!body1.hasToBuild()) return;
-	 *
-	 * compileFile.write(((FederObject) body1).generateInCompile());
-	 * compileFile.write("\n"); body1.setHasToBuild(false); }
-	 *
-	 * if (!(body1 instanceof FederBody)) return;
-	 *
-	 * FederBody body0 = (FederBody) body1;
-	 *
-	 * if (body0.hasToBuild()) { if (!body0.returnCame)
-	 * SyntaxTreeElement.generateEnding("", body0, false, null);
-	 *
-	 * if (body0 instanceof FederNamespace &&
-	 * body0.getName().startsWith("c_intern")) {
-	 * compileFile.write(body0.compile_file_text.toString()); } else if (body0
-	 * instanceof FederNamespace) { mainmethod.append(body0.compile_file_text); }
-	 * else if (body0 instanceof FederClass) { headerFile.write("\n");
-	 * headerFile.write(body0.compile_file_text.toString());
-	 * headerFile.write(body0.inFrontOfSyntax() + "};\n\n"); } else {
-	 * compileFile.write(body0.compile_file_text.toString()); } }
-	 *
-	 * if (body0.hasToBuild()) { if (body0 instanceof FederNamespace &&
-	 * body0.getName().startsWith("c_intern")) {
-	 * compileFile.write(body0.inFrontOfSyntax() + "// } " + body0.getName() +
-	 * "\n"); } else if (body0 instanceof FederNamespace) {
-	 * mainmethod.append(body0.inFrontOfSyntax() + "// } " + body0.getName() +
-	 * "\n"); } else if (body0 instanceof FederFunction) { // if (!body0.returnCame)
-	 * compileFile.write(body0.inFrontOfSyntax() + "\treturn NULL;\n");
-	 * compileFile.write(body0.inFrontOfSyntax().substring(1) + "}\n\n"); }
-	 *
-	 * if (body0 instanceof FederCompileGen) { compileFile.write(((FederCompileGen)
-	 * body0).generateInCompile()); } }
-	 *
-	 * body0.setHasToBuild(false); } }
-	 */
+	public void writeToFileForwardCompileDeclaration(BufferedWriter compileFile) throws IOException {
+		for (FederBinding body0 : buildOrder) {
+			if (body0 instanceof FederCompileGen && body0.hasToBuild()) {
+				compileFile.write(((FederCompileGen) body0).generateInCompile());
+			}
+		}
+	}
 
 	/**
 	 * Write the main code of the generated bodies to the files
@@ -996,9 +965,9 @@ public class FederCompiler {
 				compileFile.write(body0.inFrontOfSyntax().substring(1) + "}\n\n");
 			}
 
-			if (body0 instanceof FederCompileGen) {
+/*			if (body0 instanceof FederCompileGen) {
 				compileFile.write(((FederCompileGen) body0).generateInCompile());
-			}
+			}*/
 		}
 
 		body0.setHasToBuild(false);
