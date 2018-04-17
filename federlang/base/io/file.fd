@@ -285,12 +285,32 @@ class File
     # this function returns true.
     ##
     bool func write (byte b)
-    	if isOpen ().isfalse ()
+    	if !isOpen()
     		return false
     	;
     	
     	:fprintf ((*federobj_this)->val0, "%c", (char) federobj_b);
     	return true
+    ;
+
+    ##
+    # @param s
+    # @param Writes the String s to the file. If th file is not open or an error
+    # occured while writing to the file, this function returns false.
+    ##
+    bool func write (String s)
+        if !isOpen()
+            return false
+        ;
+
+        length0 = s.length()
+        for i = 0, i < length0, i++
+            if !write(s.at(i).val)
+                return false
+            ;
+        ;
+
+        return true
     ;
 
     ##
