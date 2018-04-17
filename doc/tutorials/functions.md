@@ -28,3 +28,14 @@ result = sum (5, 7)
 io.println (sum (5, 7))
 # ... there are many possibilities
 ```
+
+If you want to use the same type for several arguments in function, you don't
+need to mention the type of the variable, the type will be the one of element
+in front.
+
+The function "sum" from above would look like this:
+```
+int32 func sum (int32 n0, n1)
+    return n0 + n1
+;
+```
