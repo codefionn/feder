@@ -40,6 +40,17 @@ public class FederFunction extends FederBody implements FederHeaderGen, FederArg
 		}
 	}
 
+    public boolean hasArgumentName(String name)
+    {
+        for (FederObject obj : arguments) {
+            if (obj.getName().equals(name)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 	@Override
 	/**
 	 * @param name0 If null, every name will be accepted

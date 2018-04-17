@@ -564,6 +564,11 @@ public class SyntaxTreeElement {
 						}
 					}
 
+                    if (func.hasArgumentName(stoken)) {
+                        throw new RuntimeException("The function has already "
+                            + "an argument called '" + stoken + "'.");
+                    }
+
 					FederObject obj = new FederObject(stoken, null);
 					obj.isForced = true;
 					if (depth > 0) {
@@ -586,6 +591,40 @@ public class SyntaxTreeElement {
 					expectObjectName = false;
 					expectComma = true;
 				} else if (!expectComma) {
+                    if (func.arguments.size() > 0
+                        && indexToken + 1 < tokens.size()
+                        && (tokens.get(indexToken+1).equals(",")
+                            || tokens.get(indexToken+1).equals(")"))) {
+
+                        if (func.hasArgumentName(stoken)) {
+                            throw new RuntimeException("The function has already "
+                                + "an argument called '" + stoken + "'.");
+                        }
+
+                        FederObject obj = new FederObject(stoken, null);
+					    if (depth > 0) {
+						    if (depth > 1) {
+							    throw new RuntimeException("Currently only arrays with one depth are allowed!");
+    						}/* else if (getfrombinding instanceof FederClass && !((FederClass) getfrombinding).isType()) {
+							throw new RuntimeException("Currently arrays can only be created with data types/interfaces!");
+    						}*/
+
+    						obj.setTypeManual(new FederArray(getfrombinding));
+    						depth = 0;
+    					} else {
+    						obj.setTypeManual(getfrombinding);
+    					}
+                        
+    					func.arguments.add(obj);
+    					func.addBinding(obj); // Add it to the binding structure of the function
+    					if (obj.isInterface())
+    						func.addBinding(((FederInterface) obj.getResultType()).interfaceFrom(compiler, obj.getName(), func));
+    					expectObjectName = false;
+    					expectComma = true;
+
+                        continue;
+                    }
+
 					FederBinding binding0 = getFromBinding(body, stoken, true);
 					if (binding0 == null) {
 						throw new RuntimeException("Type not found: " + stoken);
