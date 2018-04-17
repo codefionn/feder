@@ -85,5 +85,6 @@ feder_test "tests/test_directory.fd" "directory"
 feder_test "tests/test_dynamic.fd" "dynamic"
 feder_test "tests/test_higher_order.fd" "higher_order"
 feder_test "tests/test_config.fd" "config"
+feder_test "tests/test_same_type.fd" "same_type"
 
 exit $HAS_ERROR

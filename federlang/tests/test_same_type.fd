@@ -1,0 +1,17 @@
+##
+# tests/test_same_type.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file tests, if the Feder compiler can use several
+# arguments, which have the same type, but mentioning the
+# type of the variables only one type.
+##
+include "stdio.fd"
+
+int32 func test_func(int32 n0, n1, n2)
+    return n0 + n1 + n2
+;
+
+if test_func(1, 2, 4) != 7
+    return false
+;
