@@ -1,3 +1,10 @@
+##
+# Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
+# test_libloader0.fd
+# 
+# Used by test_libloader.fd
+##
+
 # The variable n will be set in the library loader
 include "stdtype.fd"
 global n = 1

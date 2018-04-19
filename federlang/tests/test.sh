@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (C) 2018 Fionn Langhans
 
 FDC_OPTIONS=$@
 

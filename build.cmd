@@ -1,3 +1,4 @@
+::Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
 @echo off
 
 if not exist "bin" mkdir "bin"

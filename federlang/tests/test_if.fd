@@ -1,3 +1,8 @@
+##
+# Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
+# test_if.fd
+##
+
 include "stdtype.fd"
 
 if false

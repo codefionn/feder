@@ -1,3 +1,8 @@
+##
+# Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
+# test_io_dir.fd
+##
+
 include "stdio.fd"
 
 mkdir ("io_dir_test_dir")

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018 Fionn Langhans
+ */
+
 package feder;
 
 import java.util.LinkedList;

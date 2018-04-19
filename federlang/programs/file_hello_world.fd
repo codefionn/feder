@@ -1,6 +1,6 @@
 ##
+# Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
 # file_hello_world.fd
-# created by Fionn Langhans
 #
 # This program prints "Hello, World!" to a file called hello_world.txt
 ##

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (C) 2018 Fionn Langhans
 
 # This script uninstalls feder:
 #  - Delete directory /usr/lib/feder

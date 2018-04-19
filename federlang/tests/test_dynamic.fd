@@ -1,3 +1,7 @@
+##
+# Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
+# test_dynamic.fd
+##
 include "stdio.fd"
 
 var = Integer32.set (10)

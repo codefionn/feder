@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2018 Fionn Langhans
+ */
 package feder.types;
 
 import java.util.*;

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
 # jfederc - Java Feder Compiler
 # Please run build.sh in the master directory, before running this script
 DIR_OF_JAR="."

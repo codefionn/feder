@@ -1,4 +1,6 @@
 @echo off
+:: Copyright (C) 2018 Fionn Langhans
+
 set FEDER_TOOLCHAIN=CL
 set FEDER_COMPILER=java -jar jfederc.jar
 ::set WINDOWS_DEFAULT_LIB_PATH=C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.16299.0\\um\\x86

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
 
 # This script installs feder:
 # The executable jar archive will be copied to /usr/lib/feder

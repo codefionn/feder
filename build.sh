@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
 if ! [ -d "bin" ] ; then mkdir "bin" ; fi
 
 if ! javac -cp src -d bin -encoding UTF-8 -source 8 src/feder/*.java src/feder/utils/*.java src/feder/types/*.java ; then

@@ -1,2 +1,7 @@
+##
+# Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
+# test_return_false.fd
+##
+
 include "stdc.fd"
 return false

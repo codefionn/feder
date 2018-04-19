@@ -1,6 +1,6 @@
 ##
+# Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
 # test.fd
-# created by Fionn Langhans <fionn.langhans@gmail.com>
 #
 # This file tests the performance (the amount of consumed time)
 # of severel examples in some languages (C, Feder, Python, Java)

@@ -1,3 +1,4 @@
+::Copyright (C) 2018 Fionn Langhans <fionn.langhans@gmail.com>
 @echo off
 
 mkdir /parents "C:\Program Files\jfederc"

@@ -1,4 +1,5 @@
 @echo off
+:: Copyright (C) 2018 Fionn Langhans
 
 call:test test.fd
 call:test test_array
