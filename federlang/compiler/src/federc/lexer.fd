@@ -154,6 +154,7 @@ namespace compiler
                                    "global")
 
         class LexerHelper
+            String name
             String error
             int32 error_count
 
@@ -174,6 +175,7 @@ namespace compiler
             int32 scopeSquare
 
             func init
+                name = ""
                 error = String
                 error_count = 0
 
@@ -268,6 +270,7 @@ namespace compiler
                 ;
 
 
+                error += "File=" + name + ", "
                 error += "Line=" + iLine + "\n"
                 error += sLine
                 error += "\n"
@@ -463,13 +466,13 @@ namespace compiler
         # interface fn_buffer_readbyte (in 'helper'). If the buffer's end has
         # been reached, the buffer will be closed by 'fn_buffer_close' (in
         # 'helper').
-        #
+        # 
         # @param tokenKeys The result of lexer (tokenizer), These are tokens,
         # which described the elements in 'tokenValues' (The elements of this
         # array can have the values from 'compiler.LEX_*' (wildcard)
         # @param tokenValues The result of the lexer (tokennizer). The elements
         # of this list are the real values, described by 'tokenKeys'.
-        #
+        # 
         # @return Returns true, if the Lexer processed the buffer successfully.
         # If an error occures, while processing the buffer, the error
         # description is added to 'error'.
@@ -650,6 +653,8 @@ namespace compiler
                                 tokenValues,
                                 tokenPositions, "Invalid character")
             ;
+
+            helper.fn_buffer_close(helper.buffer)
 
             # error_count is null => No error occured
             return helper.error_count == 0

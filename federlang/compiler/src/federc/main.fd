@@ -11,6 +11,7 @@ include "stdio.fd"
 include "federc/compile.fd"
 include "federc/help.fd"
 include "federc/license.fd"
+include "federc/pretty_printer.fd"
 
 if args.length() == 1
     compiler.help.err()
@@ -18,6 +19,12 @@ if args.length() == 1
 ;
 
 global FEDERC_VERSION = "1.0"
+
+cargs = String[0]
+# Ignore the file argument
+for i = 1, i < args.length(), i++
+    append(cargs, String from args.at(i))
+;
 
 if isEqual(String from args.at(1), "help")
     # Help was requested
@@ -53,7 +60,13 @@ if isEqual(String from args.at(1), "help")
 else if isEqual(String from args.at(1), "compile")
 
 else if isEqual(String from args.at(1), "style")
+    # Give 'cargs' to the command interpreter of
+    # the pretty printer
+    if !compiler.pretty.command(cargs)
+        return false
+    ;
 
+    return true
 else if isEqual(String from args.at(1), "license")
     # Print the license of this program
     compiler.federc.license()

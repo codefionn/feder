@@ -12,7 +12,24 @@ namespace compiler
             io.err.println("    federc help")
         ;
 
+        func err_unknown_option(String opt)
+            io.err.print("Unknown option: ")
+            io.err.println(opt)
+            err()
+        ;
+
         func _printOperation(String opName)
+            io.print("    ")
+            io.print(opName)
+
+            length = 10 - opName.length()
+            for length > 0
+                io.print(' ')
+                length--
+            ;
+        ;
+
+        func _printOption(String opName)
             io.print("    ")
             io.print(opName)
 
@@ -53,9 +70,18 @@ namespace compiler
 
         func style
             io.println("Usage:")
-            io.println("   federc style [options] [files]")
+            io.println("    federc style [options] [files]")
             io.println("[options]")
             
+            _printOption("-suffix [ext]")
+            io.println("Use [ext] as extention for the new files")
+            _printOption("")
+            io.println("Default: \"\"")
+
+            _printOption("-tab")
+            io.println("Use a different \"tab\"")
+            _printOption("")
+            io.println("Default: 4 spaces")
         ;
 
         func license

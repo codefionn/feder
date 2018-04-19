@@ -1,0 +1,105 @@
+##
+# federc/pretty_printer.fd
+# created by Fionn Langhans <fionn.langhans@gmail.com>
+#
+# This file is a pretty printer for humans
+##
+
+include "stdio.fd"
+include "federc/help.fd"
+include "federc/lexer.fd"
+
+namespace compiler
+    namespace pretty
+        bool interface int_printToBuffer(object buffer, String s)
+
+        # Applyable to int_printToBuffer
+        bool func printToFile(object buffer, String s)
+            return (File from buffer).write(s)
+        ;
+
+        bool func command(String[] args)
+            if len(args) == 1
+                compiler.help.err()
+            ;
+
+            String[] files = String[0]
+            String suffix = ""
+            String tab = "    "
+
+            int32 flag = 0
+            FLAG_FILENAME = 0
+            FLAG_SUFFIX = 1
+            FLAG_TAB = 2
+
+            for i = 1, i < len(args), i++
+                if args[i].startsWith("-")
+                    if isEqual(args[i], "-suffix")
+                        flag = FLAG_SUFFIX
+                    else if isEqual(args[i], "-tab")
+                        flag = FLAG_TAB
+                    else
+                        compiler.help.err_unknown_option(args[i])
+                        return false
+                    ;
+                else if flag != FLAG_FILENAME
+                    if flag == FLAG_SUFFIX
+                        suffix = args[i]
+                    else if flag == FLAG_TAB
+                        suffix = args[i]
+                    ;
+                else if args[i].startsWith("\\-")
+                    # Ignore first - (would be option)
+                    append(files, args[i].subString(2))
+                else
+                    append(files, args[i])
+                ;
+            ;
+
+            for i = 0, i < len(files), i++
+                File f = File
+                if !f.open(files[i], "r")
+                    io.err.print("Can't read file ")
+                    io.err.println(files[i])
+                    continue
+                ;
+
+                # Give the user a message
+                io.print("Pretty printing file ")
+                io.print(files[i])
+                if suffix.isEmpty()
+                    io.println()
+                else
+                    io.print(" to ")
+                    io.print(files[i])
+                    io.print(suffix)
+                    io.println()
+                ;
+
+                Lex = compiler.lexer.LexerHelper
+                Lex.name = files[i]
+                Lex.buffer = object from f
+                Lex.fn_buffer_readbyte = compiler.lexer.readbyteFile
+                Lex.fn_buffer_close = compiler.lexer.closeFile
+
+                TokenKeys = int32[0]
+                TokenValues = String[0]
+                TokenPositions = int32[0]
+                if !compiler.lexer.lex(Lex,
+                                       TokenKeys, TokenValues, TokenPositions)
+                    
+                    continue
+                ;
+
+                int32 scope = 0
+                int32 int_scope = 0
+
+                for i = 0, i < len(TokenKeys), i++
+                    io.print(TokenValues[i])
+                ;
+            ;
+
+            return true
+        ;
+    ;
+;
