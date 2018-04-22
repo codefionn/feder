@@ -151,7 +151,28 @@ namespace compiler
                                    "from",
                                    "true", "false", "null",
                                    "include", "import",
-                                   "global")
+                                   "global", "namespace")
+        global KEYWORD_CLASS = 0
+        global KEYWORD_TYPE = 1
+        global KEYWORD_FUNC = 2
+        global KEYWORD_INTERFACE = 3
+        global KEYWORD_WHILE = 4
+        global KEYWORD_FOR = 5
+        global KEYWORD_IF = 6
+        global KEYWORD_ELSE = 7
+        global KEYWORD_BREAK = 8
+        global KEYWORD_CONTINUE = 9
+        global KEYWORD_RETURN = 10
+        global KEYWORD_LEN = 11
+        global KEYWORD_APPEND = 12
+        global KEYWORD_FROM = 13
+        global KEYWORD_TRUE = 14
+        global KEYWORD_FALSE = 15
+        global KEYWORD_NULL = 16
+        global KEYWORD_INCLUDE = 17
+        global KEYWORD_IMPORT = 18
+        global KEYWORD_GLOBAL = 19
+        global KEYWORD_NAMESPACE = 20
 
         class LexerHelper
             String name
@@ -174,6 +195,8 @@ namespace compiler
             int32 scopeCurly
             int32 scopeSquare
 
+            bool addline_direct
+
             func init
                 name = ""
                 error = String
@@ -188,6 +211,8 @@ namespace compiler
 
                 scopeCurly = 0
                 scopeSquare = 0
+
+                addline_direct = false
             ;
 
             bool func isKeyword(String s)
@@ -240,6 +265,16 @@ namespace compiler
 
                 iLine++
                 column = 0
+            ;
+
+            func addUnitLine(int32[] tokenKeys,
+                             String[] tokenValues,
+                             int32[] tokenPositions)
+                if addline_direct
+                    newLine(tokenKeys, tokenValues, tokenPositions)
+                else
+                    linesInUnit++
+                ;
             ;
 
             ##
@@ -317,7 +352,7 @@ namespace compiler
                         helper.readNextChar()
                     ;
                             
-                    helper.linesInUnit++
+                    helper.addUnitLine(tokenKeys, tokenValues, tokenPositions)
                     continue
                 ;
                         
@@ -398,7 +433,7 @@ namespace compiler
                         # No lines must be added,
                         # because the source code unit could continue
                         # following the end of this comment
-                        helper.linesInUnit++
+                        helper.addUnitLine(tokenKeys, tokenValues, tokenPositions)
                         continue
                     ;
 
@@ -499,7 +534,7 @@ namespace compiler
                     if helper.scopeCurly == 0 && helper.scopeSquare == 0
                         helper.newLine(tokenKeys, tokenValues, tokenPositions)
                     else
-                        helper.linesInUnit++
+                        helper.addUnitLine(tokenKeys, tokenValues, tokenPositions)
                     ;
 
                     continue

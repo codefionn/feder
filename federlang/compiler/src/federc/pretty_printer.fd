@@ -11,6 +11,101 @@ include "federc/lexer.fd"
 
 namespace compiler
     namespace pretty
+        bool func _readFile(String[] files, int32 i,
+                            int32[] TokenKeys,
+                            String[] TokenValues,
+                            int32[] TokenPositions,
+                            
+                            String suffix)
+
+            File f = File
+            if !f.open(files[i], "r")
+                io.err.print("Can't read file ")
+                io.err.println(files[i])
+                return false
+            ;
+
+            # Give the user a message
+            io.print("Pretty printing file ")
+            io.print(files[i])
+            if suffix.isEmpty()
+                io.println()
+            else
+                io.print(" to ")
+                io.print(files[i])
+                io.print(suffix)
+                io.println()
+            ;
+
+            Lex = compiler.lexer.LexerHelper
+            #Lex.addline_direct = true
+            Lex.name = files[i]
+            Lex.buffer = object from f
+            Lex.fn_buffer_readbyte = compiler.lexer.readbyteFile
+            Lex.fn_buffer_close = compiler.lexer.closeFile
+
+
+            if !compiler.lexer.lex(Lex,
+                    TokenKeys, TokenValues, TokenPositions)
+                # No notice for now
+                # if you think it is neccessary email me
+                return false
+            ;
+
+            return true
+        ;
+
+        func _writeTo(File file, String s)
+            io.print(s)
+        ;
+
+        bool func _shouldWriteNewLine(int32 i,
+                                      int32[] tokenKeys,
+                                      String[] tokenValues)
+            if i > 1 && tokenKeys[i-1] == LEX_LINE && ((
+                isEqual(tokenKeys[i-2], LEX_OPERATOR) &&
+                    !isEqual(tokenValues[i-2], ";"))
+                || !isEqual(tokenKeys[i-2], LEX_OPERATOR))
+
+                return false
+            ;
+
+            return true
+        ;
+
+        bool func _shouldWriteSpace(int32 lastTokenKey,
+                                    String lastTokenValue,
+                                    int32 currentTokenKey,
+                                    String currentTokenValue)
+            if isEqual(lastTokenKey, LEX_LINE)
+                return false
+            ;
+
+            if isEqual(lastTokenKey, LEX_OPERATOR) && (
+                isEqual(lastTokenValue, "(")
+                || isEqual(lastTokenValue, ")")
+                || isEqual(lastTokenValue, "[")
+                || isEqual(lastTokenValue, "]")
+                || isEqual(lastTokenValue, "!")
+                || isEqual(lastTokenValue, ";")
+                || isEqual(lastTokenValue, "."))
+
+                return false
+            ;
+
+            if isEqual(currentTokenKey, LEX_OPERATOR) && (
+                isEqual(currentTokenValue, ".")
+                || isEqual(currentTokenValue, "(")
+                || isEqual(currentTokenValue, ")")
+                || isEqual(currentTokenValue, "]")
+                || isEqual(currentTokenValue, ","))
+
+                return false
+            ;
+
+            return true
+        ;
+
         bool interface int_printToBuffer(object buffer, String s)
 
         # Applyable to int_printToBuffer
@@ -26,6 +121,7 @@ namespace compiler
             String[] files = String[0]
             String suffix = ""
             String tab = "    "
+            int32 tab_length = 4
 
             int32 flag = 0
             FLAG_FILENAME = 0
@@ -56,46 +152,92 @@ namespace compiler
                 ;
             ;
 
+            tokenKeys = int32[0]
+            tokenValues = String[0]
+            tokenPositions = int32[0]
+
             for i = 0, i < len(files), i++
-                File f = File
-                if !f.open(files[i], "r")
-                    io.err.print("Can't read file ")
-                    io.err.println(files[i])
-                    continue
-                ;
-
-                # Give the user a message
-                io.print("Pretty printing file ")
-                io.print(files[i])
-                if suffix.isEmpty()
-                    io.println()
-                else
-                    io.print(" to ")
-                    io.print(files[i])
-                    io.print(suffix)
-                    io.println()
-                ;
-
-                Lex = compiler.lexer.LexerHelper
-                Lex.name = files[i]
-                Lex.buffer = object from f
-                Lex.fn_buffer_readbyte = compiler.lexer.readbyteFile
-                Lex.fn_buffer_close = compiler.lexer.closeFile
-
-                TokenKeys = int32[0]
-                TokenValues = String[0]
-                TokenPositions = int32[0]
-                if !compiler.lexer.lex(Lex,
-                                       TokenKeys, TokenValues, TokenPositions)
                     
+                if !_readFile(files, i,
+                    tokenKeys, tokenValues, tokenPositions, suffix)
+
+                    # Reset
+                    tokenKeys = int32[0]
+                    tokenValues = String[0]
+                    tokenPositions = int32[0]
                     continue
                 ;
+
 
                 int32 scope = 0
+                bool scope_next_add = false
                 int32 int_scope = 0
+                int32 column = 0
+                File file_output = null
+                
+                for i = 0, i < len(tokenKeys), i++
+                    if (isEqual(tokenKeys[i], LEX_KEYWORD)
+                        && (isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_IF])
+                            || isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_ELSE])
+                            || isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_CLASS])
+                            || isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_NAMESPACE])
+                            || isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_FUNC])
+                            || isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_FOR])
+                            || isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_WHILE])
+                            || isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_TYPE])))
 
-                for i = 0, i < len(TokenKeys), i++
-                    io.print(TokenValues[i])
+                        scope_next_add = true
+                    ;
+
+
+                    if isEqual(tokenKeys[i], LEX_LINE)
+                        column = 0
+                        if _shouldWriteNewLine(i, tokenKeys, tokenValues)
+                            _writeTo(file_output, "\n")
+                        ;
+     
+                        if scope_next_add
+                            scope++
+                            scope_next_add = false
+                        ;                       
+
+                        if ((i + 1) < len(tokenKeys)
+                            && ((isEqual(tokenKeys[i + 1], LEX_OPERATOR)
+                                && isEqual(tokenValues[i + 1], ";"))
+                                    || (isEqual(tokenKeys[i + 1], LEX_KEYWORD)
+                                && isEqual(tokenValues[i + 1], "else"))))
+
+                            scope--
+                        ;
+
+                        if ((i + 1) < len(tokenKeys)
+                            && tokenKeys[i + 1] != LEX_LINE)
+                            # We should write a bit space in front of this line
+                            # (because it's not an empty one)
+
+                            for ii = 0, ii < scope, ii++
+                                _writeTo(file_output, tab)
+                                if isEqual(tab, "\t")
+                                    column += tab_length
+                                else
+                                    column *= tab.length()
+                                ;
+                            ;
+                        ;
+
+                        continue
+                    ;
+
+                    if i > 0 && _shouldWriteSpace(tokenKeys[i-1],
+                        tokenValues[i-1],
+                        tokenKeys[i], tokenValues[i])
+                            
+                        _writeTo(file_output, " ")
+                        column += 1
+                    ;
+
+                    _writeTo(file_output, tokenValues[i])
+                    column *= tokenValues[i].length()
                 ;
             ;
 
