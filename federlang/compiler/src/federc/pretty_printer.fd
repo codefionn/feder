@@ -11,6 +11,11 @@ include "federc/lexer.fd"
 
 namespace compiler
     namespace pretty
+        ##
+        # This function was written for the function below:
+        # command(args). It reads a files (path given: files[i])
+        # and adds the result to TokenKeys, TokenValues, TokenPositions
+        ##
         bool func _readFile(String[] files, int32 i,
                             int32[] TokenKeys,
                             String[] TokenValues,
@@ -41,6 +46,7 @@ namespace compiler
             #Lex.addline_direct = true
             Lex.name = files[i]
             Lex.buffer = object from f
+            Lex.addComment = true
             Lex.fn_buffer_readbyte = compiler.lexer.readbyteFile
             Lex.fn_buffer_close = compiler.lexer.closeFile
 
@@ -59,6 +65,14 @@ namespace compiler
             io.print(s)
         ;
 
+        ##
+        # This function checks if the newline written by the 
+        # programmer should be written to the pretty version
+        # or not
+        # @param i 0 <= i < len(tokenKeys)
+        # @param tokenKeys
+        # @param tokenValues never null and len(tokenKeys) == len(tokenValues)
+        ##
         bool func _shouldWriteNewLine(int32 i,
                                       int32[] tokenKeys,
                                       String[] tokenValues)
@@ -73,6 +87,14 @@ namespace compiler
             return true
         ;
 
+        ##
+        # @param lastTokenKey
+        # @param lastTokenValue
+        # @param currentTokenKey
+        # @param currentTokenValue
+        # @return Returns true, if a new space character should
+        # be written between lastTokenKey and currentTokenKey
+        ##
         bool func _shouldWriteSpace(int32 lastTokenKey,
                                     String lastTokenValue,
                                     int32 currentTokenKey,
@@ -81,11 +103,17 @@ namespace compiler
                 return false
             ;
 
+            if isEqual(lastTokenKey, LEX_KEYWORD) && (
+                isEqual(lastTokenValue, lexer.keywords[lexer.KEYWORD_FOR])
+                || isEqual(lastTokenValue, lexer.keywords[lexer.KEYWORD_WHILE])
+                || isEqual(lastTokenValue, lexer.keywords[lexer.KEYWORD_IF]))
+
+                return true
+            ;
+
             if isEqual(lastTokenKey, LEX_OPERATOR) && (
                 isEqual(lastTokenValue, "(")
-                || isEqual(lastTokenValue, ")")
                 || isEqual(lastTokenValue, "[")
-                || isEqual(lastTokenValue, "]")
                 || isEqual(lastTokenValue, "!")
                 || isEqual(lastTokenValue, ";")
                 || isEqual(lastTokenValue, "."))
@@ -113,6 +141,10 @@ namespace compiler
             return (File from buffer).write(s)
         ;
 
+        ##
+        # @param args object at index 0 should be "style"
+        # (the command which invokes this one)
+        ##
         bool func command(String[] args)
             if len(args) == 1
                 compiler.help.err()
@@ -157,7 +189,6 @@ namespace compiler
             tokenPositions = int32[0]
 
             for i = 0, i < len(files), i++
-                    
                 if !_readFile(files, i,
                     tokenKeys, tokenValues, tokenPositions, suffix)
 
@@ -168,12 +199,12 @@ namespace compiler
                     continue
                 ;
 
-
                 int32 scope = 0
-                bool scope_next_add = false
+                bool scopeNextAdd = false
                 int32 int_scope = 0
                 int32 column = 0
-                File file_output = null
+                File fileOutput = null
+                bool inMultiComment = false
                 
                 for i = 0, i < len(tokenKeys), i++
                     if (isEqual(tokenKeys[i], LEX_KEYWORD)
@@ -186,19 +217,30 @@ namespace compiler
                             || isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_WHILE])
                             || isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_TYPE])))
 
-                        scope_next_add = true
+                        scopeNextAdd = true
                     ;
 
+                    if (isEqual(tokenKeys[i], LEX_OPERATOR)
+                        && (isEqual(tokenValues[i], "(")
+                            || isEqual(tokenValues[i], "[")))
+
+                        int_scope++
+                    else if (isEqual(tokenKeys[i], LEX_OPERATOR)
+                        && (isEqual(tokenValues[i], ")")
+                            || isEqual(tokenValues[i], "]")))
+                        
+                        int_scope--
+                    ;
 
                     if isEqual(tokenKeys[i], LEX_LINE)
                         column = 0
                         if _shouldWriteNewLine(i, tokenKeys, tokenValues)
-                            _writeTo(file_output, "\n")
+                            _writeTo(fileOutput, "\n")
                         ;
      
-                        if scope_next_add
+                        if scopeNextAdd
                             scope++
-                            scope_next_add = false
+                            scopeNextAdd = false
                         ;                       
 
                         if ((i + 1) < len(tokenKeys)
@@ -215,12 +257,12 @@ namespace compiler
                             # We should write a bit space in front of this line
                             # (because it's not an empty one)
 
-                            for ii = 0, ii < scope, ii++
-                                _writeTo(file_output, tab)
+                            for ii = 0, ii < scope + int_scope, ii++
+                                _writeTo(fileOutput, tab)
                                 if isEqual(tab, "\t")
                                     column += tab_length
                                 else
-                                    column *= tab.length()
+                                    column += tab.length()
                                 ;
                             ;
                         ;
@@ -228,16 +270,120 @@ namespace compiler
                         continue
                     ;
 
-                    if i > 0 && _shouldWriteSpace(tokenKeys[i-1],
+                    if !inMultiComment && i > 0 && _shouldWriteSpace(tokenKeys[i-1],
                         tokenValues[i-1],
                         tokenKeys[i], tokenValues[i])
                             
-                        _writeTo(file_output, " ")
+                        _writeTo(fileOutput, " ")
                         column += 1
                     ;
 
-                    _writeTo(file_output, tokenValues[i])
-                    column *= tokenValues[i].length()
+                    String startValue = null
+                    String endValue = null
+                    if tokenKeys[i] == LEX_STRING
+                        startValue = "\""
+                        endValue = startValue
+                    else if tokenKeys[i] == LEX_CHAR
+                        startValue = "\'"
+                        endValue = startValue
+                    else if tokenKeys[i] == LEX_COMMENT
+                        tokenValues[i].trim()
+                        if !tokenValues[i].startsWith("#")
+                            tokenValues[i].insert("# ", 0)
+                        ;
+
+                        if inMultiComment || ((i + 1) < len(tokenKeys)
+                                && tokenKeys[i + 1] != LEX_LINE)
+                            endValue = "\n"
+                        ;
+                    else if tokenKeys[i] == LEX_COMMENT_MULTI
+                        startValue = "##"
+                        endValue = "##"
+                    else if tokenKeys[i] == LEX_COMMENT_MULTI_END
+                        inMultiComment = false
+                        endValue = "##"
+                    else if tokenKeys[i] == LEX_COMMENT_MULTI_START
+                        inMultiComment = true
+                        startValue = "##"
+                        endValue = "\n"
+                        for ii = 0, ii < scope + int_scope, ii++
+                            endValue += tab
+                            if isEqual(tab, "\t")
+                                column += tab_length
+                            else
+                                column += tab.length()
+                            ;
+                        ;
+                    ;
+                    
+                    if int_scope > 0 && column >= 40 && isEqual(tokenKeys[i], LEX_OPERATOR) && (
+                        isEqual(tokenValues[i], "||")
+                        || isEqual(tokenValues[i], "&&"))
+                        
+                        column = 0
+                        _writeTo(fileOutput, "\n")
+                        for ii = 0, ii < scope + int_scope, ii++
+                            _writeTo(fileOutput, tab)
+                            if isEqual(tab, "\t")
+                                column += tab_length
+                            else
+                                column += tab.length()
+                            ;
+                        ;
+                    ;
+
+                    if int_scope > 0 && (tokenKeys[i] == LEX_SYMBOL
+                        || tokenKeys[i] == LEX_STRING
+                        || tokenKeys[i] == LEX_CHAR)
+                        
+                        lenToken = tokenValues[i].length()
+                        if (tokenKeys[i] == LEX_STRING
+                            || tokenKeys[i] == LEX_CHAR)
+
+                            lenToken += 2
+                        ;
+
+                        if column + lenToken >= 80
+                            column = 0
+                            _writeTo(fileOutput, "\n")
+                            for ii = 0, ii < scope + int_scope, ii++
+                                _writeTo(fileOutput, tab)
+                                if isEqual(tab, "\t")
+                                    column += tab_length
+                                else
+                                    column += tab.length()
+                                ;
+                            ;
+                        ;
+                    ;
+
+                    if startValue != null
+                        _writeTo(fileOutput, startValue)
+                        column += startValue.length()
+                    ;
+    
+                    _writeTo(fileOutput, tokenValues[i])
+                    column += tokenValues[i].length()
+
+                    if endValue != null
+                        _writeTo(fileOutput, endValue)
+                        column += endValue.length()
+                    ;
+
+                    if int_scope > 0 && column >= 40 && isEqual(tokenKeys[i], LEX_OPERATOR) && (
+                        isEqual(tokenValues[i], ","))
+                        
+                        column = 0
+                        _writeTo(fileOutput, "\n")
+                        for ii = 0, ii < scope + int_scope, ii++
+                            _writeTo(fileOutput, tab)
+                            if isEqual(tab, "\t")
+                                column += tab_length
+                            else
+                                column += tab.length()
+                            ;
+                        ;
+                    ;
                 ;
             ;
 

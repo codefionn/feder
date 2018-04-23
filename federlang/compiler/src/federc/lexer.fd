@@ -21,6 +21,10 @@ namespace compiler
     global LEX_LINE = 7
     global LEX_COMMAND = 8
     global LEX_BUILDIN = 9
+    global LEX_COMMENT = 10
+    global LEX_COMMENT_MULTI = 11
+    global LEX_COMMENT_MULTI_START = 12
+    global LEX_COMMENT_MULTI_END= 13
 
     ##
     # Contains strings, which should be used, if you want a token (those
@@ -28,7 +32,8 @@ namespace compiler
     ##
     global ARRAY_LEX_NAMES = append(String[0], "symbol", "keyword",
         "operator", "string", "char", "integer", "double", "line",
-        "command", "buildin")
+        "command", "buildin", "comment", "comment-multi",
+        "comment-multi-start", "comment-multi-end")
 
     String func _constructLine_detect(int32 tokenKey)
         if tokenKey == LEX_STRING
@@ -195,6 +200,8 @@ namespace compiler
             int32 scopeCurly
             int32 scopeSquare
 
+            bool addComment
+
             bool addline_direct
 
             func init
@@ -213,6 +220,7 @@ namespace compiler
                 scopeSquare = 0
 
                 addline_direct = false
+                addComment = false
             ;
 
             bool func isKeyword(String s)
@@ -399,14 +407,17 @@ namespace compiler
         # @param tokenKeys
         # @param tokenValues
         ##
-        func _workOnComment(LexerHelper helper,
+        bool func _workOnComment(LexerHelper helper,
                             int32[] tokenKeys,
                             String[] tokenValues,
                             int32[] tokenPositions)
 
             String buffer_tokenValue = String
+            oldColumn = helper.column
+            oldLine = helper.iLine
             
             helper.readNextChar()
+            bool isFirst = true
             if helper.c == '#'
                 # It's a (possible) multi line comment
                 helper.readNextChar()
@@ -415,6 +426,10 @@ namespace compiler
                         helper.readNextChar()
                         if helper.c == '#'
                             break
+                        ;
+
+                        if helper.addComment
+                            buffer_tokenValue.addto(Byte.set('#'))
                         ;
 
                         continue
@@ -428,7 +443,18 @@ namespace compiler
                             helper.readNextChar()
                         ;
 
-                        helper.sLine.insert("\n", helper.sLine.length()-1)
+                        if helper.addComment
+                            if isFirst
+                                append(tokenKeys, LEX_COMMENT_MULTI_START)
+                                isFirst = false
+                            else
+                                append(tokenKeys, LEX_COMMENT)
+                            ;
+
+                            append(tokenValues, buffer_tokenValue)
+                            append(tokenPositions, oldColumn)
+                            buffer_tokenValue = String
+                        ;
 
                         # No lines must be added,
                         # because the source code unit could continue
@@ -436,22 +462,55 @@ namespace compiler
                         helper.addUnitLine(tokenKeys, tokenValues, tokenPositions)
                         continue
                     ;
+                    
+                    if helper.addComment
+                        buffer_tokenValue.addto(Byte.set(helper.c))
+                    ;
 
                     helper.readNextChar()
+                ;
+
+                if helper.c == '\0'
+                    # Comment ended, but not with ##
+                    io.err.println("Comment didn't end")
+                    helper.error_count++
+                    return false
                 ;
 
                 if helper.c != '\0'
                     helper.readNextChar()
                 ;
+
+                if helper.addComment
+                    if isFirst
+                        append(tokenKeys, LEX_COMMENT_MULTI)
+                    else
+                        append(tokenKeys, LEX_COMMENT_MULTI_END)
+                    ;
+
+                    append(tokenValues, buffer_tokenValue)
+                    append(tokenPositions, oldColumn)
+                ;
             
                 # End multi line comment
-                return
+                return true
             ;
 
             # It's a single line comment
             while helper.c != '\0' && helper.c != '\n' && helper.c != '\r'
+                if helper.addComment
+                    buffer_tokenValue.addto(Byte.set(helper.c))
+                ;
                 helper.readNextChar()
             ;
+
+            if helper.addComment
+                append(tokenKeys, LEX_COMMENT)
+                append(tokenValues, buffer_tokenValue)
+                append(tokenPositions, oldColumn)
+            ;
+
+            return true
         ;
 
         ##
