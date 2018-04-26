@@ -18,7 +18,6 @@ namespace compiler
         # 'index' (Just use the token keys as indecis for this array).
         ##
         global ARRAY_SYNTAX_AWAIT = append(object[0],
-
                                            # Symbol
                                            object from append(int32[0],
                                                 LEX_KEYWORD,
@@ -280,6 +279,13 @@ namespace compiler
 
         ##
         # Operator-precedence parser
+        # @param lhs
+        # @param tokenKeys
+        # @param tokenValues
+        # @param tokenPositions
+        # @param indexStart
+        # @param indexEnd
+        # @param min_precedence
         ##
         SyntaxTreeBranch func _createParseTreeSub(SyntaxTreeBranch lhs,
                                                   int32[] tokenKeys,
@@ -328,6 +334,13 @@ namespace compiler
 
         ##
         # Operator-precendence parser
+        # @param tokenKeys len(tokenKeys) == len(tokenValues)
+        # @param tokenValues len(tokenKeys) == len(tokenValues)
+        # @param tokenPositions len(tokenKeys) == len(tokenPositions)
+        # @param indexStart 0 <= indexStart < len(tokenKeys)
+        # && indexStart <= indexEnd
+        # @param indexEnd 0 <= indexEnd < len(tokenKey)
+        # && indexStart <= indexEnd
         ##
         SyntaxTreeBranch func _createParseTree(int32[] tokenKeys,
                                                String[] tokenValues,
@@ -433,7 +446,33 @@ namespace compiler
                                                int32 indexEnd)
             
             SyntaxTreeBranch master = SyntaxTreeBranch
-            
+            startBranch = indexStart
+            #iLine = 0
+            for i = indexStart, i <= indexEnd, i++
+                if i == indexEnd || tokenKeys[i] == LEX_LINE
+                    #iLine++
+                    #io.print("Current Line:")
+                    #io.println(iLine)
+
+                    # The last index
+                    endBranch = i - 1
+
+                    # End of the syntax unit
+                    SyntaxTreeBranch result = _createParseTree(tokenKeys,
+                                                               tokenValues,
+                                                               tokenPositions,
+                                                               startBranch,
+                                                               endBranch)
+                    # Check if the branch is empty, if not add to master
+                    if len(result.parts) > 0
+                        master.addBranch(result)
+                    ;
+
+                    # Set startBranch to the beginning of the next line
+                    startBranch = i + 1 # Current i is a line (or end)
+                                        # so the next token is the next line
+                ;
+            ;
         ;
     ;
 ;

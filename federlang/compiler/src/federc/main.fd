@@ -58,7 +58,11 @@ if isEqual(String from args.at(1), "help")
     io.err.println("    federc help")
     return false
 else if isEqual(String from args.at(1), "compile")
+    if !compiler.compile.command(cargs)
+        return false
+    ;
 
+    return true
 else if isEqual(String from args.at(1), "style")
     # Give 'cargs' to the command interpreter of
     # the pretty printer

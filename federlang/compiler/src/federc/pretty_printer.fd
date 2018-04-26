@@ -126,7 +126,9 @@ namespace compiler
                 || isEqual(currentTokenValue, "(")
                 || isEqual(currentTokenValue, ")")
                 || isEqual(currentTokenValue, "]")
-                || isEqual(currentTokenValue, ","))
+                || isEqual(currentTokenValue, "[")
+                || isEqual(currentTokenValue, ",")
+                || isEqual(currentTokenValue, "[]"))
 
                 return false
             ;
@@ -147,7 +149,8 @@ namespace compiler
         ##
         bool func command(String[] args)
             if len(args) == 1
-                compiler.help.err()
+                compiler.help.err(args[0])
+                return false
             ;
 
             String[] files = String[0]
@@ -161,13 +164,13 @@ namespace compiler
             FLAG_TAB = 2
 
             for i = 1, i < len(args), i++
-                if args[i].startsWith("-")
+                if isEqual(flag, FLAG_FILENAME) && args[i].startsWith("-")
                     if isEqual(args[i], "-suffix")
                         flag = FLAG_SUFFIX
                     else if isEqual(args[i], "-tab")
                         flag = FLAG_TAB
                     else
-                        compiler.help.err_unknown_option(args[i])
+                        compiler.help.err_unknown_option(args[0], args[i])
                         return false
                     ;
                 else if flag != FLAG_FILENAME
@@ -182,6 +185,11 @@ namespace compiler
                 else
                     append(files, args[i])
                 ;
+            ;
+
+            if len(files) == 0
+                compiler.help.err(args[0])
+                return false
             ;
 
             tokenKeys = int32[0]
@@ -199,12 +207,20 @@ namespace compiler
                     continue
                 ;
 
+                # 'global' scope started by: class, func, if, else
+                # namespace, for, while, type
                 int32 scope = 0
                 bool scopeNextAdd = false
+                # int_scope = internal scope
                 int32 int_scope = 0
+                # the column counted in the current line
+                # important for: Do not use more than 80 characters in a line
                 int32 column = 0
                 File fileOutput = null
                 bool inMultiComment = false
+
+                int32 startSoftCut = 60
+                int32 startHardCut = 80
                 
                 for i = 0, i < len(tokenKeys), i++
                     if (isEqual(tokenKeys[i], LEX_KEYWORD)
@@ -224,21 +240,34 @@ namespace compiler
                         && (isEqual(tokenValues[i], "(")
                             || isEqual(tokenValues[i], "[")))
 
+                        # int_scope = internal scope
+                        # someting in () or []
                         int_scope++
                     else if (isEqual(tokenKeys[i], LEX_OPERATOR)
                         && (isEqual(tokenValues[i], ")")
                             || isEqual(tokenValues[i], "]")))
-                        
+
+                        # int_scope = internal scope
+                        # someting in () or []                       
                         int_scope--
                     ;
 
-                    if isEqual(tokenKeys[i], LEX_LINE)
-                        column = 0
-                        if _shouldWriteNewLine(i, tokenKeys, tokenValues)
+                    # Starting a new line ?
+                    if isEqual(tokenKeys[i], LEX_LINE) || (
+                        isEqual(tokenKeys[i], LEX_KEYWORD) && (
+                            isEqual(tokenValues[i], lexer.keywords[lexer.KEYWORD_CLASS])))
+                        column = 0 # Reset columns (a new line starts
+                                   # with 0 columns)
+                        if (!isEqual(tokenKeys[i], LEX_LINE)
+                            || _shouldWriteNewLine(i, tokenKeys, tokenValues))
+
                             _writeTo(fileOutput, "\n")
                         ;
      
-                        if scopeNextAdd
+                        if scopeNextAdd && isEqual(tokenKeys[i], LEX_LINE)
+                            # Means: the current syntax unit requires a body
+                            # => Start a new body (or at least add 1 to the
+                            # global scope)
                             scope++
                             scopeNextAdd = false
                         ;                       
@@ -249,6 +278,7 @@ namespace compiler
                                     || (isEqual(tokenKeys[i + 1], LEX_KEYWORD)
                                 && isEqual(tokenValues[i + 1], "else"))))
 
+                            # Srry, the scope just ended
                             scope--
                         ;
 
@@ -267,10 +297,20 @@ namespace compiler
                             ;
                         ;
 
-                        continue
+                        if isEqual(tokenKeys[i], LEX_LINE)
+                            continue
+                        ;
                     ;
 
-                    if !inMultiComment && i > 0 && _shouldWriteSpace(tokenKeys[i-1],
+                    # Should a space be written to the
+                    # current buffer ?
+                    # 
+                    # Not in multi comments: That's because all comments
+                    # following the 1. comment line of the multi comment would
+                    # be placed one space to the right (in relation to the first
+                    # line)
+                    if !inMultiComment && i > 0 && _shouldWriteSpace(
+                        tokenKeys[i-1],
                         tokenValues[i-1],
                         tokenKeys[i], tokenValues[i])
                             
@@ -295,28 +335,36 @@ namespace compiler
                         if inMultiComment || ((i + 1) < len(tokenKeys)
                                 && tokenKeys[i + 1] != LEX_LINE)
                             endValue = "\n"
+                            for ii = 0, ii < scope + int_scope, ii++
+                                endValue += tab
+                            ;
                         ;
                     else if tokenKeys[i] == LEX_COMMENT_MULTI
-                        startValue = "##"
-                        endValue = "##"
+                        tokenValues[i].trim()
+                        startValue = "## "
+                        endValue = " ##"
                     else if tokenKeys[i] == LEX_COMMENT_MULTI_END
+                        tokenValues[i].trim()
                         inMultiComment = false
-                        endValue = "##"
+
+                        if tokenValues[i].isEmpty()
+                            endValue = "##"
+                        else
+                            endValue = " ##"
+                        ;
                     else if tokenKeys[i] == LEX_COMMENT_MULTI_START
+                        tokenValues[i].trim()
                         inMultiComment = true
-                        startValue = "##"
+                        startValue = "## "
                         endValue = "\n"
                         for ii = 0, ii < scope + int_scope, ii++
                             endValue += tab
-                            if isEqual(tab, "\t")
-                                column += tab_length
-                            else
-                                column += tab.length()
-                            ;
                         ;
                     ;
                     
-                    if int_scope > 0 && column >= 40 && isEqual(tokenKeys[i], LEX_OPERATOR) && (
+                    # We might want to start a new line in front of the
+                    # current token
+                    if int_scope > 0 && column >= startSoftCut && isEqual(tokenKeys[i], LEX_OPERATOR) && (
                         isEqual(tokenValues[i], "||")
                         || isEqual(tokenValues[i], "&&"))
                         
@@ -332,6 +380,8 @@ namespace compiler
                         ;
                     ;
 
+                    # We might want to start a new line in front of the
+                    # current token
                     if int_scope > 0 && (tokenKeys[i] == LEX_SYMBOL
                         || tokenKeys[i] == LEX_STRING
                         || tokenKeys[i] == LEX_CHAR)
@@ -343,7 +393,7 @@ namespace compiler
                             lenToken += 2
                         ;
 
-                        if column + lenToken >= 80
+                        if column + lenToken >= startHardCut 
                             column = 0
                             _writeTo(fileOutput, "\n")
                             for ii = 0, ii < scope + int_scope, ii++
@@ -362,6 +412,7 @@ namespace compiler
                         column += startValue.length()
                     ;
     
+                    # Write the token's value to the buffer (e.g. file)
                     _writeTo(fileOutput, tokenValues[i])
                     column += tokenValues[i].length()
 
@@ -370,7 +421,9 @@ namespace compiler
                         column += endValue.length()
                     ;
 
-                    if int_scope > 0 && column >= 40 && isEqual(tokenKeys[i], LEX_OPERATOR) && (
+                    # We might want to start a new line
+                    # following the current token
+                    if int_scope > 0 && column >= startSoftCut && isEqual(tokenKeys[i], LEX_OPERATOR) && (
                         isEqual(tokenValues[i], ","))
                         
                         column = 0

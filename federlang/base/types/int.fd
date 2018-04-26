@@ -174,6 +174,8 @@ namespace c_intern_int
 ::rule buildin len_dataarray "fdGetTypeArrayLength ((fdtypearray*) {0})" int32
 ::rule buildin len_classarray "fdGetClassArrayLength ((fdclassarray*) {0})" int32
 ::rule buildin array_create_number "x" int32
+::rule buildin append_dataarray "fdAppendToTypeArray_{2}((fdtypearray*) {0}, {1})" 
+::rule buildin append_classarray "fdAppendToClassArray((fdclassarray*) {0}, (fdobject*) {1})" 
 
 # int16
 ::rule pattern + "{0} + {1}" int16 int16 int16

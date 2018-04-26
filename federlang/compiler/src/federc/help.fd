@@ -7,15 +7,21 @@ include "stdio.fd"
 
 namespace compiler
     namespace help
-        func err
+        func err(String operation)
             io.err.println("Help:")
-            io.err.println("    federc help")
+            io.err.print("    federc help ")
+            io.err.print(operation)
+            io.err.println()
         ;
 
-        func err_unknown_option(String opt)
+        func err
+            err("")
+        ;
+
+        func err_unknown_option(String op, String arg)
             io.err.print("Unknown option: ")
-            io.err.println(opt)
-            err()
+            io.err.println(arg)
+            err(op)
         ;
 
         func _printOperation(String opName)
@@ -33,7 +39,7 @@ namespace compiler
             io.print("    ")
             io.print(opName)
 
-            length = 10 - opName.length()
+            length = 20 - opName.length()
             for length > 0
                 io.print(' ')
                 length--
@@ -66,6 +72,12 @@ namespace compiler
             io.println("Usage:")
             io.println("    federc compile [options] [files]")
             io.println("[options]:")
+
+            _printOption("-output-dir [dir]")
+            io.println("Write output in the directory 'dir'")
+            _printOption("  -d [dir]")
+            io.println("Default: \"./build\"")
+            io.println()
         ;
 
         func style
@@ -77,11 +89,13 @@ namespace compiler
             io.println("Use [ext] as extention for the new files")
             _printOption("")
             io.println("Default: \"\"")
+            io.println()
 
             _printOption("-tab")
             io.println("Use a different \"tab\"")
             _printOption("")
             io.println("Default: 4 spaces")
+            io.println()
         ;
 
         func license

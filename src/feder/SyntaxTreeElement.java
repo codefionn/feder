@@ -2036,30 +2036,24 @@ public class SyntaxTreeElement {
 
 				for (int i = 1; i < ste.returnedClasses.size(); i++) {
 					FederBinding binding = ste.returnedClasses.get(i);
-					/*					if (!(binding instanceof FederClass) || !((FederClass) binding).isType()) {
-											throw new RuntimeException("Only 'append (array ar, type obj, ..)' is acceptable: "
-											                           + "Argument " + i + " is not a data type!");
-										}*/
 
-					FederClass fc = (FederClass) binding;
-					if (!FederBinding.areSameTypes(fc, ar.getType())) {
-						throw new RuntimeException("Argument " + i + " has not the same type as the array: " + fc.getName() + " != " + ar.getType().getName());
-					}
+					FederClass fc = null;
+                    if (binding != null) {
+                        fc = (FederClass) binding;
+    					if (!FederBinding.areSameTypes(fc, ar.getType())) {
+    						throw new RuntimeException("Argument " + i + " has not the same type as the array: " + fc.getName() + " != " + ar.getType().getName());
+    					}
+                    }
+                    FederRule rule = null;
+                    
+					if (FederBinding.isDataType (ar.getType()))
+                        rule = compiler.getApplyableRuleForBuildin("append_dataarray");
+                    else
+                        rule = compiler.getApplyableRuleForBuildin("append_classarray");
 
-					if (FederBinding.isDataType (ar.getType())) {
-						result.insert(0, "fdAppendToTypeArray_" + fc.generateCNameOnly() + " (");
-					} else {
-						result.insert(0, "fdAppendToClassArray(");
-					}
-
-					result.append(", ");
-					if (!FederBinding.isDataType (ar.getType())) {
-						result.append ("(fdobject*) ");
-					}
-
-					result.append(ste.results_list.get(i));
-
-					result.append(")");
+                    result = new StringBuilder(rule.applyRule(body,
+                        result.toString(), ste.results_list.get(i),
+                        fc == null ? "" : fc.generateCNameOnly()));
 				}
 
 				indexToken += lentokens + 2;
