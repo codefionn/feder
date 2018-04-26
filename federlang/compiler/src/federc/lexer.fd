@@ -135,6 +135,11 @@ namespace compiler
             file.close ()
         ;
 
+        byte func readbyteString (object reader0)
+            StringReader reader = StringReader from reader0
+            return reader.readNext()
+        ;
+
         global String[] operators = append (String[0],
                                     "(", ")", ",", ".", ";",
                                     "[]", "[", "]",

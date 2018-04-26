@@ -14,6 +14,17 @@ namespace h_intern_io
 ;
 
 namespace io
+    byte func readByte
+        byte b
+        :int c = (signed char) fgetc(stdin);
+        :if (c == EOF) {
+            :federobj_b = '\0';
+        :} else {
+            :federobj_b = (signed char) c;
+        :}
+        return b
+    ;
+
     String func readString
     	String result = String
     	byte b

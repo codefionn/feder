@@ -159,6 +159,11 @@ namespace compiler
             int32[] tokenKeys
             String[] tokenValues
 
+            func init
+                tokenKeys = int32[0]
+                tokenValues = String[0]
+            ;
+
             func addToken(int32 tokenKey, String tokenValue)
                 append(tokenKeys, tokenKey)
                 append(tokenValues, tokenValue)
@@ -307,7 +312,7 @@ namespace compiler
                 int32 op = precedence
                 # Next token, current is an operator
                 indexStart++
-                SyntaxTreeBranch rhs = null
+                SyntaxTreeBranch rhs = SyntaxTreeBranch
                 lastIndex = _asMuchAsPossible(rhs, tokenKeys, tokenValues,
                                               tokenPositions,
                                               indexStart, indexEnd)
@@ -315,11 +320,32 @@ namespace compiler
                     indexStart = lastIndex + 1
                 ;
 
-                precedence = precedences.getPresedence(tokenKeys[indexStart],
-                                                       tokenValues[indexStart])
-                while precedence >= op
-                    
-                    
+                if indexStart < indexEnd
+                    precedence = precedences.getPresedence(tokenKeys[indexStart],
+                        tokenValues[indexStart])
+                ;
+
+                while indexStart < len(tokenKeys) && indexStart <= indexEnd && precedence >= op
+                    SyntaxTreeBranch newrhs = null
+                    if len(rhs.parts) == 1
+                        newrhs = rhs
+                    else
+                        newrhs = SyntaxTreeBranch
+                    ;
+
+                    newrhs.operator = tokenValues[indexStart]
+
+                    lastIndex = _asMuchAsPossible(rhs,
+                        tokenKeys, tokenValues, tokenPositions,
+                        indexStart + 1, indexEnd)
+                    lastIndex
+                    indexStart = lastIndex + 1
+
+                    if newrhs != rhs
+                        newrhs.addBranch(rhs)
+                        rhs = newrhs
+                    ;
+
                     precedence = precedences.getPresedence(tokenKeys[indexStart],
                                                            tokenValues[indexStart])
                 ;
@@ -351,10 +377,13 @@ namespace compiler
             lastIndex = _asMuchAsPossible(lhs, tokenKeys, tokenValues,
                                                 tokenPositions,
                                                 indexStart, indexEnd)
-            SyntaxTreeBranch stb = null
+            if lastIndex == indexEnd
+                return lhs
+            ;
+
+            SyntaxTreeBranch stb = SyntaxTreeBranch
             if lastIndex >= 0
                 lastIndex++
-                stb = SyntaxTreeBranch
                 stb.addBranch(lhs)
             else
                 lastIndex = indexStart
@@ -438,6 +467,17 @@ namespace compiler
             return i
         ;
 
+        ##
+        # @param fileName
+        # @param tokenKeys
+        # @param tokenValues
+        # @param tokenPositions
+        # @param indexStart
+        # @param indexEnd
+        # @return Returns a master branch, containing several branches,
+        # which were found in the selected tokens (creates branch per line
+        # which then create more branches with an operator-precedence parser
+        ##
         SyntaxTreeBranch func createBranches(String fileName,
                                                int32[] tokenKeys,
                                                String[] tokenValues,

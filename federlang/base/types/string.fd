@@ -961,3 +961,27 @@ namespace c_intern_String
     :    return cString;
     :}
 ;
+
+class StringReader
+    int32 pos
+    String input
+
+    func init
+        pos = 0
+    ;
+
+    StringReader func new(String input)
+        this.input = input
+        return this
+    ;
+    
+    byte func readNext
+        if pos >= input.length()
+            return '\0'
+        ;
+
+        Byte result = input.at(pos)
+        pos++
+        return result.val
+    ;
+;

@@ -20,19 +20,32 @@ namespace compiler
                             String[] TokenValues,
                             int32[] TokenPositions)
 
-            File f = File
-            if !f.open(files[i], "r")
-                io.err.print("Can't read file ")
-                io.err.println(files[i])
-                return false
-            ;   
-
             Lex = compiler.lexer.LexerHelper
             Lex.name = files[i]
-            Lex.buffer = object from f
-            Lex.fn_buffer_readbyte = compiler.lexer.readbyteFile
-            Lex.fn_buffer_close = compiler.lexer.closeFile
 
+            if isEqual(files[i], "-")
+                String buffer = String
+                byte c = io.readByte()
+                while c != '\0'
+                    buffer.addto(Byte.set(c))
+                    c = io.readByte()
+                ;
+
+                Lex.buffer = object from StringReader.new(buffer)
+                Lex.fn_buffer_readbyte = compiler.lexer.readbyteString
+                io.println("Reading from stdin")
+            else 
+                File f = File
+                if !f.open(files[i], "r")
+                    io.err.print("Can't read file ")
+                    io.err.println(files[i])
+                    return false
+                ;
+
+                Lex.buffer = object from f
+                Lex.fn_buffer_readbyte = compiler.lexer.readbyteFile
+                Lex.fn_buffer_close = compiler.lexer.closeFile
+            ;
 
             if !compiler.lexer.lex(Lex,
                     TokenKeys, TokenValues, TokenPositions)
@@ -110,6 +123,13 @@ namespace compiler
                     append(masters, null)
                     continue
                 ;
+
+                master = syntax.createBranches(Files[i],
+                    TokenKeys, TokenValues, TokenPositions,
+                    0, len(TokenKeys) - 1)
+
+                io.print("Parts_len: ")
+                io.println(len(master.parts))
             ;
         ;
     ;
