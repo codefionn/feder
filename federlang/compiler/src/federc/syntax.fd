@@ -205,6 +205,7 @@ namespace compiler
                 return this
             ;
         ;
+
         class PrecedenceConfig
             # The operator
             String[] keys
@@ -308,7 +309,7 @@ namespace compiler
                                                          tokenValues[indexStart])
             String operator = tokenValues[indexStart]
             
-            while precedence >= min_precedence
+            while precedence >= min_precedence && indexStart < indexEnd
                 int32 op = precedence
                 # Next token, current is an operator
                 indexStart++
@@ -338,7 +339,6 @@ namespace compiler
                     lastIndex = _asMuchAsPossible(rhs,
                         tokenKeys, tokenValues, tokenPositions,
                         indexStart + 1, indexEnd)
-                    lastIndex
                     indexStart = lastIndex + 1
 
                     if newrhs != rhs
