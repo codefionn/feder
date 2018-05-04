@@ -128,6 +128,11 @@ namespace compiler
                     TokenKeys, TokenValues, TokenPositions,
                     0, len(TokenKeys) - 1)
 
+                if master == null
+                    io.println("Returned null! No compiling")
+                    continue
+                ;
+
                 io.print("Parts_len: ")
                 io.println(len(master.parts))
             ;

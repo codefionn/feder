@@ -397,6 +397,15 @@ namespace c_intern
 
         :return result;
     :}
+
+    :void*
+    :fdGetTypeArrayObjectAt (fdtypearray* ar, int index) {
+        # Out of bounds
+        :if (index < 0 || index >= ar->length)
+            :return NULL;
+
+        :return ar->data + index;
+    :}
 ;
 
 ::rule struct increase "fdIncreaseUsage ((fdobject*) {0})"
