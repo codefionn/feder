@@ -1909,10 +1909,18 @@ public class SyntaxTreeElement {
 
 					result = new StringBuilder (ruleArrayDataAt.applyRule(body, result.toString(), compiled.toString(), ar.getType().generateCName()));
 				} else {
-					FederRule ruleClassArrayAt = compiler.getApplyableRuleForBuildin("at_classarray");
-					if (ruleClassArrayAt == null) {
-						throw new RuntimeException("The buildin rule 'at_classarray' doesn't exist!");
-					}
+                    FederRule ruleClassArrayAt = null;
+                    if (indexToken < tokens.size() && tokens.get(indexToken).equals("=")) {
+    					ruleClassArrayAt = compiler.getApplyableRuleForBuildin("at_classarrayassign");
+	    				if (ruleClassArrayAt == null) {
+	    					throw new RuntimeException("The buildin rule 'at_classarrayassign' doesn't exist!");
+	    				}                    
+                    } else {
+					    ruleClassArrayAt = compiler.getApplyableRuleForBuildin("at_classarray");
+					    if (ruleClassArrayAt == null) {
+						    throw new RuntimeException("The buildin rule 'at_classarray' doesn't exist!");
+					    }
+                    }
 
 					if (!FederBinding.areSameTypes(ste.returnedClasses.get(0), ruleClassArrayAt.getSpecifiedResultValue())) {
 						throw new RuntimeException("Result type of 'at_dataarray' is not the same as in the '[]' brackets!");

@@ -513,6 +513,28 @@ namespace compiler
                                         # so the next token is the next line
                 ;
             ;
+
+            return master
+        ;
+
+        ##
+        # @return Returns a simplified version of "master"
+        ##
+        syntax.SyntaxTreeBranch func simplify (syntax.SyntaxTreeBranch master)
+            for i = 0, i < len(master.parts), i++
+                if master.parts_types[i] == syntax.STB_TYPE_STB
+                    # A SyntaxTreeBranch
+                    # check if just an instruction
+                    if (len((SyntaxTreeBranch from master.parts[i]).parts) == 1
+                        && (SyntaxTreeBranch from master.parts[i]).operator == null)
+                        
+                        master.parts_types[i] = (SyntaxTreeBranch from master.parts[i]).parts_types[0]
+                        master.parts[i] = object from (SyntaxTreeBranch from master.parts[i]).parts[0]
+                    else
+                        
+                    ;
+                ;
+            ;
         ;
     ;
 ;

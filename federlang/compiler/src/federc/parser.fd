@@ -3,7 +3,14 @@
 # created by Fionn Langhans <fionn.langhans@gmail.de>
 ##
 
+include "stdio.fd"
+include "federc/help.fd"
+include "federc/syntax.fd"
+
 namespace compiler
     namespace parser
+        String func parseMaster(syntax.SyntaxTreeBranch master)
+            
+        ;
     ;
 ;

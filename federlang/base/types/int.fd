@@ -171,6 +171,8 @@ namespace c_intern_int
 # arrays
 ::rule buildin at_dataarray "(({2}*) {0}->data) [{1}]" int32
 ::rule buildin at_classarray "({2}) fdGetClassArrayObjectAt ({0}, {1})" int32
+::rule buildin at_classarrayassign "{0}->data[{1}]" int32
+#::rule buildin at_classarray "(({2}) (*({0}->data + {1})))" int32
 ::rule buildin len_dataarray "fdGetTypeArrayLength ((fdtypearray*) {0})" int32
 ::rule buildin len_classarray "fdGetClassArrayLength ((fdclassarray*) {0})" int32
 ::rule buildin array_create_number "x" int32

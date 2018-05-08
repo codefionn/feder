@@ -129,7 +129,6 @@ namespace compiler
                     0, len(TokenKeys) - 1)
 
                 if master == null
-                    io.println("Returned null! No compiling")
                     continue
                 ;
 
