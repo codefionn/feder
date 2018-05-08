@@ -364,21 +364,21 @@ class String
     # or if index_start is greater than index_end
     ##
     String func subString (int32 index_start, int32 index_end)
-        if index_start > index_end
+        if index_start > index_end || index_start < 0 || index_end < 0
             return null
         ;
         
+        len0 = length()
         result = String
         i = index_start.cp ()
-        while !(i > index_end)
-            character = at (i)
+        for i <= index_end && i < len0, i++
+            character = at(i)
             if character == null
                 # The index is out of bounds
                 return null
             ;
 
             result.addto (character.cp ())
-            i.addto (1)
         ;
 
         return result
@@ -393,7 +393,7 @@ class String
     # of bounds
     ##
     String func subString (int32 index_start)
-        return subString (index_start, length().add ((1).makeNegative ()))
+        return subString (index_start, length() - 1)
     ;
 
     ##
@@ -970,18 +970,20 @@ class StringReader
         pos = 0
     ;
 
-    StringReader func new(String input)
-        this.input = input
+    StringReader func new(String input0)
+        input = input0
         return this
     ;
     
     byte func readNext
-        if pos >= input.length()
+        if input == null || pos >= input.length()
             return '\0'
         ;
 
         Byte result = input.at(pos)
+        byte res = result.val
         pos++
-        return result.val
+
+        return res
     ;
 ;

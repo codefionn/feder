@@ -531,7 +531,7 @@ namespace compiler
                         master.parts_types[i] = (SyntaxTreeBranch from master.parts[i]).parts_types[0]
                         master.parts[i] = object from (SyntaxTreeBranch from master.parts[i]).parts[0]
                     else
-                        
+                        simplify(SyntaxTreeBranch from master.parts[i])
                     ;
                 ;
             ;

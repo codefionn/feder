@@ -9,8 +9,47 @@ include "federc/syntax.fd"
 
 namespace compiler
     namespace parser
-        String func parseMaster(syntax.SyntaxTreeBranch master)
-            
+        class ParserResult
+            # Header: Forward declaration
+            String header_forDec
+            String header
+
+            # C file: Forward declaration
+            String c_forDec
+            String c
+        ;
+
+        int32 STYPE_NONE = 1
+        int32 STYPE_NULL = 2
+        int32 STYPE_CLASS = 3
+        int32 STYPE_FUNCTION = 4
+        int32 STYPE_ARRAY = 5
+        int32 STYPE_DATATYPE = 6
+        int32 STYPE_NAMESPACE = 7
+
+        class Symbol
+            int32 stype
+            String name
+            String buildName
+
+            Symbol parent
+            Symbol[] children
+
+            func init
+                children = Symbol[0]
+            ;
+
+            Symbol func new(int32 stype0, String name0, Symbol parent0)
+                parent = parent0
+                stype = stype0
+                name = name0
+
+            ;
+        ;
+
+        ParserResult func parseMaster(syntax.SyntaxTreeBranch master,
+                                      Symbol[] symbols)
+             
         ;
     ;
 ;

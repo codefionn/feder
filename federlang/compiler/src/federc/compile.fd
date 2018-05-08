@@ -26,6 +26,7 @@ namespace compiler
             if isEqual(files[i], "-")
                 String buffer = String
                 byte c = io.readByte()
+                io.println("Reading from stdin")
                 while c != '\0'
                     buffer.addto(Byte.set(c))
                     c = io.readByte()
@@ -33,7 +34,6 @@ namespace compiler
 
                 Lex.buffer = object from StringReader.new(buffer)
                 Lex.fn_buffer_readbyte = compiler.lexer.readbyteString
-                io.println("Reading from stdin")
             else 
                 File f = File
                 if !f.open(files[i], "r")
@@ -131,6 +131,9 @@ namespace compiler
                 if master == null
                     continue
                 ;
+
+                # Simplify
+                syntax.simplify(master)
 
                 io.print("Parts_len: ")
                 io.println(len(master.parts))

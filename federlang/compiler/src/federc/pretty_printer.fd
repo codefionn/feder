@@ -23,40 +23,42 @@ namespace compiler
                             
                             String suffix)
 
-            File f = File
-            if !f.open(files[i], "r")
-                io.err.print("Can't read file ")
-                io.err.println(files[i])
-                return false
-            ;
-
-            # Give the user a message
-            io.print("Pretty printing file ")
-            io.print(files[i])
-            if suffix.isEmpty()
-                io.println()
-            else
-                io.print(" to ")
-                io.print(files[i])
-                io.print(suffix)
-                io.println()
-            ;
-
             Lex = compiler.lexer.LexerHelper
-            #Lex.addline_direct = true
             Lex.name = files[i]
-            Lex.buffer = object from f
-            Lex.addComment = true
-            Lex.fn_buffer_readbyte = compiler.lexer.readbyteFile
-            Lex.fn_buffer_close = compiler.lexer.closeFile
 
+            if isEqual(files[i], "-")
+                String buffer = String
+                byte c = io.readByte()
+                io.println("Reading from stdin")
+                while c != '\0'
+                    buffer.addto(Byte.set(c))
+                    c = io.readByte()
+                ;
+
+                Lex.buffer = object from StringReader.new(buffer)
+                Lex.fn_buffer_readbyte = compiler.lexer.readbyteString
+                Lex.fn_buffer_close = null
+            else 
+                File f = File
+                if !f.open(files[i], "r")
+                    io.err.print("Can't read file ")
+                    io.err.println(files[i])
+                    return false
+                ;
+
+                Lex.buffer = object from f
+                Lex.fn_buffer_readbyte = compiler.lexer.readbyteFile
+                Lex.fn_buffer_close = compiler.lexer.closeFile
+            ;
+
+            Lex.addComment = true
 
             if !compiler.lexer.lex(Lex,
                     TokenKeys, TokenValues, TokenPositions)
                 # No notice for now
                 # if you think it is neccessary email me
                 return false
-            ;
+            ;   
 
             return true
         ;
@@ -181,7 +183,7 @@ namespace compiler
                     ;
                 else if args[i].startsWith("\\-")
                     # Ignore first - (would be option)
-                    append(files, args[i].subString(2))
+                    append(files, args[i].cp().removeAt(0))
                 else
                     append(files, args[i])
                 ;

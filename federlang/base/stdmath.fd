@@ -13,7 +13,9 @@ namespace h_intern_stdmath
 ::use -lm
 
 namespace math
-    ::rule buildin func_sqrt "sqrt ({0})" double
+    ::rule buildin func_sqrt "sqrt({0})" double
+    ::rule buildin func_floor "floor({0})" double
+    ::rule buildin func_ceil "ceil({0})" double
 
     double func sqrt (double n)
         double result = sqrt!(n)
@@ -37,20 +39,17 @@ namespace math
     ;
 
     uint32 func sqrt (uint32 n)
-        uint32 result
-        :federobj_result = (fdc_uint32) sqrt ((double) federobj_n);
+        uint32 result = uint32 from sqrt!(double from n)
         return result
     ;
 
     double func floor (double n)
-        double result
-        :federobj_result = (fdc_double) floor (federobj_n);
+        double result = floor!(n)
         return result
     ;
 
     double func ceil (double n)
-        double result
-        :federobj_result = (fdc_double) ceil (federobj_n);
+        double result = ceil!(n)
         return result
     ;
 

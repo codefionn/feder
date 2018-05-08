@@ -753,7 +753,9 @@ namespace compiler
                                 tokenPositions, "Invalid character")
             ;
 
-            helper.fn_buffer_close(helper.buffer)
+            if helper.fn_buffer_close != null
+                helper.fn_buffer_close(helper.buffer)
+            ;
 
             # error_count is null => No error occured
             return helper.error_count == 0

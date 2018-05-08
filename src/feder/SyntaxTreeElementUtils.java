@@ -458,7 +458,36 @@ public class SyntaxTreeElementUtils {
 			return new StringBuilder();
 		} else if (args[0].equals("assume")) {
 			assume(currentBody, args);
-		}
+            return new StringBuilder();
+		} else if (args[0].equals("cbind")) {
+            if (args.length < 3) {
+                throw new RuntimeException("Usage: cbind [cname] [type]");
+            }
+
+            String cname = args[1];
+            FederBinding b = currentBody;
+            for (int i = 2; i < args.length; i++) {
+                String[] split = args[i].split("\\.");
+                for (int ii = 0; ii < split.length; ii++) {
+                    if (!split[ii].equals(".")) {
+                        if (b != null) {
+                            if (!(b instanceof FederBody)) {
+                                throw new RuntimeException(split[ii] + " cant be in a body, because the returned binding doesn't contain anything.");
+                            }
+
+                            b = ((FederBody) b).getBinding((FederBody) b, split[ii], false);
+                        } else if (b == null)
+                            b = currentBody.getBinding(currentBody, split[ii], true);
+
+                        if (b == null) {
+                            throw new RuntimeException("Invalid symbol: " + split[ii]);
+                        }
+                    }
+                }
+            }
+
+            return new StringBuilder("typedef " + b.generateCName() + " " + cname + ";\n");
+        }
 
 		throw new RuntimeException("That command is invalid!");
 	}

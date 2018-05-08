@@ -14,9 +14,17 @@ namespace h_intern_io
 ;
 
 namespace io
+    ::rule buildin func_fgetc_stdin "fgetc(stdin)" int32
+    ::rule buildin func_EOF "EOF" int32
     byte func readByte
         byte b
-        :int c = (signed char) fgetc(stdin);
+        #int32 c = fgetc_stdin!()
+        #if c == (EOF!())
+        #    b = '\0'
+        #else
+        #    b = byte from c
+        #;
+        :int c = fgetc(stdin);
         :if (c == EOF) {
             :federobj_b = '\0';
         :} else {
