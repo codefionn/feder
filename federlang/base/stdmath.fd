@@ -17,6 +17,8 @@ namespace math
     ::rule buildin func_floor "floor({0})" double
     ::rule buildin func_ceil "ceil({0})" double
 
+    double PI = 3.14159265358979323846
+
     double func sqrt (double n)
         double result = sqrt!(n)
         #:federobj_result = sqrt (federobj_n);
