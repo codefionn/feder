@@ -55,8 +55,15 @@ if len (args0) != 4
     return false
 ;
 
-append (args0, "Hallo")
+append(args0, "Hallo")
 if !isEqual (args0[4], "Hallo")
     io.println ("Test 06 failed")
+    return false
+;
+
+# Test assign
+args0[4] = "Sekai"
+if !isEqual (args0[4], "Sekai")
+    io.println("Test 07 failed")
     return false
 ;
