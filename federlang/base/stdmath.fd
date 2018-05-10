@@ -3,6 +3,7 @@
 # created by Fionn Langhans <fionn.langhans@gmail.com>
 ##
 
+include "stdc.fd"
 include "stdtype.fd"
 
 namespace h_intern_stdmath
@@ -13,13 +14,61 @@ namespace h_intern_stdmath
 ::use -lm
 
 namespace math
+    # C Binding
     ::rule buildin func_sqrt "sqrt({0})" double
+    ::rule buildin func_pow "pow({0})" double
+
     ::rule buildin func_floor "floor({0})" double
     ::rule buildin func_ceil "ceil({0})" double
+    ::rule buildin func_abs "abs({0})" double
 
-    double PI = 3.14159265358979323846
+    ::rule buildin func_fmax "fmax({0})" double
+    ::rule buildin func_fmin "fmin({0})" double
 
-    double func sqrt (double n)
+    ::rule buildin func_cos "cos({0})" double
+    ::rule buildin func_sin "sin({0})" double
+    ::rule buildin func_tan "tan({0})" double
+    ::rule buildin func_acos "acos({0})" double
+    ::rule buildin func_asin "asin({0})" double
+    ::rule buildin func_atan "atan({0})" double
+    ::rule buildin func_cosh "cosh({0})" double
+    ::rule buildin func_sinh "sinh({0})" double
+    ::rule buildin func_tanh "tanh({0})" double
+    
+    # Constants
+    global double PI = 3.14159265358979323846 # PI
+    global double PI2 = 1.57079632679489661923 # PI / 2
+    global double SQRT2 = 1.41421356237309504880 # sqrt(2)
+
+    double func pow(double base, double exponent)
+        return pow!(base, exponent)
+    ;
+
+    double func abs(double n)
+        return abs!(n)
+    ;
+
+    double func max(double n0, double n1)
+        return fmax!(n0, n1)
+    ;
+
+    double func min(double n0, double n1)
+        return fmin!(n0, n1)
+    ;
+
+    double func cos(double n)
+        return cos!(n)
+    ;
+
+    double func sin(double n)
+        return sin!(n)
+    ;
+
+    double func tan(double n)
+        return tan!(n)
+    ;
+
+    double func sqrt(double n)
         double result = sqrt!(n)
         #:federobj_result = sqrt (federobj_n);
         return result

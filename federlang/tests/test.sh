@@ -87,5 +87,6 @@ feder_test "tests/test_dynamic.fd" "dynamic"
 feder_test "tests/test_higher_order.fd" "higher_order"
 feder_test "tests/test_config.fd" "config"
 feder_test "tests/test_same_type.fd" "same_type"
+feder_test "tests/test_math.fd" "math"
 
 exit $HAS_ERROR

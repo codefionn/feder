@@ -1,0 +1,31 @@
+# test_math.fd: Test the math library "stdmath.fd"
+
+include "stdmath.fd"
+include "stdio.fd"
+
+if !isEqual(math.sqrt(4), 2)
+    io.println("Test 01 failed")
+    return false
+;
+
+if !isEqual(math.pow(2.0, 4.0), 16.0)
+    io.println("Test 02 failed")
+    return false
+;
+
+if !isEqual(math.cos(0.0), 1.0)
+    io.println("Test 03 failed")
+    return false
+;
+
+if !isEqual(math.sin(0.0), 0.0)
+    io.println("Test 04 failed")
+    return false
+;
+
+if !isEqual(math.abs(-4.0), 4.0)
+    io.println("Test 05 failed")
+    return false
+;
+
+return true

@@ -28,6 +28,7 @@ call:test test_roperator
 call:test test_string
 call:test test_string_array
 call:test test_whileinif
+call:test test_math
 
 EXIT /B 0
 
