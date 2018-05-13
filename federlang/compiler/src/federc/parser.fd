@@ -12,20 +12,24 @@ namespace compiler
         class ParserResult
             # Header: Forward declaration
             String header_forDec
+
             String header
 
             # C file: Forward declaration
             String c_forDec
+
             String c
         ;
 
-        int32 STYPE_NONE = 1
-        int32 STYPE_NULL = 2
-        int32 STYPE_CLASS = 3
-        int32 STYPE_FUNCTION = 4
-        int32 STYPE_ARRAY = 5
-        int32 STYPE_DATATYPE = 6
-        int32 STYPE_NAMESPACE = 7
+        global STYPE_NONE = 0x00
+        global STYPE_CLASS = 0x01
+        global STYPE_DATATYPE = 0x02
+        global STYPE_FUNCTION = 0x04
+        global STYPE_INTERFACE = 0x08
+        global STYPE_NAMESPACE = 0x10
+        global STYPE_OBJECT = 0x20
+        global STYPE_BINDING = 0x40
+        global STYPE_DIRECT = 0x80
 
         class Symbol
             int32 stype
