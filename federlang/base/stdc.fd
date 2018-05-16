@@ -180,7 +180,7 @@ namespace h_intern
     :fdclassarray*
     :fdAppendToClassArray (fdclassarray* ar, fdobject * obj);
 
-    :fdobject*
+    :fdobject**
     :fdGetClassArrayObjectAt (fdclassarray* ar, int index);
 ;
 
@@ -381,7 +381,7 @@ namespace c_intern
         :return ar;
     :}
 
-    :fdobject*
+    :fdobject**
     :fdGetClassArrayObjectAt (fdclassarray* ar, int index) {
         :if (!ar)
             :return NULL;
@@ -389,12 +389,13 @@ namespace c_intern
         # Out of bounds
         :if (index < 0 || index >= ar->length)
             :return NULL;
+
         
-        :fdobject* result = ar->data[index];
+        :fdobject** result = ar->data + index;
         # Necessary, if ar gets deleted from heap
-        :fdIncreaseUsage (result);
+        :fdIncreaseUsage (*result);
         :fdRemoveObject_func ((fdobject*) ar);
-        :fdDecreaseUsage (result);
+        :fdDecreaseUsage (*result);
 
         :return result;
     :}
