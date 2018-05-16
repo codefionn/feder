@@ -1,5 +1,13 @@
 ![Feder Logo](/logo.png)
 
+63.57%  Java
+32.47%  Feder
+1.99%   Shell
+1.10%   Batchfile
+0.51%   C
+0.22%   Go
+0.14%   Python
+
 ## Introduction
 
 Feder is a programming language, which aims to be simple and yet fast.
