@@ -1,4 +1,4 @@
-![Feder Logo](/logo.png)
+![Feder Logo](/doc/logo.png)
 
 63.57%  Java
 32.47%  Feder
@@ -22,7 +22,9 @@ created and you can't submit any changes to the project.
 
 A Java enviroment ([JDK version >= 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html))
 and the programs of the JDK have to be available in the console environment
-(```$PATH: export PATH=$PATH:/path/to/jdk/bin or set PATH = $PATH:/path/to/jdk/bin```, %PATH%: [Windows Environment variables](https://www.computerhope.com/issues/ch000549.htm)).
+(```$PATH: export PATH=$PATH:/path/to/jdk/bin or
+set PATH = $PATH:/path/to/jdk/bin```, %PATH%:
+[Windows Environment variables](https://www.computerhope.com/issues/ch000549.htm)).
 Requires: javac, java, jar. The compiler does also require a C compiler available
 in the PATH environment variable. The default one is 'cc'. You can change the
 used compiler program with the option '--toolchain [compiler]'. If you want to
@@ -33,14 +35,28 @@ path variable, then use the --toolchain option to change the used compiler).
 You should also have installed a bash environment (on Windows [Cygwin](https://cygwin.com/)). This is
 optional, but is required if you want to do the tutorials right below.
 
-## Installation
+## Installation on Unixes
 
 ```
 $ git clone https://github.com/codefionn/feder.git
 $ cd feder
-$ ./build.sh
-$ sudo ./install.sh
+$ ./scripts/build.sh
+$ sudo ./scripts/install.sh
 ```
+
+## Installation on Windows
+
+Execute as admin:
+
+```
+> git clone https://github.com/codefionn/feder.git
+> cd feder
+> .\scripts\build.cmd
+> .\scripts\install.cmd
+```
+
+".\scripts\install.cmd" notifies you to add "C:\Program Files\jfederc" to the
+Path environment variable [Windows Environment variables](https://www.computerhope.com/issues/ch000549.htm).
 
 ### Uninstalling
 
@@ -48,7 +64,7 @@ To uninstall Feder simply execute the uninstall.sh script in the master director
 of the project.
 
 ```
-$ sudo ./uninstall.sh
+$ sudo ./scripts/uninstall.sh
 ```
 
 ### Install to another location
@@ -56,14 +72,14 @@ $ sudo ./uninstall.sh
 If you want to install Feder to another location (e.g.: ~/.local) use:
 
 ```
-$ ./install.sh ~/.local
+$ ./scripts/install.sh ~/.local
 ```
 
 
 Uninstalling would look like this:
 
 ```
-$ ./uninstall.sh ~/.local
+$ ./scripts/uninstall.sh ~/.local
 ```
 
 ### Cleaning up
