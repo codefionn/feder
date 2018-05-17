@@ -17,3 +17,4 @@ feder_compile sys_progtime
 feder_compile compute_pi
 feder_compile printinput
 feder_compile greatest_common_divisor
+feder_compile pi_leibniz
