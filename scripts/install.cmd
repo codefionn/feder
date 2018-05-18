@@ -9,7 +9,7 @@ if not exist "jfederc.jar" (
     EXIT /B 0
 )
 
-copy /Y jfederc.jar "C:\Program Files\jfederc\jfederc.jar"
+copy /Y bin\jfederc.jar "C:\Program Files\jfederc\jfederc.jar"
 robocopy /E federlang\base "C:\Program Files\jfederc\base"
 
 :: Write to file

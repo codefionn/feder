@@ -115,7 +115,7 @@ public class Feder {
 	/**
 	 * Current version of this program
 	 */
-	public static String VERSION = "1.0";
+	public static String VERSION = "1.1";
 
 	/**
 	 * This method processes the arguments given to the program

@@ -7,7 +7,7 @@ if $(echo $(pwd) | grep -G '^.*random$' > /dev/null) ; then
 	DIR_OF_JAR="${DIR_OF_JAR}/.."
 fi
 
-DIR_OF_JAR=${DIR_OF_JAR}/../jfederc.jar
+DIR_OF_JAR=${DIR_OF_JAR}/../bin/jfederc.jar
 
 if uname -s | grep "Cygwin" > /dev/null ; then
 	DIR_OF_JAR=$(cygpath -w ${DIR_OF_JAR})

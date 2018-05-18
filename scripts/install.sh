@@ -33,12 +33,12 @@ if ! [ -d "$DEST_DIR/usr/lib/feder" ] ; then
   exit 1
 fi
 
-if ! [ -f jfederc.jar ] ; then
-  echo "jfederc.jar is missing. Run build.sh first!"
+if ! [ -f ./bin/jfederc.jar ] ; then
+  echo "jfederc.jar is missing. Run scripts/build.sh first!"
   exit 1
 fi
 
-if ! cp jfederc.jar "$DEST_DIR/usr/share/java/" ; then
+if ! cp ./bin/jfederc.jar "$DEST_DIR/usr/share/java/" ; then
   echo "Insufficient permissions, run this program as a privileged"
   exit 1
 fi
@@ -84,4 +84,3 @@ EOF
 fi
 
 chmod a+x "$DEST_DIR/usr/bin/jfedercnolib" # Allow execution (all users)
-
