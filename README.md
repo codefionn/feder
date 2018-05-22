@@ -18,6 +18,21 @@ stdlib (Feder Standard Library) are written for POSIX and Windows systems.
 Attention: Currently, because of the "Jugend forscht" contest, issues can't be
 created and you can't submit any changes to the project.
 
+## Further development
+
+The most active development process is in the repository
+[federc](https://github.com/codefionn/federc).
+
+What should be changed (if you want something to be changed, write an email to
+"fionn.langhans@gmail.com"):
+
+- The current file extension for Feder source  code is ".fd". But that's also
+  an (not so common?) extension for describing fonts in (La-)Tex. Should the
+  extension be changed to something else (like ".feder") ?
+
+- Should memory safety be improved (even when the size of possible standard
+  libraries would shrink) ?
+
 ## Requirements
 
 A Java enviroment ([JDK version >= 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html))
