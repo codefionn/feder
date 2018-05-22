@@ -215,4 +215,4 @@ $ doxygen doxyconf
 ```
 
 in the main directory of the project. This generates a HTML documentation
-in [/doc/java_api/html](/doc/java_api/html).
+in [/doc/java_api/html](/doc/java_api/html). Can be found online: [jfederc-doc](https://codefionn.github.io/jfederc-doc)
