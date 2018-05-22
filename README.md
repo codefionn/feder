@@ -175,31 +175,36 @@ Examples are in /federlang/programs and little tutorials in [/doc/tutorials/](/d
 ## Files
 
 ```
-feder
-    build.cmd       Build Java Feder compiler (batch)
-    build.sh        Build Java Feder compiler (bash)
-    doc
-        Feder.odt   Document for the 'Jugend Forscht' contest
-        Feder.7     Trying to created a man page for Feder
-        tutorials   Tutorials describing the basics of the language
-
-    federlang
-        base        Feder Standard Library (/usr/lib/feder/base)
-        clean.sh    Removes build files
-        comparison  Compare runtime speed (C, Feder, Go, Python, Java)
-        compiler    A sub-project: A Feder compiler written in Feder
-        failtests   Tests which should fail to compile (./failtests/test.sh)
-        jfederc     Compiles Feder source code (use /usr/bin/jfederc)
-        programs    Programs written in Feder (examples)
-        tests       Tests which should succeed (./tests/test.sh)
-        tutorials   Programs for /doc/tutorials
-
-    install.sh      install Feder, requires root permissions
-    LICENSE         zlib license
-    README.md       This file
-    src             Source files for the Java Feder compiler
-    uninstall.sh     Uninstall files & directories installed by install.sh
+|-- LICENSE         zlib license
+|-- README.md
+|-- doc
+|   |-- Feder.odt   Document for the "Jugend Forscht" contest
+|   |-- Feder.pdf   PDF of Feder.odt
+|   |-- feder.7     Wants to be a man-page
+|   |-- java_api    Documentation of the Java-Feder compiler (jfederc)
+|   |-- logo.png    The Feder logo
+|   `-- tutorials   Tutorials for writing Feder source code (jfederc std lib)
+|-- federlang
+|   |-- base        jfederc Standard Library
+|   |-- clean.sh    Delete builds
+|   |-- comparison  Compare performance of Feder with other languages
+|   |-- compiler    Moved to https://github.com/codefionn/federc
+|   |-- failtests   Tests which should fail (test.sh should of course not fail)
+|   |-- jfederc     Execute jfederc in this or in a sub directory (bash)
+|   |-- jfederc.cmd Execute jfederc in this or in a sub directory (batch)
+|   |-- programs    Example programs (build with build.sh)
+|   |-- tests       Test jfederc and the Standard Library (test.sh or test.cmd)
+|   `-- tutorials   Programs from /doc/tutorials
+|-- scripts
+|   |-- build.cmd   Build jfederc (batch)
+|   |-- build.sh    Build jfederc (bash)
+|   |-- install.cmd Install jfederc (batch, SET ENVIRONMENT VARIABLE)
+|   |-- install.sh  Install jfederc (bash)
+|   |-- linguist_prepare.sh Build github/linguist with Feder support
+|   `-- uninstall.sh Unistall jfederc (bash)
+`-- src             Java source code (jfederc)
 ```
+
 
 ## Documentation
 
