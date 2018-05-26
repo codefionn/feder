@@ -432,6 +432,7 @@ class object
 # binary
 ::rule precedence % 30
 ::rule precedence | 30
+::rule precedence & 30
 # boolean
 ::rule precedence ! 20
 # boolean comparison
@@ -444,3 +445,5 @@ class object
 # boolean combinations
 ::rule precedence && 10
 ::rule precedence || 10
+
+
