@@ -15,9 +15,6 @@ Currently, Feder source code can be compiled with jfederc (The Java Feder
 compiler, a Feder compiler written in Java). The Feder compiler and Feder
 stdlib (Feder Standard Library) are written for POSIX and Windows systems.
 
-Attention: Currently, because of the "Jugend forscht" contest, issues can't be
-created and you can't submit any changes to the project.
-
 ## Further development
 
 The most active development process is in the repository
