@@ -215,3 +215,11 @@ $ doxygen doxyconf
 
 in the main directory of the project. This generates a HTML documentation
 in [/doc/java_api/html](/doc/java_api/html). Can be found online: [jfederc-doc](https://codefionn.github.io/jfederc-doc)
+
+## Further links
+
+[Project at JugendForscht](https://www.jugend-forscht.de/projektdatenbank/feder-eine-programmiersprache.html)
+
+[Feder compiler written in Feder](https://github.com/codefionn/federc)
+
+[Feder vim syntax highlighting](https://github.com/codefionn/feder-highlight)
