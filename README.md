@@ -29,6 +29,10 @@ What should be changed (if you want something to be changed, write an email to
 
 - Should memory safety be improved (even when the size of possible standard
   libraries would shrink) ?
+  
+I have to admit current development is on hold. Currently I'm learning
+how to create good compilers/interpreters. I would like to resume this
+project, when I can create better compilers/interpreters.
 
 ## Requirements
 
