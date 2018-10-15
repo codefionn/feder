@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Copyright (C) 2018 Fionn Langhans
 
-FDC_OPTIONS=$@
+FDC_OPTIONS=("$@")
 
 if ! [ -d "tests" ] ; then
 	echo "Current directory has to be 'federlang'"
@@ -24,7 +24,7 @@ if [ $# -eq 1 ] ; then
 fi
 
 function feder_test_program_compile {
-	if ./jfederc $FEDER_ADDITIONAL -I base -I tests -O "$2" -D tests/build "$1" $FDC_OPTIONS ; then
+	if ./jfederc $FEDER_ADDITIONAL -I base -I tests -O "$2" -D tests/build "$1" "${FDC_OPTIONS[@]}" ; then
 		return 0
 	else
 		return 1
@@ -46,7 +46,7 @@ if ! ./tests/build/ret_true$FEDER_OUTPUT_ENDING ; then
 fi
 
 function feder_test_program_test {
-	if ! timeout 5 $@ > /dev/null ; then
+	if ! timeout 5 "$@" > /dev/null ; then
 		echo "Test \"$1\" failed" 1>&2 
 		HAS_ERROR=1
 	fi
@@ -54,7 +54,7 @@ function feder_test_program_test {
 
 function feder_test {
 	echo "# Test " $1$FEDER_OUTPUT_ENDING
-	if feder_test_program_compile $@ ; then
+	if feder_test_program_compile "$@" ; then
 		feder_test_program_test tests/build/$2
 	else
 		echo "Compiler error"
