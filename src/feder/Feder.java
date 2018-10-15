@@ -101,6 +101,18 @@ public class Feder {
 	private Feder() {
 	}
 
+	private static final Map<String, String> OPTION_EXPANSIONS;
+
+	static {
+		OPTION_EXPANSIONS = new HashMap<>();
+		OPTION_EXPANSIONS.put("D", "builddir");
+		OPTION_EXPANSIONS.put("I", "include");
+		OPTION_EXPANSIONS.put("O", "output");
+		OPTION_EXPANSIONS.put("T", "toolchain");
+		OPTION_EXPANSIONS.put("W", "usewinop");
+		OPTION_EXPANSIONS.put("v", "version");
+	}
+
 	/**
 	 * This thing should describe the filename separator, which
 	 * should be used by this program
@@ -167,7 +179,7 @@ public class Feder {
 		 * - POSIX
 		 * - WINDOWS
 		 */
-		String systemName = "POSIX";
+		String systemName;
 
 		/*
 		 * The following condition clauses analyse the
@@ -181,7 +193,8 @@ public class Feder {
 		} else if (osName.contains("windows")) {
 			systemName = "WINDOWS";
 		} else {
-			System.err.println ("WARNING: System not recognized, using POSIX library!");
+			System.err.println("WARNING: System not recognized, using POSIX library!");
+			systemName = "POSIX";
 		}
 
 		// System.out.println ("System: " + systemName);
@@ -200,19 +213,22 @@ public class Feder {
 			}
 
 			boolean islongoption = arg.startsWith("--");
-			boolean isshortoption = arg.startsWith("-");
+			boolean isshortoption = arg.startsWith("-") && !islongoption;
 
 			// option is not null, if either of islongoption or
 			// isshortoption is true
 			String option = null;
-			if (islongoption)
+			if (islongoption) {
 				option = arg.substring(2);
-			else if (isshortoption)
+			} else if (isshortoption) {
 				option = arg.substring(1);
+				option = OPTION_EXPANSIONS.getOrDefault(option, option);
+			}
 
 			if (await != null) {
 				islongoption = false;
 				isshortoption = false;
+				option = null;
 			}
 
 			if (await == null && option == null) {
@@ -220,76 +236,82 @@ public class Feder {
 				continue;
 			}
 
-			if (await != null && await.equals("builddir")) {
-				buildDir = arg;
-			} else if (await != null && await.equals("includedir")) {
-				if (!arg.endsWith("/"))
-					arg = arg + "/";
-				includeDirs.add(arg);
-			} else if (await != null && await.equals("output")) {
-				progName = arg;
-			}  else if (await != null && await.equals("toolchain")) {
-				progCC = arg;
-			} else if (await != null && await.equals ("separator")) {
-				separator = arg;
-			} else if (await != null && await.equals("coption")) {
-				progOptions.add(arg);
-			} else if (await != null && await.equals("loption")) {
-				linkerOptions.add(arg);
-			} else if (await != null && await.equals("system")) {
-				systemName = arg;
+			if (await != null) {
+				switch (await) {
+					case "builddir":
+						buildDir = arg;
+						break;
+					case "includedir":
+						if (!arg.endsWith("/")) {
+							arg = arg + "/";
+						}
+						includeDirs.add(arg);
+						break;
+					case "output":
+						progName = arg;
+						break;
+					case "toolchain":
+						progCC = arg;
+						break;
+					case "separator":
+						separator = arg;
+						break;
+					case "coption":
+						progOptions.add(arg);
+						break;
+					case "loption":
+						linkerOptions.add(arg);
+						break;
+					case "system":
+						systemName = arg;
+						break;
+				}
 
-			} else if ((islongoption && option.equals("builddir")) ||
-			           (isshortoption && option.equals("D"))) {
-				await = "builddir";
-				continue;
-			} else if ((islongoption && option.equals("include")) ||
-			           (isshortoption && option.equals("I"))) {
-				await = "includedir";
-				continue;
-			} else if ((islongoption && option.equals("output")) ||
-			           (isshortoption && option.equals("O"))) {
-				await = "output";
-				continue;
-			} else if (islongoption && option.equals("debug")) {
-				debug = true;
-				continue;
-			} else if ((isshortoption && option.equals ("T")) ||
-			           (islongoption && option.equals ("toolchain"))) {
-				await = "toolchain";
-				continue;
-			} else if ((isshortoption && option.equals("W")) ||
-			           (islongoption && option.equals ("usewinop"))) {
-				usewincl = true;
-				continue;
-			} else if (islongoption && option.equals ("separator")) {
-				await = "separator";
-				continue;
-			} else if (islongoption && option.equals ("coption")) {
-				await = "coption";
-				continue;
-			} else if (islongoption && option.equals("loption")) {
-				await = "loption";
-				continue;
-			} else if (islongoption && option.equals("system")) {
-				await = "system";
-				continue;
-			} else if ((isshortoption && option.equals("v")) ||
-			           (islongoption && option.equals("version"))) {
-				System.out.println (VERSION);
-				return;
-			} else if (islongoption && option.equals("printbuild")) {
-				printCommands = true;
-				continue;
+				await = null;
 			}
 
-			else {
-				System.err.println("Invalid option \"" + arg + "\"!");
-				System.exit (1);
-				return;
+			if (option != null) {
+				switch (option) {
+					default:
+						System.err.println("Invalid option \"" + arg + "\"!");
+						System.exit(1);
+						return;
+					case "builddir":
+						await = "builddir";
+						break;
+					case "include":
+						await = "includedir";
+						break;
+					case "output":
+						await = "output";
+						break;
+					case "debug":
+						debug = true;
+					case "toolchain":
+						await = "toolchain";
+						break;
+					case "usewinop":
+						usewincl = true;
+					case "separator":
+						await = "separator";
+						break;
+					case "coption":
+						await = "coption";
+						break;
+					case "loption":
+						await = "loption";
+						break;
+					case "system":
+						await = "system";
+						break;
+					case "version":
+						System.out.println(VERSION);
+						return;
+					case "printbuild":
+						printCommands = true;
+						break;
+				}
 			}
-
-			await = null;
 		}
 
 		/*
@@ -339,7 +361,7 @@ public class Feder {
 				progName = progName.substring(0, progName.length()-3);
 
 			String separator0 = separator;
-			if (separator0.equals ("\\"))
+			if (separator0.equals("\\"))
 				separator0 += "\\";
 
 			String[] parts = progName.split("/");
