@@ -3,6 +3,8 @@
  */
 package feder.utils;
 
+import java.util.regex.*;
+
 /**
  * 
  * @author Fionn Langhans
@@ -25,20 +27,7 @@ public class NumberUtils
 	 * complete == false: 0x[A-F0-9]*
 	 */
 	public static boolean isHexadecimalNumber (String str, boolean complete) {
-		if (str.isEmpty())
-			return false;
-		
-		if (!str.startsWith("0x") || (str.length() == 2 && complete))
-			return false;
-		
-		for (int i = 2; i < str.length(); i++) {
-			if (!Character.isDigit(str.charAt(i))
-					&& (str.charAt(i) >= 'A' && str.charAt(i) <= 'F')) {
-				return false;
-			}
-		}
-		
-		return true;
+		return Pattern.matches("0x[A-F0-9]" + (complete ? "+" : "*"), str);
 	}
 
 	/**
@@ -49,28 +38,7 @@ public class NumberUtils
 	 */
 	public static boolean isNumber(String str, boolean allowFloatingPoint, boolean allow_minus)
 	{
-		if (str.isEmpty()) {
-			return false;
-		}
-
-		int index = 0;
-		if (allow_minus && str.startsWith("-")) {
-			index++;
-		}
-
-		boolean floatingPointCame = false;
-
-		for (int i = index; i < str.length(); i++) {
-			if (!Character.isDigit(str.charAt(i))
-			        && !(str.charAt(i) == '.' && allowFloatingPoint && !floatingPointCame)) {
-				return false;
-			}
-
-			if (str.charAt(i) == '.' && allowFloatingPoint)
-				floatingPointCame = false;
-		}
-
-		return true;
+		return Pattern.matches((allow_minus ? "-?" : "") + "(0|[1-9][0-9]*)" + (allowFloatingPoint ? "(\.[0-9]+)?" : ""), str);
 	}
 
 	/**
