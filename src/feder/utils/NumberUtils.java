@@ -38,7 +38,7 @@ public class NumberUtils
 	 */
 	public static boolean isNumber(String str, boolean allowFloatingPoint, boolean allow_minus)
 	{
-		return Pattern.matches((allow_minus ? "-?" : "") + "(0|[1-9][0-9]*)" + (allowFloatingPoint ? "(\.[0-9]+)?" : ""), str);
+		return Pattern.matches((allow_minus ? "-?" : "") + "(0|[1-9][0-9]*)" + (allowFloatingPoint ? "(\\.[0-9]+)?" : ""), str);
 	}
 
 	/**
