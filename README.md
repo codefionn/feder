@@ -31,7 +31,7 @@ What should be changed (if you want something to be changed, write an email to
   libraries would shrink) ?
   
 It's not on hold anymore, instead a second Feder language standard is in development.
-[Federlang](codefionn.github.io/federlang/definition.pdf)
+[Federlang](htttps://codefionn.github.io/federlang/definition.pdf)
 
 ## Requirements
 
