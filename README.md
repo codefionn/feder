@@ -17,9 +17,6 @@ stdlib (Feder Standard Library) are written for POSIX and Windows systems.
 
 ## Further development
 
-The most active development process is in the repository
-[federc](https://github.com/codefionn/federc).
-
 What should be changed (if you want something to be changed, write an email to
 "fionn.langhans@gmail.com"):
 
@@ -31,7 +28,7 @@ What should be changed (if you want something to be changed, write an email to
   libraries would shrink) ?
   
 It's not on hold anymore, instead a second Feder language standard is in development.
-[Federlang](https://codefionn.github.io/federlang/definition.pdf)
+[Federlang](https://codefionn.github.io/federlang/feder2018.pdf)
 
 ## Requirements
 
